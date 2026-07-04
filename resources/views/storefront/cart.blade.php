@@ -68,7 +68,15 @@
                                 <form method="POST" action="{{ route('cart.update', $item->id) }}">
                                     @csrf
                                     @method('PATCH')
-                                    <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="10" class="cart-qty-input" onchange="this.form.submit()">
+                                    <div class="qty-control">
+                                        <button type="button" class="qty-btn" onclick="this.parentNode.querySelector('input').stepDown(); this.form.submit();">
+                                            <span class="material-symbols-outlined" style="font-size: 1rem;">remove</span>
+                                        </button>
+                                        <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="10" class="cart-qty-input" onchange="this.form.submit()">
+                                        <button type="button" class="qty-btn" onclick="this.parentNode.querySelector('input').stepUp(); this.form.submit();">
+                                            <span class="material-symbols-outlined" style="font-size: 1rem;">add</span>
+                                        </button>
+                                    </div>
                                 </form>
                             </div>
 
