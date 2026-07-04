@@ -6,8 +6,6 @@
 
 {{-- ============================================
     HERO BANNER SECTION
-    Matches UI: Full-width hero with gradient overlay,
-    "STEP INTO STYLE" label, serif heading, sub text, CTA
 ============================================= --}}
 <section class="hero-section">
     <div class="hero-bg">
@@ -33,8 +31,7 @@
 </section>
 
 {{-- ============================================
-    CATEGORY TILES
-    Matches UI: 3 tiles - MEN, WOMEN, OUTLET
+    CATEGORY TILES — MEN, WOMEN, OUTLET
 ============================================= --}}
 <section style="padding: var(--space-lg) 0;">
     <div class="container">
@@ -69,7 +66,6 @@
 
 {{-- ============================================
     VALUE PROPOSITIONS BAR
-    Matches UI: 4 props with icons, dividers
 ============================================= --}}
 <section style="padding: 0 0 var(--space-xl);">
     <div class="container">
@@ -102,9 +98,46 @@
 </section>
 
 {{-- ============================================
+    FEATURED PRODUCTS (from DB is_featured flag)
+============================================= --}}
+@if($featuredProducts->count() > 0)
+<section style="padding-bottom: var(--space-2xl);" id="featured-section">
+    <div class="container skeleton-container">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">
+                    FEATURED
+                    <span class="material-symbols-outlined" style="color: var(--color-premium-gold); font-size: 1.2rem;">star</span>
+                </h2>
+                <div class="section-title-underline"></div>
+            </div>
+            <a href="{{ route('categories') }}" class="section-link">
+                VIEW ALL <span class="material-symbols-outlined" style="font-size: 1.1rem;">arrow_forward</span>
+            </a>
+        </div>
+
+        <div class="skeleton-grid" aria-hidden="true">
+            @for($i = 0; $i < 4; $i++)
+                @include('storefront.partials.skeleton-product-card')
+            @endfor
+        </div>
+
+        <div class="product-real-grid home-product-grid">
+            @foreach($featuredProducts as $product)
+                <div class="home-product-item">
+                    @include('storefront.partials.product-card', [
+                        'product'     => $product,
+                        'wishlistIds' => $wishlistIds ?? [],
+                    ])
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- ============================================
     NEW ARRIVALS
-    Matches UI: Section heading with gold underline,
-    crown icon, "VIEW ALL ->" link, product grid
 ============================================= --}}
 @if($newArrivals->count() > 0)
 <section style="padding-bottom: var(--space-2xl);" id="new-arrivals-section">
@@ -122,17 +155,15 @@
             </a>
         </div>
 
-        {{-- Skeleton Loading --}}
-        <div class="skeleton-grid" id="arrivals-skeleton" aria-hidden="true">
+        <div class="skeleton-grid" aria-hidden="true">
             @for($i = 0; $i < 4; $i++)
                 @include('storefront.partials.skeleton-product-card')
             @endfor
         </div>
 
-        {{-- Real Products --}}
-        <div class="new-arrivals-grid product-real-grid" id="arrivals-grid">
+        <div class="product-real-grid home-product-grid">
             @foreach($newArrivals as $product)
-                <div class="new-arrivals-item">
+                <div class="home-product-item">
                     @include('storefront.partials.product-card', [
                         'product'     => $product,
                         'wishlistIds' => $wishlistIds ?? [],
@@ -142,21 +173,10 @@
         </div>
     </div>
 </section>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var container = document.querySelector('#new-arrivals-section .skeleton-container');
-        if (container) {
-            container.classList.add('content-loaded');
-        }
-    });
-</script>
 @endif
 
 {{-- ============================================
     PROMO BANNER
-    Matches UI: Black banner, gold icon, gold heading,
-    white subtitle, outlined "JOIN NOW" CTA
 ============================================= --}}
 <section style="padding-bottom: var(--space-2xl);">
     <div class="container">
@@ -175,8 +195,17 @@
     </div>
 </section>
 
+{{-- Skeleton → Real content transition --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.skeleton-container').forEach(function (el) {
+        el.classList.add('content-loaded');
+    });
+});
+</script>
+
 {{-- ============================================
-    HOMEPAGE STYLES (scoped to homepage components)
+    HOMEPAGE SCOPED STYLES
 ============================================= --}}
 <style>
 /* HERO */
@@ -369,7 +398,7 @@
     .value-prop-divider { display: none; }
 }
 
-/* SECTION TITLE UNDERLINE (gold bar under heading) */
+/* SECTION TITLE UNDERLINE */
 .section-title-underline {
     width: 40px;
     height: 3px;
@@ -377,8 +406,8 @@
     margin-top: 4px;
 }
 
-/* NEW ARRIVALS GRID */
-.new-arrivals-grid {
+/* HOMEPAGE PRODUCT GRID */
+.home-product-grid {
     display: flex;
     gap: var(--space-md);
     overflow-x: auto;
@@ -387,19 +416,19 @@
     scrollbar-width: none;
     padding-bottom: var(--space-sm);
 }
-.new-arrivals-grid::-webkit-scrollbar { display: none; }
-.new-arrivals-item {
+.home-product-grid::-webkit-scrollbar { display: none; }
+.home-product-item {
     flex: 0 0 calc(50% - 8px);
     min-width: 150px;
     scroll-snap-align: start;
 }
 @media (min-width: 769px) {
-    .new-arrivals-grid {
+    .home-product-grid {
         display: grid !important;
         grid-template-columns: repeat(4, 1fr);
         overflow-x: visible;
     }
-    .new-arrivals-item {
+    .home-product-item {
         flex: unset;
         min-width: 0;
     }

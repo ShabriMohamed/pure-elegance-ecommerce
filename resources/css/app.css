@@ -38,9 +38,12 @@
     --color-error: #D32F2F;
     --color-success: #388E3C;
 
-    /* Aliases */
+    /* Aliases (backward compat for existing views) */
     --color-border: #EAEAEA;
     --color-gold: #C89B3C;
+    --color-cream: #F5F2EC;
+    --color-charcoal: #1E1E1E;
+    --color-muted: #999999;
 
     /* Gradient Styles */
     --gradient-black-gold: linear-gradient(90deg, #0B0B0B, #C89B3C);
@@ -1091,3 +1094,65 @@ textarea.form-control {
 .mb-xl { margin-bottom: var(--space-xl); }
 .py-lg { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
 .py-xl { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
+
+/* ========================================
+   PAGINATION
+   ======================================== */
+.pe-pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+}
+
+.pe-pagination-info {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: var(--color-muted-text);
+}
+
+.pe-pagination-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pe-page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--color-light-gray);
+    border-radius: var(--radius-sm);
+    background: var(--color-pure-white);
+    color: var(--color-primary-text);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.pe-page-link:hover:not(.disabled):not(.active) {
+    background: var(--color-soft-gray);
+    border-color: var(--color-medium-gray);
+}
+
+.pe-page-link.active {
+    background: var(--color-rich-black);
+    color: var(--color-pure-white);
+    border-color: var(--color-rich-black);
+}
+
+.pe-page-link.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pe-page-link .material-symbols-outlined {
+    font-size: 1.1rem;
+}

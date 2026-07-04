@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
-@section('title', isset($category) ? $category->name : 'Categories')
+@php
+    $title = $pageTitle
+        ?? (isset($category) ? $category->name : null)
+        ?? (request('gender') === 'men' ? "Men's Collection" : null)
+        ?? (request('gender') === 'women' ? "Women's Collection" : null)
+        ?? 'All Products';
+@endphp
+
+@section('title', $title)
 
 @section('content')
 <section style="padding: var(--space-xl) 0 var(--space-3xl);">
@@ -8,19 +16,7 @@
         {{-- Page Header --}}
         <div style="margin-bottom: var(--space-xl);">
             <h1 class="section-title" style="font-size: 1.8rem; margin-bottom: var(--space-xs);">
-                @if(isset($category))
-                    {{ $category->name }}
-                @elseif(request('gender') === 'men')
-                    Men's Collection
-                @elseif(request('gender') === 'women')
-                    Women's Collection
-                @elseif(request()->routeIs('sale'))
-                    Sale
-                @elseif(request()->routeIs('new-arrivals'))
-                    New Arrivals
-                @else
-                    All Products
-                @endif
+                {{ $title }}
             </h1>
             <div style="width: 50px; height: 3px; background: var(--color-premium-gold);"></div>
         </div>
@@ -39,7 +35,7 @@
             {{-- Pagination --}}
             @if($products->hasPages())
                 <div style="margin-top: var(--space-xl);">
-                    {{ $products->links() }}
+                    {{ $products->withQueryString()->links() }}
                 </div>
             @endif
         @else

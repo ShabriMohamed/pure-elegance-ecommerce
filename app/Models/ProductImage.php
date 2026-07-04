@@ -19,4 +19,18 @@ class ProductImage extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    /**
+     * Get the full URL for this image.
+     */
+    public function getUrlAttribute(): string
+    {
+        if ($this->image_path) {
+            $path = public_path('storage/' . $this->image_path);
+            if (file_exists($path)) {
+                return asset('storage/' . $this->image_path);
+            }
+        }
+        return asset('images/placeholder.jpg');
+    }
 }

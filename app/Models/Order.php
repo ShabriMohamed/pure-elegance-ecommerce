@@ -4,10 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    // Status constants matching DB enum exactly
+    const STATUS_PENDING = 'pending';
+    const STATUS_WHATSAPP_SENT = 'whatsapp_sent';
+    const STATUS_CONFIRMED = 'confirmed';
+    const STATUS_PROCESSING = 'processing';
+    const STATUS_SHIPPED = 'shipped';
+    const STATUS_DELIVERED = 'delivered';
+    const STATUS_CANCELLED = 'cancelled';
+    const STATUS_REFUNDED = 'refunded';
 
     protected $guarded = ['id'];
 
@@ -30,18 +41,31 @@ class Order extends Model
     }
 
     /**
-     * Get all possible statuses for the order lifecycle.
+     * Generate a unique order number (PE-XXXXXXXX format).
+     */
+    public static function generateOrderNumber(): string
+    {
+        do {
+            $number = 'PE-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
+        } while (static::where('order_number', $number)->exists());
+
+        return $number;
+    }
+
+    /**
+     * All possible order statuses for the lifecycle.
      */
     public static function statuses(): array
     {
         return [
-            'pending'    => 'Pending',
-            'confirmed'  => 'Confirmed',
-            'whatsapp_sent' => 'WhatsApp Sent',
-            'processing' => 'Processing',
-            'shipped'    => 'Shipped',
-            'delivered'  => 'Delivered',
-            'cancelled'  => 'Cancelled',
+            self::STATUS_PENDING       => 'Pending',
+            self::STATUS_WHATSAPP_SENT => 'WhatsApp Sent',
+            self::STATUS_CONFIRMED     => 'Confirmed',
+            self::STATUS_PROCESSING    => 'Processing',
+            self::STATUS_SHIPPED       => 'Shipped',
+            self::STATUS_DELIVERED     => 'Delivered',
+            self::STATUS_CANCELLED     => 'Cancelled',
+            self::STATUS_REFUNDED      => 'Refunded',
         ];
     }
 
