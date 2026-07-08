@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -25,27 +26,54 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
+     * Enforces strong password, saves all profile fields, assigns customer role.
      *
      * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:100'],
+            'last_name'  => ['required', 'string', 'max:100'],
+            'email'      => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'phone'      => ['nullable', 'string', 'max:20'],
+            'password'   => [
+                'required',
+                'confirmed',
+                Rules\Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'       => trim($validated['first_name'] . ' ' . $validated['last_name']),
+            'first_name' => $validated['first_name'],
+            'last_name'  => $validated['last_name'],
+            'email'      => $validated['email'],
+            'phone'      => $validated['phone'] ?? null,
+            'password'   => Hash::make($validated['password']),
+            'is_admin'   => false,
+            'is_active'  => true,
         ]);
+
+        // Assign customer role (Spatie)
+        if (\Spatie\Permission\Models\Role::where('name', 'customer')->exists()) {
+            $user->assignRole('customer');
+        }
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('home', absolute: false));
+        Log::info('New user registered', [
+            'user_id' => $user->id,
+            'email'   => $user->email,
+            'ip'      => $request->ip(),
+        ]);
+
+        return redirect(route('home', absolute: false))
+            ->with('success', 'Welcome to Pure Elegance! Your account has been created.');
     }
 }
