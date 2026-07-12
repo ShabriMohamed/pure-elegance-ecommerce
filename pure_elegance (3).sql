@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 21-Jun-2026 às 10:46
--- Versão do servidor: 10.4.32-MariaDB
--- versão do PHP: 8.2.12
+-- Generation Time: Jul 12, 2026 at 06:58 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: `pure_elegance`
+-- Database: `pure_elegance`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `activity_logs`
+-- Table structure for table `activity_logs`
 --
 
 CREATE TABLE `activity_logs` (
@@ -43,7 +43,7 @@ CREATE TABLE `activity_logs` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `banners`
+-- Table structure for table `banners`
 --
 
 CREATE TABLE `banners` (
@@ -65,7 +65,7 @@ CREATE TABLE `banners` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `cache`
+-- Table structure for table `cache`
 --
 
 CREATE TABLE `cache` (
@@ -77,7 +77,7 @@ CREATE TABLE `cache` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `cache_locks`
+-- Table structure for table `cache_locks`
 --
 
 CREATE TABLE `cache_locks` (
@@ -89,7 +89,7 @@ CREATE TABLE `cache_locks` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `carts`
+-- Table structure for table `carts`
 --
 
 CREATE TABLE `carts` (
@@ -101,7 +101,7 @@ CREATE TABLE `carts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `carts`
+-- Dumping data for table `carts`
 --
 
 INSERT INTO `carts` (`id`, `user_id`, `session_id`, `created_at`, `updated_at`) VALUES
@@ -116,12 +116,37 @@ INSERT INTO `carts` (`id`, `user_id`, `session_id`, `created_at`, `updated_at`) 
 (9, NULL, 'UvfolzhsWjc83bXEyUisq4fq7EoS8jY6yu1ZYj2y', '2026-06-20 13:08:24', '2026-06-20 13:08:24'),
 (10, NULL, 'isYaPpwilBQwLYXqvQK1EHDZ2YGYrkxXy9VM01QQ', '2026-06-21 00:34:56', '2026-06-21 00:34:56'),
 (11, NULL, '7AzUEM9OV1sguZE2CCLht9TkkRFwDKQJs3ubA3ci', '2026-06-21 00:39:22', '2026-06-21 00:39:22'),
-(12, NULL, 'Tq8ZR3qjWnygxh1bs31djg7VlhfP5GN1673ZnEmB', '2026-06-21 03:14:44', '2026-06-21 03:14:44');
+(12, NULL, 'Tq8ZR3qjWnygxh1bs31djg7VlhfP5GN1673ZnEmB', '2026-06-21 03:14:44', '2026-06-21 03:14:44'),
+(13, 1, 'I81Vt9m6gFXokJrYfjgRvy7qgMWnC6fyu5hoSgOi', '2026-06-21 08:05:42', '2026-06-21 08:05:42'),
+(14, NULL, 'f8qh1FgCfUN5ajluZw6Tpk2O0fSY1T2g8UkjPPnE', '2026-07-04 02:04:21', '2026-07-04 02:04:21'),
+(15, NULL, '7Sj3EDD7DzoyVqoSj8cj8BuDR9U23tdpSHzNRCum', '2026-07-04 02:27:47', '2026-07-04 02:27:47'),
+(16, NULL, 'FEIWMVQyoAxuSuHR0bRiDJhDqT3vX8qM0w3BwIeW', '2026-07-04 02:40:09', '2026-07-04 02:40:09'),
+(17, NULL, 'Bd9OcGQXr6SRh8AK27hAOgqXGXCv8C1usOxp4z0H', '2026-07-04 04:29:00', '2026-07-04 04:29:00'),
+(18, NULL, 'jO7TZ3DOkKq1jMaqbscDzGbxRBbAydMElYr7xaaK', '2026-07-04 07:31:30', '2026-07-04 07:31:30'),
+(19, NULL, 'YoDCtj6qpZAaIwUlgi9tfeHiCWYk4LxJWx16zMaG', '2026-07-04 07:38:27', '2026-07-04 07:38:27'),
+(20, NULL, 'DbU8eZoolyZlcS5DkmDSt1EvWbSfsJ1j2fSecPk3', '2026-07-04 12:02:16', '2026-07-04 12:02:16'),
+(21, NULL, 'Th1JXDslULygTolbWBMHTiFsWFivfmQKb6ZlUxtE', '2026-07-04 12:02:21', '2026-07-04 12:02:21'),
+(22, NULL, 'UzaBSti5hXtbfxNCXeWM9Patcjh1ObpjbD3MaqNT', '2026-07-04 12:02:23', '2026-07-04 12:02:23'),
+(23, NULL, 'qkVtyGxKyLgGjiThY1QsOhrto06XjfmJl3LCxiO0', '2026-07-04 12:02:23', '2026-07-04 12:02:23'),
+(24, NULL, 'XDaj8Z6t7HSCpLGemwOR0bhwsIAijrpXkHM4IonA', '2026-07-07 12:38:50', '2026-07-07 12:38:50'),
+(25, NULL, 'QjRD3HqFLrxmnEF0vW9RQ1kavqEHpozhUkKuaEpx', '2026-07-07 13:17:34', '2026-07-07 13:17:34'),
+(26, NULL, 'mnayvsWHg8EUTncU6lrXXxZVCqXpPocndSvfpzNa', '2026-07-07 13:19:56', '2026-07-07 13:19:56'),
+(27, NULL, 'bq3Uo4KMqJjnRRTEediMQtIDfKBOrhugRyV1S6Fi', '2026-07-07 20:46:30', '2026-07-07 20:46:30'),
+(28, NULL, 'Yw5cbCq4aCi95yNUGqUs07Y0s7rWTGUoNXgdnbvH', '2026-07-07 20:53:05', '2026-07-07 20:53:05'),
+(29, NULL, 'bRC0eiPSn48T9WMhXPr15ep4Ksb6lFeGc1BFibYG', '2026-07-07 20:54:15', '2026-07-07 20:54:15'),
+(30, 3, 'qTGotxNA2pDuO6IzgMdsUEsqSVMB99SvElTpVeUp', '2026-07-07 20:54:36', '2026-07-07 20:54:36'),
+(31, NULL, 'HzoMii7gfB7IqAc3hgEx1y6kgOFfsEvus9njOOTQ', '2026-07-07 20:54:53', '2026-07-07 20:54:53'),
+(32, NULL, 'jHUNrcKofVyeNztYas7Ynf1HQhH6xJXkYC5vGA81', '2026-07-08 10:55:55', '2026-07-08 10:55:55'),
+(33, NULL, 'NBigpnNJOGOZ4RMFIwidFyTptht18lWwUajV0s6V', '2026-07-08 10:56:01', '2026-07-08 10:56:01'),
+(34, NULL, 'DWAlhcGaK2MmRb7t90DtDRwfiyXfB5fYShNrI5TX', '2026-07-08 11:34:26', '2026-07-08 11:34:26'),
+(35, NULL, 'w6e5oIrCAQ8uF7cItVu9Ev6BqfdKrjm8LmjeBCbh', '2026-07-08 11:54:51', '2026-07-08 11:54:51'),
+(36, NULL, 'N9iV0Vlpb97SrGMhAeHRUgsOwtXg1KCBYMTh7Hlh', '2026-07-12 10:19:41', '2026-07-12 10:19:41'),
+(37, NULL, '8N6pG7C7htOg8jEsaIbi7xmXQpxAQwt1y9lRkf2G', '2026-07-12 10:54:19', '2026-07-12 10:54:19');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `cart_items`
+-- Table structure for table `cart_items`
 --
 
 CREATE TABLE `cart_items` (
@@ -136,19 +161,22 @@ CREATE TABLE `cart_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `cart_items`
+-- Dumping data for table `cart_items`
 --
 
 INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `variant_id`, `quantity`, `price`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, NULL, 2, 4990.00, '2026-06-19 21:08:35', '2026-06-19 21:08:42'),
 (2, 7, 1, NULL, 1, 4990.00, '2026-06-20 09:41:40', '2026-06-20 09:41:40'),
 (5, 9, 5, NULL, 1, 9990.00, '2026-06-20 13:08:34', '2026-06-20 13:08:34'),
-(7, 10, 4, NULL, 2, 1990.00, '2026-06-21 00:39:19', '2026-06-21 00:39:20');
+(7, 10, 4, NULL, 2, 1990.00, '2026-06-21 00:39:19', '2026-06-21 00:39:20'),
+(10, 14, 2, NULL, 1, 5990.00, '2026-07-04 04:28:04', '2026-07-04 04:28:04'),
+(11, 18, 18, NULL, 1, 5990.00, '2026-07-04 07:32:09', '2026-07-04 07:32:09'),
+(13, 8, 7, NULL, 2, 12990.00, '2026-07-04 09:27:37', '2026-07-04 09:43:50');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `categories`
+-- Table structure for table `categories`
 --
 
 CREATE TABLE `categories` (
@@ -169,7 +197,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `categories`
+-- Dumping data for table `categories`
 --
 
 INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `icon`, `image`, `gender`, `sort_order`, `is_active`, `description`, `meta_title`, `meta_description`, `created_at`, `updated_at`) VALUES
@@ -211,7 +239,7 @@ INSERT INTO `categories` (`id`, `parent_id`, `name`, `slug`, `icon`, `image`, `g
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `failed_jobs`
+-- Table structure for table `failed_jobs`
 --
 
 CREATE TABLE `failed_jobs` (
@@ -227,7 +255,7 @@ CREATE TABLE `failed_jobs` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `jobs`
+-- Table structure for table `jobs`
 --
 
 CREATE TABLE `jobs` (
@@ -243,7 +271,7 @@ CREATE TABLE `jobs` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `job_batches`
+-- Table structure for table `job_batches`
 --
 
 CREATE TABLE `job_batches` (
@@ -262,7 +290,7 @@ CREATE TABLE `job_batches` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `migrations`
+-- Table structure for table `migrations`
 --
 
 CREATE TABLE `migrations` (
@@ -272,7 +300,7 @@ CREATE TABLE `migrations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `migrations`
+-- Dumping data for table `migrations`
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
@@ -298,7 +326,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `model_has_permissions`
+-- Table structure for table `model_has_permissions`
 --
 
 CREATE TABLE `model_has_permissions` (
@@ -310,7 +338,7 @@ CREATE TABLE `model_has_permissions` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `model_has_roles`
+-- Table structure for table `model_has_roles`
 --
 
 CREATE TABLE `model_has_roles` (
@@ -320,7 +348,7 @@ CREATE TABLE `model_has_roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `model_has_roles`
+-- Dumping data for table `model_has_roles`
 --
 
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
@@ -331,7 +359,7 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `orders`
+-- Table structure for table `orders`
 --
 
 CREATE TABLE `orders` (
@@ -358,7 +386,7 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `orders`
+-- Dumping data for table `orders`
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `order_number`, `status`, `subtotal`, `discount_amount`, `delivery_fee`, `total`, `customer_name`, `customer_email`, `customer_phone`, `delivery_address`, `city`, `postal_code`, `notes`, `promo_code`, `whatsapp_sent_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
@@ -367,7 +395,7 @@ INSERT INTO `orders` (`id`, `user_id`, `order_number`, `status`, `subtotal`, `di
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `order_items`
+-- Table structure for table `order_items`
 --
 
 CREATE TABLE `order_items` (
@@ -385,7 +413,7 @@ CREATE TABLE `order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `order_items`
+-- Dumping data for table `order_items`
 --
 
 INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `variant_id`, `product_name`, `variant_info`, `quantity`, `unit_price`, `total_price`, `created_at`, `updated_at`) VALUES
@@ -394,7 +422,7 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `variant_id`, `produc
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `page_contents`
+-- Table structure for table `page_contents`
 --
 
 CREATE TABLE `page_contents` (
@@ -412,7 +440,7 @@ CREATE TABLE `page_contents` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `password_reset_tokens`
+-- Table structure for table `password_reset_tokens`
 --
 
 CREATE TABLE `password_reset_tokens` (
@@ -424,7 +452,7 @@ CREATE TABLE `password_reset_tokens` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `permissions`
+-- Table structure for table `permissions`
 --
 
 CREATE TABLE `permissions` (
@@ -438,7 +466,7 @@ CREATE TABLE `permissions` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `products`
+-- Table structure for table `products`
 --
 
 CREATE TABLE `products` (
@@ -467,35 +495,35 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `products`
+-- Dumping data for table `products`
 --
 
 INSERT INTO `products` (`id`, `name`, `slug`, `sku`, `description`, `short_description`, `price`, `sale_price`, `cost_price`, `category_id`, `gender`, `brand`, `stock_quantity`, `is_active`, `is_featured`, `is_new_arrival`, `meta_title`, `meta_description`, `view_count`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Premium Cotton Polo', 'premium-cotton-polo', 'PE-B4E809E4', 'Premium cotton pique polo shirt with a classic fit. Features ribbed collar and cuffs with mother-of-pearl buttons. Perfect for casual and semi-formal occasions.', 'Classic fit cotton pique polo', 4990.00, NULL, NULL, 3, 'men', 'Pure Elegance', 9, 1, 0, 1, NULL, NULL, 11, '2026-06-19 20:38:36', '2026-06-21 02:18:00', NULL),
-(2, 'Classic Oxford Button-Down Shirt', 'classic-oxford-button-down-shirt', 'PE-2EDF1EDC', 'Timeless Oxford button-down shirt crafted from premium long-staple cotton. Features a tailored fit with adjustable barrel cuffs.', 'Tailored Oxford button-down', 5990.00, NULL, NULL, 5, 'men', 'Pure Elegance', 36, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
+(1, 'Premium Cotton Polo', 'premium-cotton-polo', 'PE-B4E809E4', 'Premium cotton pique polo shirt with a classic fit. Features ribbed collar and cuffs with mother-of-pearl buttons. Perfect for casual and semi-formal occasions.', 'Classic fit cotton pique polo', 4990.00, NULL, NULL, 3, 'men', 'Pure Elegance', 9, 1, 0, 1, NULL, NULL, 20, '2026-06-19 20:38:36', '2026-07-04 08:31:06', NULL),
+(2, 'Classic Oxford Button-Down Shirt', 'classic-oxford-button-down-shirt', 'PE-2EDF1EDC', 'Timeless Oxford button-down shirt crafted from premium long-staple cotton. Features a tailored fit with adjustable barrel cuffs.', 'Tailored Oxford button-down', 5990.00, NULL, NULL, 5, 'men', 'Pure Elegance', 36, 1, 0, 0, NULL, NULL, 2, '2026-06-19 20:38:36', '2026-07-04 04:28:05', NULL),
 (3, 'Slim Fit Bermuda Shorts', 'slim-fit-bermuda-shorts', 'PE-1C3E68BF', 'Modern slim-fit bermuda shorts in lightweight stretch cotton. Features slant pockets and a clean tailored look.', 'Lightweight stretch cotton bermudas', 3990.00, NULL, NULL, 4, 'men', 'Pure Elegance', 14, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
 (4, 'Striped V-Neck T-Shirt', 'striped-v-neck-t-shirt', 'PE-423E9432', 'Soft cotton V-neck tee with horizontal contrast stripes. Relaxed fit for everyday comfort.', 'Casual striped V-neck tee', 2990.00, 1990.00, NULL, 3, 'men', 'Pure Elegance', 12, 1, 0, 0, NULL, NULL, 1, '2026-06-19 20:38:36', '2026-06-21 00:39:05', NULL),
-(5, 'Minimal White Sneakers', 'minimal-white-sneakers', 'PE-3722380F', 'Clean and minimalist white leather sneakers with a cushioned insole and durable rubber outsole. Versatile enough for any outfit.', 'Clean leather white sneakers', 9990.00, NULL, NULL, 7, 'men', 'Pure Elegance', 40, 1, 0, 1, NULL, NULL, 3, '2026-06-19 20:38:36', '2026-06-21 01:41:59', NULL),
+(5, 'Minimal White Sneakers', 'minimal-white-sneakers', 'PE-3722380F', 'Clean and minimalist white leather sneakers with a cushioned insole and durable rubber outsole. Versatile enough for any outfit.', 'Clean leather white sneakers', 9990.00, NULL, NULL, 7, 'men', 'Pure Elegance', 40, 1, 0, 1, NULL, NULL, 4, '2026-06-19 20:38:36', '2026-07-04 12:03:07', NULL),
 (6, 'Premium Leather Loafers', 'premium-leather-loafers', 'PE-84249E4E', 'Handcrafted leather penny loafers with blake-stitched construction. Features a leather lining and cushioned footbed.', 'Handcrafted leather penny loafers', 12990.00, 8990.00, NULL, 8, 'men', 'Pure Elegance', 16, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
-(7, 'Classic Black Watch', 'classic-black-watch', 'PE-857ACC71', 'Sophisticated black dial watch with Japanese quartz movement. Features a genuine leather strap and mineral crystal glass. Water resistant to 30 meters.', 'Black dial Japanese quartz watch', 12990.00, NULL, NULL, 9, 'men', 'Maison', 19, 1, 1, 1, NULL, NULL, 1, '2026-06-19 20:38:36', '2026-06-20 09:23:35', NULL),
+(7, 'Classic Black Watch', 'classic-black-watch', 'PE-857ACC71', 'Sophisticated black dial watch with Japanese quartz movement. Features a genuine leather strap and mineral crystal glass. Water resistant to 30 meters.', 'Black dial Japanese quartz watch', 12990.00, NULL, NULL, 9, 'men', 'Maison', 19, 1, 1, 1, NULL, NULL, 3, '2026-06-19 20:38:36', '2026-07-04 09:27:37', NULL),
 (8, 'Silver Chronograph Watch', 'silver-chronograph-watch', 'PE-A615A1B8', 'Premium chronograph watch with stainless steel case and bracelet. Features three sub-dials and date window.', 'Stainless steel chronograph', 18990.00, NULL, NULL, 9, 'men', 'Maison', 33, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
 (9, 'Italian Leather Wallet', 'italian-leather-wallet', 'PE-46B1E7E1', 'Slim bifold wallet in full-grain Italian leather. Features RFID blocking technology, multiple card slots and a bill compartment.', 'RFID-blocking Italian leather wallet', 4990.00, NULL, NULL, 11, 'men', 'Pure Elegance', 13, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
 (10, 'Classic Leather Belt', 'classic-leather-belt', 'PE-0458312D', 'Premium full-grain leather belt with brushed steel buckle. Features a clean, minimalist design suitable for both formal and casual wear.', 'Full-grain leather with steel buckle', 3490.00, NULL, NULL, 12, 'men', 'Pure Elegance', 7, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
 (11, 'Aviator Sunglasses', 'aviator-sunglasses', 'PE-00809267', 'Classic aviator sunglasses with polarized lenses and gold-tone metal frame. UV400 protection for superior eye protection.', 'Polarized aviator with UV400', 6990.00, 4990.00, NULL, 15, 'men', 'Pure Elegance', 45, 1, 0, 0, NULL, NULL, 1, '2026-06-19 20:38:36', '2026-06-19 21:07:53', NULL),
-(12, 'Oud Noir Eau de Parfum', 'oud-noir-eau-de-parfum', 'PE-7F3DAAA8', 'A luxurious oriental fragrance featuring rich oud wood, warm amber, and smoky incense notes. Long-lasting projection for 8+ hours.', 'Luxurious oriental oud fragrance', 15990.00, NULL, NULL, 17, 'men', 'Oud Noir', 49, 1, 1, 1, NULL, NULL, 1, '2026-06-19 20:38:36', '2026-06-21 02:18:23', NULL),
+(12, 'Oud Noir Eau de Parfum', 'oud-noir-eau-de-parfum', 'PE-7F3DAAA8', 'A luxurious oriental fragrance featuring rich oud wood, warm amber, and smoky incense notes. Long-lasting projection for 8+ hours.', 'Luxurious oriental oud fragrance', 15990.00, NULL, NULL, 17, 'men', 'Oud Noir', 49, 1, 1, 1, NULL, NULL, 3, '2026-06-19 20:38:36', '2026-07-04 02:13:49', NULL),
 (13, 'Silk Blend Wrap Dress', 'silk-blend-wrap-dress', 'PE-C8F2E566', 'Elegant wrap dress in a luxurious silk blend fabric. Features a flattering V-neckline, 3/4 sleeves, and a self-tie belt.', 'Elegant silk blend wrap dress', 8990.00, NULL, NULL, 23, 'women', 'Pure Elegance', 46, 1, 1, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
-(14, 'Oversized Linen Blouse', 'oversized-linen-blouse', 'PE-A5D26915', 'Relaxed-fit linen blouse with dropped shoulders and a boxy silhouette. Features mother-of-pearl buttons and a mandarin collar.', 'Relaxed linen with mandarin collar', 4990.00, NULL, NULL, 22, 'women', 'Pure Elegance', 45, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
+(14, 'Oversized Linen Blouse', 'oversized-linen-blouse', 'PE-A5D26915', 'Relaxed-fit linen blouse with dropped shoulders and a boxy silhouette. Features mother-of-pearl buttons and a mandarin collar.', 'Relaxed linen with mandarin collar', 4990.00, NULL, NULL, 22, 'women', 'Pure Elegance', 45, 1, 0, 0, NULL, NULL, 2, '2026-06-19 20:38:36', '2026-07-04 07:31:59', NULL),
 (15, 'Essential White T-Shirt', 'essential-white-t-shirt', 'PE-11729F6D', 'Premium Pima cotton crew-neck t-shirt. Perfect everyday essential with a relaxed yet refined fit.', 'Pima cotton crew-neck essential', 2490.00, NULL, NULL, 21, 'women', 'Pure Elegance', 42, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
 (16, 'Quilted Leather Handbag', 'quilted-leather-handbag', 'PE-7C14E7E0', 'Luxurious quilted leather handbag with gold-tone chain strap. Features multiple interior compartments and a magnetic closure.', 'Quilted leather with gold chain', 18990.00, 14990.00, NULL, 24, 'women', 'Pure Elegance', 32, 1, 1, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
 (17, 'Rose Gold Ladies Watch', 'rose-gold-ladies-watch', 'PE-55D286D5', 'Delicate rose gold ladies watch with a mother-of-pearl dial. Features a slim mesh bracelet and Swiss quartz movement.', 'Rose gold with mother-of-pearl dial', 14990.00, NULL, NULL, 25, 'women', 'Maison', 47, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
-(18, 'Cat-Eye Sunglasses', 'cat-eye-sunglasses', 'PE-2DAC830B', 'Chic cat-eye sunglasses with gradient lenses and acetate frame. UV400 protection with a vintage-inspired design.', 'Gradient lens cat-eye frames', 5990.00, NULL, NULL, 28, 'women', 'Pure Elegance', 32, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL),
-(19, 'Rose Petal Face Serum', 'rose-petal-face-serum', 'PE-513B9CFE', 'Luxurious face serum infused with real rose petal extract and hyaluronic acid. Deeply hydrates and brightens for a radiant glow.', 'Rose extract hydrating serum', 7990.00, NULL, NULL, 31, 'women', 'Bloom', 50, 1, 0, 1, NULL, NULL, 1, '2026-06-19 20:38:36', '2026-06-21 02:15:32', NULL),
+(18, 'Cat-Eye Sunglasses', 'cat-eye-sunglasses', 'PE-2DAC830B', 'Chic cat-eye sunglasses with gradient lenses and acetate frame. UV400 protection with a vintage-inspired design.', 'Gradient lens cat-eye frames', 5990.00, NULL, NULL, 28, 'women', 'Pure Elegance', 32, 1, 0, 0, NULL, NULL, 2, '2026-06-19 20:38:36', '2026-07-04 07:32:10', NULL),
+(19, 'Rose Petal Face Serum', 'rose-petal-face-serum', 'PE-513B9CFE', 'Luxurious face serum infused with real rose petal extract and hyaluronic acid. Deeply hydrates and brightens for a radiant glow.', 'Rose extract hydrating serum', 7990.00, NULL, NULL, 31, 'women', 'Bloom', 50, 1, 0, 1, NULL, NULL, 3, '2026-06-19 20:38:36', '2026-07-04 07:51:28', NULL),
 (20, 'Premium Wireless Earbuds', 'premium-wireless-earbuds', 'PE-DC00CE66', 'True wireless earbuds with active noise cancellation, 30-hour battery life, and premium sound quality. IPX5 water resistant.', 'ANC earbuds with 30h battery', 8990.00, 6990.00, NULL, 18, 'unisex', 'SoundPure', 29, 1, 0, 0, NULL, NULL, 0, '2026-06-19 20:38:36', '2026-06-19 20:38:36', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `product_images`
+-- Table structure for table `product_images`
 --
 
 CREATE TABLE `product_images` (
@@ -510,7 +538,7 @@ CREATE TABLE `product_images` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `product_images`
+-- Dumping data for table `product_images`
 --
 
 INSERT INTO `product_images` (`id`, `product_id`, `image_path`, `alt_text`, `sort_order`, `is_primary`, `created_at`, `updated_at`) VALUES
@@ -538,7 +566,7 @@ INSERT INTO `product_images` (`id`, `product_id`, `image_path`, `alt_text`, `sor
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `product_variants`
+-- Table structure for table `product_variants`
 --
 
 CREATE TABLE `product_variants` (
@@ -558,7 +586,7 @@ CREATE TABLE `product_variants` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `promotions`
+-- Table structure for table `promotions`
 --
 
 CREATE TABLE `promotions` (
@@ -581,7 +609,7 @@ CREATE TABLE `promotions` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `reviews`
+-- Table structure for table `reviews`
 --
 
 CREATE TABLE `reviews` (
@@ -598,7 +626,7 @@ CREATE TABLE `reviews` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `roles`
+-- Table structure for table `roles`
 --
 
 CREATE TABLE `roles` (
@@ -610,7 +638,7 @@ CREATE TABLE `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `roles`
+-- Dumping data for table `roles`
 --
 
 INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
@@ -620,7 +648,7 @@ INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VAL
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `role_has_permissions`
+-- Table structure for table `role_has_permissions`
 --
 
 CREATE TABLE `role_has_permissions` (
@@ -631,7 +659,7 @@ CREATE TABLE `role_has_permissions` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `sessions`
+-- Table structure for table `sessions`
 --
 
 CREATE TABLE `sessions` (
@@ -644,19 +672,40 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `sessions`
+-- Dumping data for table `sessions`
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
+('Bd9OcGQXr6SRh8AK27hAOgqXGXCv8C1usOxp4z0H', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidXNDajRoNXJ2c2dveHRFUU5Gc2VXempDV3lZSk44U0gyVzBNZkZ6MSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1783159140),
+('bRC0eiPSn48T9WMhXPr15ep4Ksb6lFeGc1BFibYG', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQnZMbTRXdkIwbVZlc29VYjZmb3paQ0ZZS1V2S3pWMXZ1VmFsY3BaWCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1783477463),
+('DbU8eZoolyZlcS5DkmDSt1EvWbSfsJ1j2fSecPk3', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiTlBxbEE5cFAzUTUyaXI3NTE1c2U3VjBZWloxb3BuZEMyVkNNSTE3dCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjY6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9jYXJ0IjtzOjU6InJvdXRlIjtzOjEwOiJjYXJ0LmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1783186341),
+('f8qh1FgCfUN5ajluZw6Tpk2O0fSY1T2g8UkjPPnE', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidEJkdmQ4UzZiNEtITkFhUGRkUzJaWmsxSG51cGxuNXNJVjF5NXhDVyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jYXJ0IjtzOjU6InJvdXRlIjtzOjEwOiJjYXJ0LmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1783159150),
+('FEIWMVQyoAxuSuHR0bRiDJhDqT3vX8qM0w3BwIeW', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoielBUWHJyTFdlUXU5NnFqdU8xdjdYcjVFS0QxeDhHeTgzUEVKNkpNTiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1783159130),
+('HzoMii7gfB7IqAc3hgEx1y6kgOFfsEvus9njOOTQ', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiRjR6NExTRURkZWhsbFRWaGtDZ082Y210VkR1UkNzRVk5b1Vja0tEdyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9fQ==', 1783477493),
+('I81Vt9m6gFXokJrYfjgRvy7qgMWnC6fyu5hoSgOi', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoid1QyUlNZcVBRSWNoVEVTTUxBeFprdTQycE94d3BLdFVuSjRTTU4zMiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jYXRlZ29yaWVzIjtzOjU6InJvdXRlIjtzOjEwOiJjYXRlZ29yaWVzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1782051669),
 ('isYaPpwilBQwLYXqvQK1EHDZ2YGYrkxXy9VM01QQ', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiN0NVcDlZV0RzSzFPRXVVOWZCZ3dhOEtydDZJbTBodXZBdWg4dGpOcSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jYXJ0IjtzOjU6InJvdXRlIjtzOjEwOiJjYXJ0LmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1782022162),
-('Tq8ZR3qjWnygxh1bs31djg7VlhfP5GN1673ZnEmB', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQTR4NHNRYTRNdWZWeFBmYk1lSzFZeTRlakdqWUVpWHIxZ29jVHBidCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1782031501),
+('jHUNrcKofVyeNztYas7Ynf1HQhH6xJXkYC5vGA81', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoicUNEdkQ4UFpKV1d6S0F6eGpUbFRYY1JtT0pNQWlWeVRselJIZDA4bCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1783528032),
+('jm1INoPGQYnaVECXP8k4VGdRqz0DsBpaRY22eEAz', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiQzYyMWg5ajNPYjI4R0RRcFRVWUtQTmJwNHpjb3Fvc2xjZUVTNGxNciI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9jdXN0b21lcnMvNCI7czo1OiJyb3V0ZSI7czoyMDoiYWRtaW4uY3VzdG9tZXJzLnNob3ciO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YTowOnt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mzt9', 1783875451),
+('jO7TZ3DOkKq1jMaqbscDzGbxRBbAydMElYr7xaaK', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoieU5Dc1pmVlNCNjZ5VGN5U1hRZ1ZnT2o1WG1VOFJXNkV0RG1UeUhLUyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jYXJ0IjtzOjU6InJvdXRlIjtzOjEwOiJjYXJ0LmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1783175147),
+('LXoNcP37tEjuqedlZqhTEQAbKEO7UvVxN9W3vSPX', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoibk05R1VENWs4NlNSWFFNNjJZdkdHTXVSNXFDMG04RkdNWW9MVVFVNCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbiI7czo1OiJyb3V0ZSI7czoxNToiYWRtaW4uZGFzaGJvYXJkIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mzt9', 1783450175),
+('N9iV0Vlpb97SrGMhAeHRUgsOwtXg1KCBYMTh7Hlh', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiYlVCMmZjWk1SN1JKZVl2RHVub3h2Mklib25jRVpHTHVocGpUc2ZJMSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jYXRlZ29yaWVzP2NhdGVnb3J5PXNhbGUiO3M6NToicm91dGUiO3M6MTA6ImNhdGVnb3JpZXMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1783871389),
+('NOZrG3zFVyEve1RnsRLNTAxWkpVQYQd14fO03VGT', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiOHJwYTc5Rmg2cGRzQWw3VW5kWUp5cnVLNVlkOFAycXVtMmlVdmxzYSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbiI7czo1OiJyb3V0ZSI7czoxNToiYWRtaW4uZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mzt9', 1783450229),
+('PumbxsuYz4NZuptvN2IwWRJjQniUQZALzRZSOMCH', 5, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiaUh1YWZadjJZSzlzOGVGa1V4UzhQbm5kV05mMmpDcVJRTW91NDg4aiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NTt9', 1783530280),
+('Qf9nn72NUbSqEDjPTEV7VKrGMjGz8FCnoXCXYcFr', 5, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiZEgyQ0pkb2g2UnJhSkpTczVmaXdsN2NWSncxQkdoRDVMY25yZUJXeCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjY6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9jYXJ0IjtzOjU6InJvdXRlIjtzOjEwOiJjYXJ0LmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NTt9', 1783157458),
+('QjRD3HqFLrxmnEF0vW9RQ1kavqEHpozhUkKuaEpx', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoibkJKS01TbUE5MlFzZ1VwVVJKRHJUeGx6VXcxblZDWEl1TVpTUEdnRyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1783450105),
+('Th1JXDslULygTolbWBMHTiFsWFivfmQKb6ZlUxtE', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiYURoVWgwUGJndm5FYnNCVWJRUjZzVUU2TmtwbHgxQ281MUUySm84YyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9jYXRlZ29yaWVzP2NhdGVnb3J5PW1lbiI7czo1OiJyb3V0ZSI7czoxMDoiY2F0ZWdvcmllcyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1783188418),
+('UV5tSkrqbtv2OyVldMNz6kwrxjWHs767GZaCcdtr', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYzVaV3U1N290UE05Wm1ibng4TDNIckFMeHBRVWxtbDRKcElNR3Y4NyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM7fQ==', 1783448186),
 ('UvfolzhsWjc83bXEyUisq4fq7EoS8jY6yu1ZYj2y', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiSU9MT2VUVUxqcVQ3cUxDT04zb0tSa2g5bDN1d3MwWms1QmZiS0w2RiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9jYXRlZ29yaWVzIjtzOjU6InJvdXRlIjtzOjEwOiJjYXRlZ29yaWVzIjt9fQ==', 1781980742),
-('zjuCLTWwnRimK5tiCSkxqFY4WzKRsAizhiB4H3cj', 5, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoieGVTSmwyVUVVYUNSQXh2dlRLbExxcjNZM0ZvTDZET0VMR1lqMXBaZyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NTt9', 1782028110);
+('UzaBSti5hXtbfxNCXeWM9Patcjh1ObpjbD3MaqNT', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoib3BqWW5DODdoMUdFTnlLRE5xeWg0ZFU3ZDlZYmxxSld0bUF6YkdSTCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1783186343),
+('wkFAFieBIfSJum4tj7qXin269a8wUAcw6J8PP3qw', 5, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiT1BiZUg3dlZJN01KZXptSEtPNXV1bndScnc1T3U1ZjdDUkVVb0VFTyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NTt9', 1783191453),
+('yoFRBjkJgfd3KZkxiN3SdSybM1OLTez1QvMX9ZV6', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoia2lIb1FSU3BzbUxIa0tncXRuMDI2N21nUDhyNHN0czR4cUhkTDM3WSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbiI7czo1OiJyb3V0ZSI7czoxNToiYWRtaW4uZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mzt9', 1783531590),
+('ZIk03vw5jvdkztVNgxV79HqZUJv3s1Ws0TLSIvQq', 5, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiV3ZOQmZBalNjeHZSM3pIaFVFZ2ZqNHkxQkVGdVhLakVFU21YSE50UCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NTt9', 1783178352),
+('zjuCLTWwnRimK5tiCSkxqFY4WzKRsAizhiB4H3cj', 5, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoieGVTSmwyVUVVYUNSQXh2dlRLbExxcjNZM0ZvTDZET0VMR1lqMXBaZyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7czo0OiJob21lIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NTt9', 1782032762);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `site_settings`
+-- Table structure for table `site_settings`
 --
 
 CREATE TABLE `site_settings` (
@@ -671,7 +720,7 @@ CREATE TABLE `site_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `site_settings`
+-- Dumping data for table `site_settings`
 --
 
 INSERT INTO `site_settings` (`id`, `key`, `value`, `group`, `type`, `label`, `created_at`, `updated_at`) VALUES
@@ -706,7 +755,7 @@ INSERT INTO `site_settings` (`id`, `key`, `value`, `group`, `type`, `label`, `cr
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -735,20 +784,20 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `first_name`, `last_name`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `address_line1`, `address_line2`, `city`, `postal_code`, `country`, `avatar`, `is_admin`, `is_active`, `last_login_at`, `last_login_ip`, `deleted_at`) VALUES
-(1, 'Admin', 'admin@pureelegance.lk', '+94771234567', 'System', 'Administrator', '2026-06-19 20:38:35', '$2y$12$UEZDyap4svEFubsh3TAXtuhglk7mLs7U4Fpg2F5339zD3gKpHnDqu', NULL, '2026-06-19 20:38:35', '2026-06-19 20:38:35', NULL, NULL, NULL, NULL, 'Sri Lanka', NULL, 1, 1, NULL, NULL, NULL),
+(1, 'Admin', 'admin@pureelegance.lk', '+94771234567', 'System', 'Administrator', '2026-06-19 20:38:35', '$2y$12$9bHlR5u12XESqmxOxf5FLOf/66Y8UqMErucGw.hDszp5meVVEE2tW', 'Q1sVcro4ZTuqg7ya2SLUSNTYx9XJmAtaKgZbcAYxXg7GBWxPECNJl4UQfmxG', '2026-06-19 20:38:35', '2026-06-21 06:33:47', NULL, NULL, NULL, NULL, 'Sri Lanka', NULL, 1, 1, NULL, NULL, NULL),
 (2, 'Sample User', 'sampleuser@gmail.com', NULL, NULL, NULL, NULL, '$2y$12$vZsDh9gZ0AEus8yqvnFe1O/WSg4O6UP44ge2wA4LbD7Cjw9nZ7y6q', NULL, '2026-06-19 21:09:35', '2026-06-19 21:09:35', NULL, NULL, NULL, NULL, 'Sri Lanka', NULL, 0, 1, NULL, NULL, NULL),
-(3, 'Store Admin', 'admin@pureelegance.com', NULL, 'Store', 'Admin', '2026-06-20 04:58:59', '$2y$12$ehTsq2xO2R6dphYBKG72ber/d0pG5K/BT2VtD4m31.l0OVXx2zuyC', NULL, '2026-06-20 04:58:59', '2026-06-20 04:58:59', NULL, NULL, NULL, NULL, 'Sri Lanka', NULL, 1, 1, NULL, NULL, NULL),
+(3, 'Store Admin', 'admin@pureelegance.com', NULL, 'Store', 'Admin', '2026-06-20 04:58:59', '$2y$12$ehTsq2xO2R6dphYBKG72ber/d0pG5K/BT2VtD4m31.l0OVXx2zuyC', NULL, '2026-06-20 04:58:59', '2026-07-12 10:57:19', NULL, NULL, NULL, NULL, 'Sri Lanka', NULL, 1, 1, '2026-07-12 10:57:19', '127.0.0.1', NULL),
 (4, 'Test Customer', 'customer@example.com', NULL, 'Test', 'Customer', '2026-06-20 04:58:59', '$2y$12$ts7Pikj6.dXv3xPy.Yh/IuyVlJDF.C9XPaTiaC04eUFLit753pQHq', NULL, '2026-06-20 04:58:59', '2026-06-20 04:58:59', NULL, NULL, NULL, NULL, 'Sri Lanka', NULL, 0, 1, NULL, NULL, NULL),
-(5, 'John Doe', 'john.doe2@example.com', NULL, NULL, NULL, NULL, '$2y$12$XCgqxhTZK4TGd2IWB064vejv7mgGBYrb/pGA6DoOSnCXmDwwt9TZe', NULL, '2026-06-20 09:45:08', '2026-06-20 09:45:08', NULL, NULL, NULL, NULL, 'Sri Lanka', NULL, 0, 1, NULL, NULL, NULL);
+(5, 'John Doe', 'john.doe2@example.com', NULL, NULL, NULL, NULL, '$2y$12$XCgqxhTZK4TGd2IWB064vejv7mgGBYrb/pGA6DoOSnCXmDwwt9TZe', NULL, '2026-06-20 09:45:08', '2026-07-08 11:34:39', NULL, NULL, NULL, NULL, 'Sri Lanka', NULL, 0, 1, '2026-07-08 11:34:39', '127.0.0.1', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `wishlists`
+-- Table structure for table `wishlists`
 --
 
 CREATE TABLE `wishlists` (
@@ -760,11 +809,18 @@ CREATE TABLE `wishlists` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Índices para tabelas despejadas
+-- Dumping data for table `wishlists`
+--
+
+INSERT INTO `wishlists` (`id`, `user_id`, `product_id`, `created_at`, `updated_at`) VALUES
+(3, 5, 1, '2026-06-21 03:35:53', '2026-06-21 03:35:53');
+
+--
+-- Indexes for dumped tables
 --
 
 --
--- Índices para tabela `activity_logs`
+-- Indexes for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
   ADD PRIMARY KEY (`id`),
@@ -773,28 +829,28 @@ ALTER TABLE `activity_logs`
   ADD KEY `activity_logs_created_at_index` (`created_at`);
 
 --
--- Índices para tabela `banners`
+-- Indexes for table `banners`
 --
 ALTER TABLE `banners`
   ADD PRIMARY KEY (`id`),
   ADD KEY `banners_position_is_active_sort_order_index` (`position`,`is_active`,`sort_order`);
 
 --
--- Índices para tabela `cache`
+-- Indexes for table `cache`
 --
 ALTER TABLE `cache`
   ADD PRIMARY KEY (`key`),
   ADD KEY `cache_expiration_index` (`expiration`);
 
 --
--- Índices para tabela `cache_locks`
+-- Indexes for table `cache_locks`
 --
 ALTER TABLE `cache_locks`
   ADD PRIMARY KEY (`key`),
   ADD KEY `cache_locks_expiration_index` (`expiration`);
 
 --
--- Índices para tabela `carts`
+-- Indexes for table `carts`
 --
 ALTER TABLE `carts`
   ADD PRIMARY KEY (`id`),
@@ -802,7 +858,7 @@ ALTER TABLE `carts`
   ADD KEY `carts_session_id_index` (`session_id`);
 
 --
--- Índices para tabela `cart_items`
+-- Indexes for table `cart_items`
 --
 ALTER TABLE `cart_items`
   ADD PRIMARY KEY (`id`),
@@ -811,7 +867,7 @@ ALTER TABLE `cart_items`
   ADD KEY `cart_items_variant_id_foreign` (`variant_id`);
 
 --
--- Índices para tabela `categories`
+-- Indexes for table `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`),
@@ -820,47 +876,47 @@ ALTER TABLE `categories`
   ADD KEY `categories_gender_is_active_index` (`gender`,`is_active`);
 
 --
--- Índices para tabela `failed_jobs`
+-- Indexes for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
 
 --
--- Índices para tabela `jobs`
+-- Indexes for table `jobs`
 --
 ALTER TABLE `jobs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `jobs_queue_index` (`queue`);
 
 --
--- Índices para tabela `job_batches`
+-- Indexes for table `job_batches`
 --
 ALTER TABLE `job_batches`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `migrations`
+-- Indexes for table `migrations`
 --
 ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `model_has_permissions`
+-- Indexes for table `model_has_permissions`
 --
 ALTER TABLE `model_has_permissions`
   ADD PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
   ADD KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`);
 
 --
--- Índices para tabela `model_has_roles`
+-- Indexes for table `model_has_roles`
 --
 ALTER TABLE `model_has_roles`
   ADD PRIMARY KEY (`role_id`,`model_id`,`model_type`),
   ADD KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`);
 
 --
--- Índices para tabela `orders`
+-- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
@@ -871,7 +927,7 @@ ALTER TABLE `orders`
   ADD KEY `orders_created_at_index` (`created_at`);
 
 --
--- Índices para tabela `order_items`
+-- Indexes for table `order_items`
 --
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`),
@@ -880,27 +936,27 @@ ALTER TABLE `order_items`
   ADD KEY `order_items_variant_id_foreign` (`variant_id`);
 
 --
--- Índices para tabela `page_contents`
+-- Indexes for table `page_contents`
 --
 ALTER TABLE `page_contents`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `page_contents_slug_unique` (`slug`);
 
 --
--- Índices para tabela `password_reset_tokens`
+-- Indexes for table `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
--- Índices para tabela `permissions`
+-- Indexes for table `permissions`
 --
 ALTER TABLE `permissions`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
 
 --
--- Índices para tabela `products`
+-- Indexes for table `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
@@ -914,14 +970,14 @@ ALTER TABLE `products`
   ADD KEY `products_sale_price_index` (`sale_price`);
 
 --
--- Índices para tabela `product_images`
+-- Indexes for table `product_images`
 --
 ALTER TABLE `product_images`
   ADD PRIMARY KEY (`id`),
   ADD KEY `product_images_product_id_sort_order_index` (`product_id`,`sort_order`);
 
 --
--- Índices para tabela `product_variants`
+-- Indexes for table `product_variants`
 --
 ALTER TABLE `product_variants`
   ADD PRIMARY KEY (`id`),
@@ -929,7 +985,7 @@ ALTER TABLE `product_variants`
   ADD KEY `product_variants_product_id_is_active_index` (`product_id`,`is_active`);
 
 --
--- Índices para tabela `promotions`
+-- Indexes for table `promotions`
 --
 ALTER TABLE `promotions`
   ADD PRIMARY KEY (`id`),
@@ -937,7 +993,7 @@ ALTER TABLE `promotions`
   ADD KEY `promotions_code_is_active_index` (`code`,`is_active`);
 
 --
--- Índices para tabela `reviews`
+-- Indexes for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD PRIMARY KEY (`id`),
@@ -945,21 +1001,21 @@ ALTER TABLE `reviews`
   ADD KEY `reviews_product_id_is_approved_index` (`product_id`,`is_approved`);
 
 --
--- Índices para tabela `roles`
+-- Indexes for table `roles`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`);
 
 --
--- Índices para tabela `role_has_permissions`
+-- Indexes for table `role_has_permissions`
 --
 ALTER TABLE `role_has_permissions`
   ADD PRIMARY KEY (`permission_id`,`role_id`),
   ADD KEY `role_has_permissions_role_id_foreign` (`role_id`);
 
 --
--- Índices para tabela `sessions`
+-- Indexes for table `sessions`
 --
 ALTER TABLE `sessions`
   ADD PRIMARY KEY (`id`),
@@ -967,7 +1023,7 @@ ALTER TABLE `sessions`
   ADD KEY `sessions_last_activity_index` (`last_activity`);
 
 --
--- Índices para tabela `site_settings`
+-- Indexes for table `site_settings`
 --
 ALTER TABLE `site_settings`
   ADD PRIMARY KEY (`id`),
@@ -975,14 +1031,14 @@ ALTER TABLE `site_settings`
   ADD KEY `site_settings_group_index` (`group`);
 
 --
--- Índices para tabela `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `users_email_unique` (`email`);
 
 --
--- Índices para tabela `wishlists`
+-- Indexes for table `wishlists`
 --
 ALTER TABLE `wishlists`
   ADD PRIMARY KEY (`id`),
@@ -990,153 +1046,153 @@ ALTER TABLE `wishlists`
   ADD KEY `wishlists_product_id_foreign` (`product_id`);
 
 --
--- AUTO_INCREMENT de tabelas despejadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de tabela `activity_logs`
+-- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `banners`
+-- AUTO_INCREMENT for table `banners`
 --
 ALTER TABLE `banners`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `carts`
+-- AUTO_INCREMENT for table `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
--- AUTO_INCREMENT de tabela `cart_items`
+-- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT de tabela `categories`
+-- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
--- AUTO_INCREMENT de tabela `failed_jobs`
+-- AUTO_INCREMENT for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `jobs`
+-- AUTO_INCREMENT for table `jobs`
 --
 ALTER TABLE `jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `migrations`
+-- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT de tabela `orders`
+-- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de tabela `order_items`
+-- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de tabela `page_contents`
+-- AUTO_INCREMENT for table `page_contents`
 --
 ALTER TABLE `page_contents`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `permissions`
+-- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `products`
+-- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT de tabela `product_images`
+-- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT de tabela `product_variants`
+-- AUTO_INCREMENT for table `product_variants`
 --
 ALTER TABLE `product_variants`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `promotions`
+-- AUTO_INCREMENT for table `promotions`
 --
 ALTER TABLE `promotions`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `reviews`
+-- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `roles`
+-- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de tabela `site_settings`
+-- AUTO_INCREMENT for table `site_settings`
 --
 ALTER TABLE `site_settings`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
--- AUTO_INCREMENT de tabela `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT de tabela `wishlists`
+-- AUTO_INCREMENT for table `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- Restrições para despejos de tabelas
+-- Constraints for dumped tables
 --
 
 --
--- Limitadores para a tabela `activity_logs`
+-- Constraints for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
   ADD CONSTRAINT `activity_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
--- Limitadores para a tabela `carts`
+-- Constraints for table `carts`
 --
 ALTER TABLE `carts`
   ADD CONSTRAINT `carts_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `cart_items`
+-- Constraints for table `cart_items`
 --
 ALTER TABLE `cart_items`
   ADD CONSTRAINT `cart_items_cart_id_foreign` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`id`) ON DELETE CASCADE,
@@ -1144,31 +1200,31 @@ ALTER TABLE `cart_items`
   ADD CONSTRAINT `cart_items_variant_id_foreign` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE SET NULL;
 
 --
--- Limitadores para a tabela `categories`
+-- Constraints for table `categories`
 --
 ALTER TABLE `categories`
   ADD CONSTRAINT `categories_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `model_has_permissions`
+-- Constraints for table `model_has_permissions`
 --
 ALTER TABLE `model_has_permissions`
   ADD CONSTRAINT `model_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `model_has_roles`
+-- Constraints for table `model_has_roles`
 --
 ALTER TABLE `model_has_roles`
   ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `orders`
+-- Constraints for table `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
--- Limitadores para a tabela `order_items`
+-- Constraints for table `order_items`
 --
 ALTER TABLE `order_items`
   ADD CONSTRAINT `order_items_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
@@ -1176,39 +1232,39 @@ ALTER TABLE `order_items`
   ADD CONSTRAINT `order_items_variant_id_foreign` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE SET NULL;
 
 --
--- Limitadores para a tabela `products`
+-- Constraints for table `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `product_images`
+-- Constraints for table `product_images`
 --
 ALTER TABLE `product_images`
   ADD CONSTRAINT `product_images_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `product_variants`
+-- Constraints for table `product_variants`
 --
 ALTER TABLE `product_variants`
   ADD CONSTRAINT `product_variants_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `reviews`
+-- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `reviews_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `role_has_permissions`
+-- Constraints for table `role_has_permissions`
 --
 ALTER TABLE `role_has_permissions`
   ADD CONSTRAINT `role_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `wishlists`
+-- Constraints for table `wishlists`
 --
 ALTER TABLE `wishlists`
   ADD CONSTRAINT `wishlists_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,

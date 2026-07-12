@@ -10,7 +10,7 @@ class PromotionController extends Controller
 {
     public function index()
     {
-        $promotions = Promotion::latest()->get();
+        $promotions = Promotion::latest()->paginate(20);
         return view('admin.promotions.index', compact('promotions'));
     }
 
@@ -19,23 +19,10 @@ class PromotionController extends Controller
         return view('admin.promotions.create');
     }
 
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Admin\StorePromotionRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:promotions,code',
-            'type' => 'required|in:percentage,fixed',
-            'value' => 'required|numeric|min:0',
-            'min_order_amount' => 'nullable|numeric|min:0',
-            'max_discount_amount' => 'nullable|numeric|min:0',
-            'usage_limit' => 'nullable|integer|min:1',
-            'starts_at' => 'nullable|date',
-            'ends_at' => 'nullable|date|after_or_equal:starts_at',
-        ]);
-
-        $validated['code'] = strtoupper($validated['code']);
-        $validated['is_active'] = $request->has('is_active');
-
+        $validated = $request->validated();
+        
         Promotion::create($validated);
 
         return redirect()->route('admin.promotions.index')->with('success', 'Promotion created successfully.');
@@ -46,23 +33,10 @@ class PromotionController extends Controller
         return view('admin.promotions.edit', compact('promotion'));
     }
 
-    public function update(Request $request, Promotion $promotion)
+    public function update(\App\Http\Requests\Admin\UpdatePromotionRequest $request, Promotion $promotion)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:promotions,code,' . $promotion->id,
-            'type' => 'required|in:percentage,fixed',
-            'value' => 'required|numeric|min:0',
-            'min_order_amount' => 'nullable|numeric|min:0',
-            'max_discount_amount' => 'nullable|numeric|min:0',
-            'usage_limit' => 'nullable|integer|min:1',
-            'starts_at' => 'nullable|date',
-            'ends_at' => 'nullable|date|after_or_equal:starts_at',
-        ]);
-
-        $validated['code'] = strtoupper($validated['code']);
-        $validated['is_active'] = $request->has('is_active');
-
+        $validated = $request->validated();
+        
         $promotion->update($validated);
 
         return redirect()->route('admin.promotions.index')->with('success', 'Promotion updated successfully.');

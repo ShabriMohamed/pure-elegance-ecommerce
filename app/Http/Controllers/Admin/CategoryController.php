@@ -21,19 +21,15 @@ class CategoryController extends Controller
         return view('admin.categories.create', compact('parents'));
     }
 
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Admin\StoreCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'parent_id' => 'nullable|exists:categories,id',
-            'gender' => 'nullable|string|max:50',
-            'description' => 'nullable|string',
-            'sort_order' => 'required|integer|min:0',
-            'is_active' => 'boolean',
-        ]);
-
-        $validated['slug'] = Str::slug($validated['name']);
-        $validated['is_active'] = $request->has('is_active');
+        $validated = $request->validated();
+        
+        $slug = Str::slug($validated['name']);
+        if (Category::where('slug', $slug)->exists()) {
+            $slug .= '-' . Str::random(4);
+        }
+        $validated['slug'] = $slug;
 
         Category::create($validated);
 
@@ -46,21 +42,17 @@ class CategoryController extends Controller
         return view('admin.categories.edit', compact('category', 'parents'));
     }
 
-    public function update(Request $request, Category $category)
+    public function update(\App\Http\Requests\Admin\UpdateCategoryRequest $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'parent_id' => 'nullable|exists:categories,id',
-            'gender' => 'nullable|string|max:50',
-            'description' => 'nullable|string',
-            'sort_order' => 'required|integer|min:0',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         if ($validated['name'] !== $category->name) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $slug = Str::slug($validated['name']);
+            if (Category::where('slug', $slug)->where('id', '!=', $category->id)->exists()) {
+                $slug .= '-' . Str::random(4);
+            }
+            $validated['slug'] = $slug;
         }
-        $validated['is_active'] = $request->has('is_active');
 
         $category->update($validated);
 
