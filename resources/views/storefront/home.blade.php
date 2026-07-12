@@ -5,9 +5,9 @@
 @section('content')
 
 {{-- ============================================
-    HERO BANNER SECTION
+    HERO BANNER SECTION — Cinematic Entrance
 ============================================= --}}
-<section class="hero-section">
+<section class="hero-section" id="hero">
     <div class="hero-bg">
         <img src="{{ asset('images/hero-banner.jpg') }}" alt="Pure Elegance Fashion" class="hero-bg-img">
         <div class="hero-overlay"></div>
@@ -17,26 +17,25 @@
             <div class="hero-label">STEP INTO STYLE</div>
             <h1 class="hero-heading">TIMELESS FASHION.<br>PURE ELEGANCE.</h1>
             <div class="hero-divider"></div>
-            <p class="hero-desc">Premium fashion for Men & Women.<br>Elevate your everyday style.</p>
+            <p class="hero-desc">Premium fashion for Men &amp; Women.<br>Elevate your everyday style.</p>
             <a href="{{ route('categories') }}" class="btn btn-primary hero-btn">
                 SHOP NOW <span class="material-symbols-outlined" style="font-size: 1rem;">chevron_right</span>
             </a>
         </div>
     </div>
-    <div class="hero-dots">
-        <span class="hero-dot active"></span>
-        <span class="hero-dot"></span>
-        <span class="hero-dot"></span>
-    </div>
+    <a href="#categories-section" class="hero-scroll-indicator" aria-label="Scroll down">
+        <span class="hero-scroll-text">SCROLL</span>
+        <span class="material-symbols-outlined">expand_more</span>
+    </a>
 </section>
 
 {{-- ============================================
     CATEGORY TILES — MEN, WOMEN, OUTLET
 ============================================= --}}
-<section style="padding: var(--space-lg) 0;">
+<section style="padding: var(--space-xl) 0;" id="categories-section">
     <div class="container">
-        <div class="category-tiles">
-            <a href="{{ route('categories') }}?gender=men" class="cat-tile">
+        <div class="category-tiles reveal">
+            <a href="{{ route('categories') }}?gender=men" class="cat-tile stagger-item">
                 <img src="{{ asset('images/category-men.jpg') }}" alt="Men's Collection" class="cat-tile-img">
                 <div class="cat-tile-overlay"></div>
                 <div class="cat-tile-content">
@@ -44,7 +43,7 @@
                     <span class="cat-tile-cta">SHOP NOW</span>
                 </div>
             </a>
-            <a href="{{ route('categories') }}?gender=women" class="cat-tile">
+            <a href="{{ route('categories') }}?gender=women" class="cat-tile stagger-item">
                 <img src="{{ asset('images/category-women.jpg') }}" alt="Women's Collection" class="cat-tile-img">
                 <div class="cat-tile-overlay"></div>
                 <div class="cat-tile-content">
@@ -52,7 +51,7 @@
                     <span class="cat-tile-cta">SHOP NOW</span>
                 </div>
             </a>
-            <a href="{{ route('sale') }}" class="cat-tile">
+            <a href="{{ route('sale') }}" class="cat-tile stagger-item">
                 <img src="{{ asset('images/category-outlet.jpg') }}" alt="Outlet Sale" class="cat-tile-img">
                 <div class="cat-tile-overlay"></div>
                 <div class="cat-tile-content">
@@ -69,7 +68,7 @@
 ============================================= --}}
 <section style="padding: 0 0 var(--space-xl);">
     <div class="container">
-        <div class="value-props">
+        <div class="value-props reveal">
             <div class="value-prop">
                 <span class="material-symbols-outlined value-prop-icon">local_shipping</span>
                 <div class="value-prop-title">CASH ON DELIVERY</div>
@@ -91,19 +90,68 @@
             <div class="value-prop">
                 <span class="material-symbols-outlined value-prop-icon">lock</span>
                 <div class="value-prop-title">SECURE PAYMENT</div>
-                <div class="value-prop-desc">Safe & Secure Checkout</div>
+                <div class="value-prop-desc">Safe &amp; Secure Checkout</div>
             </div>
         </div>
     </div>
 </section>
 
 {{-- ============================================
+    SHOP BY CATEGORY — Browsable Category Grid
+============================================= --}}
+@if(isset($topCategories) && $topCategories->count() > 0)
+<section style="padding-bottom: var(--space-2xl);" id="shop-by-category">
+    <div class="container">
+        <div class="section-header reveal">
+            <div>
+                <h2 class="section-title">
+                    SHOP BY CATEGORY
+                    <span class="material-symbols-outlined" style="color: var(--color-premium-gold); font-size: 1.2rem;">grid_view</span>
+                </h2>
+                <div class="section-title-underline"></div>
+            </div>
+        </div>
+
+        <div class="shop-categories-grid">
+            @php
+                $categoryIcons = [
+                    'clothing' => 'checkroom',
+                    'footwear' => 'steps',
+                    'watches' => 'watch',
+                    'accessories' => 'diamond',
+                    'fragrances' => 'spa',
+                    'bags' => 'shopping_bag',
+                    'beauty' => 'cosmetics',
+                    'tech' => 'headphones',
+                    'skin-care' => 'dermatology',
+                    'makeup' => 'brush',
+                ];
+            @endphp
+            @foreach($topCategories as $index => $category)
+                <a href="{{ route('categories') }}?category={{ $category->slug }}"
+                   class="shop-cat-card stagger-item"
+                   style="transition-delay: {{ $index * 0.08 }}s;">
+                    <div class="shop-cat-icon">
+                        <span class="material-symbols-outlined">
+                            {{ $categoryIcons[strtolower($category->slug)] ?? 'category' }}
+                        </span>
+                    </div>
+                    <div class="shop-cat-name">{{ $category->name }}</div>
+                    <div class="shop-cat-count">{{ $category->products_count }} {{ Str::plural('Product', $category->products_count) }}</div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- ============================================
     FEATURED PRODUCTS (from DB is_featured flag)
 ============================================= --}}
 @if($featuredProducts->count() > 0)
-<section style="padding-bottom: var(--space-2xl);" id="featured-section">
+<section class="section-bg-beige" style="padding: var(--space-2xl) 0;" id="featured-section">
     <div class="container skeleton-container">
-        <div class="section-header">
+        <div class="section-header reveal">
             <div>
                 <h2 class="section-title">
                     FEATURED
@@ -123,8 +171,8 @@
         </div>
 
         <div class="product-real-grid home-product-grid">
-            @foreach($featuredProducts as $product)
-                <div class="home-product-item">
+            @foreach($featuredProducts as $index => $product)
+                <div class="home-product-item stagger-item" style="transition-delay: {{ $index * 0.1 }}s;">
                     @include('storefront.partials.product-card', [
                         'product'     => $product,
                         'wishlistIds' => $wishlistIds ?? [],
@@ -137,12 +185,44 @@
 @endif
 
 {{-- ============================================
+    BRAND STORY / ABOUT SECTION
+============================================= --}}
+<section class="brand-story-section" style="padding: var(--space-3xl) 0;">
+    <div class="container">
+        <div class="brand-story-grid">
+            <div class="brand-story-content reveal">
+                <div class="brand-story-label">OUR STORY</div>
+                <h2 class="brand-story-heading">Discover Original<br>Branded Fashion</h2>
+                <div class="brand-story-divider"></div>
+                <p class="brand-story-text">
+                    At Pure Elegance, we believe fashion is more than clothing — it's a statement of who you are.
+                    We curate original branded pieces from the finest designers, bringing you premium fashion
+                    that combines timeless elegance with contemporary style. Every item in our collection is
+                    handpicked to ensure authenticity, quality, and the perfect fit for the modern individual.
+                </p>
+                <a href="{{ route('categories') }}" class="brand-story-btn">
+                    EXPLORE COLLECTION
+                    <span class="material-symbols-outlined" style="font-size: 1rem;">arrow_forward</span>
+                </a>
+            </div>
+            <div class="brand-story-img-wrapper reveal reveal-delay-2">
+                <img src="{{ asset('images/hero-banner.jpg') }}" alt="Pure Elegance Brand Story">
+                <div class="brand-story-img-badge">
+                    <div class="brand-story-img-badge-title">PURE ELEGANCE</div>
+                    <div class="brand-story-img-badge-text">Premium Fashion Since 2024</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ============================================
     NEW ARRIVALS
 ============================================= --}}
 @if($newArrivals->count() > 0)
-<section style="padding-bottom: var(--space-2xl);" id="new-arrivals-section">
+<section style="padding: var(--space-2xl) 0;" id="new-arrivals-section">
     <div class="container skeleton-container">
-        <div class="section-header">
+        <div class="section-header reveal">
             <div>
                 <h2 class="section-title">
                     NEW ARRIVALS
@@ -162,8 +242,8 @@
         </div>
 
         <div class="product-real-grid home-product-grid">
-            @foreach($newArrivals as $product)
-                <div class="home-product-item">
+            @foreach($newArrivals as $index => $product)
+                <div class="home-product-item stagger-item" style="transition-delay: {{ $index * 0.1 }}s;">
                     @include('storefront.partials.product-card', [
                         'product'     => $product,
                         'wishlistIds' => $wishlistIds ?? [],
@@ -180,7 +260,7 @@
 ============================================= --}}
 <section style="padding-bottom: var(--space-2xl);">
     <div class="container">
-        <div class="promo-banner">
+        <div class="promo-banner reveal">
             <div class="promo-left">
                 <div class="promo-icon">
                     <span class="material-symbols-outlined">featured_seasonal_and_gifts</span>
@@ -195,295 +275,63 @@
     </div>
 </section>
 
-{{-- Skeleton → Real content transition --}}
+{{-- ============================================
+    NEWSLETTER SECTION
+============================================= --}}
+<section class="newsletter-section" style="padding: var(--space-3xl) 0;">
+    <div class="container">
+        <div class="newsletter-inner reveal">
+            <div class="newsletter-label">STAY IN THE LOOP</div>
+            <h2 class="newsletter-heading">Get the Latest Drops<br>Straight to Your Inbox</h2>
+            <p class="newsletter-desc">Be the first to know about new collections, exclusive deals, and style inspiration.</p>
+            <form class="newsletter-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='SUBSCRIBED ✓'; this.querySelector('input').value='';">
+                <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+                <button type="submit" class="newsletter-submit">SUBSCRIBE</button>
+            </form>
+            <div class="newsletter-trust">
+                <span class="material-symbols-outlined">lock</span>
+                No spam. Unsubscribe anytime.
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ============================================
+    SCROLL-REVEAL & SKELETON TRANSITION SCRIPT
+============================================= --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Skeleton → Real content transition
     document.querySelectorAll('.skeleton-container').forEach(function (el) {
         el.classList.add('content-loaded');
     });
+
+    // IntersectionObserver for scroll-reveal animations
+    const revealElements = document.querySelectorAll('.reveal, .stagger-item');
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        revealElements.forEach(function (el) {
+            observer.observe(el);
+        });
+    } else {
+        // Fallback: show everything immediately
+        revealElements.forEach(function (el) {
+            el.classList.add('revealed');
+        });
+    }
 });
 </script>
-
-{{-- ============================================
-    HOMEPAGE SCOPED STYLES
-============================================= --}}
-<style>
-/* HERO */
-.hero-section {
-    position: relative;
-    width: 100%;
-    height: 420px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    background: var(--color-rich-black);
-}
-@media (min-width: 769px) {
-    .hero-section { height: 560px; }
-}
-.hero-bg {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-}
-.hero-bg-img {
-    width: 100%; height: 100%; object-fit: cover;
-}
-.hero-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(90deg, rgba(11,11,11,0.88) 0%, rgba(11,11,11,0.55) 45%, rgba(11,11,11,0.1) 100%);
-}
-.hero-content {
-    position: relative;
-    z-index: 10;
-    max-width: 520px;
-}
-.hero-label {
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--color-premium-gold);
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    margin-bottom: var(--space-sm);
-}
-.hero-heading {
-    font-family: var(--font-serif);
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 700;
-    color: var(--color-pure-white);
-    line-height: 1.1;
-    margin-bottom: var(--space-md);
-}
-.hero-divider {
-    width: 50px;
-    height: 3px;
-    background: var(--color-premium-gold);
-    margin-bottom: var(--space-md);
-}
-.hero-desc {
-    font-family: var(--font-sans);
-    font-size: 0.95rem;
-    font-weight: 400;
-    color: rgba(255,255,255,0.75);
-    line-height: 1.7;
-    margin-bottom: var(--space-lg);
-}
-.hero-btn {
-    padding: 14px 32px;
-    font-size: 0.85rem;
-}
-.hero-dots {
-    position: absolute;
-    bottom: 24px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    z-index: 10;
-}
-.hero-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.4);
-    cursor: pointer;
-    transition: background var(--transition-base);
-}
-.hero-dot.active {
-    background: var(--color-premium-gold);
-}
-
-/* CATEGORY TILES */
-.category-tiles {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-md);
-}
-.cat-tile {
-    position: relative;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    height: 200px;
-    display: block;
-    background: var(--color-soft-gray);
-}
-@media (min-width: 769px) {
-    .cat-tile { height: 300px; }
-}
-.cat-tile-img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform var(--transition-slow);
-}
-.cat-tile:hover .cat-tile-img {
-    transform: scale(1.06);
-}
-.cat-tile-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.6) 100%);
-}
-.cat-tile-content {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: var(--space-lg);
-    z-index: 5;
-}
-.cat-tile-title {
-    font-family: var(--font-sans);
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--color-pure-white);
-    margin-bottom: 4px;
-}
-.cat-tile-cta {
-    font-family: var(--font-sans);
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--color-pure-white);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
-/* VALUE PROPS */
-.value-props {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    background: var(--color-pure-white);
-    border: 1px solid var(--color-light-gray);
-    border-radius: var(--radius-md);
-    padding: var(--space-lg) var(--space-md);
-}
-.value-prop {
-    text-align: center;
-    flex: 1;
-}
-.value-prop-icon {
-    font-size: 2rem;
-    color: var(--color-rich-black);
-    margin-bottom: 6px;
-    display: block;
-}
-.value-prop-title {
-    font-family: var(--font-sans);
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--color-primary-text);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-bottom: 2px;
-}
-.value-prop-desc {
-    font-family: var(--font-sans);
-    font-size: 0.6rem;
-    color: var(--color-paragraph-text);
-    line-height: 1.3;
-}
-.value-prop-divider {
-    width: 1px;
-    height: 40px;
-    background: var(--color-light-gray);
-    flex-shrink: 0;
-}
-@media (min-width: 769px) {
-    .value-prop-icon { font-size: 2.5rem; }
-    .value-prop-title { font-size: 0.8rem; }
-    .value-prop-desc { font-size: 0.75rem; }
-    .value-prop-divider { height: 55px; }
-}
-@media (max-width: 480px) {
-    .value-props { flex-wrap: wrap; padding: var(--space-md); gap: var(--space-md); }
-    .value-prop { flex: 0 0 45%; }
-    .value-prop-divider { display: none; }
-}
-
-/* SECTION TITLE UNDERLINE */
-.section-title-underline {
-    width: 40px;
-    height: 3px;
-    background: var(--color-premium-gold);
-    margin-top: 4px;
-}
-
-/* HOMEPAGE PRODUCT GRID */
-.home-product-grid {
-    display: flex;
-    gap: var(--space-md);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: var(--space-sm);
-}
-.home-product-grid::-webkit-scrollbar { display: none; }
-.home-product-item {
-    flex: 0 0 calc(50% - 8px);
-    min-width: 150px;
-    scroll-snap-align: start;
-}
-@media (min-width: 769px) {
-    .home-product-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr);
-        overflow-x: visible;
-    }
-    .home-product-item {
-        flex: unset;
-        min-width: 0;
-    }
-}
-
-/* PROMO BANNER */
-.promo-banner {
-    background: var(--color-rich-black);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg) var(--space-xl);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-md);
-    border: 1px solid rgba(200, 155, 60, 0.2);
-}
-.promo-left {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-}
-.promo-icon {
-    color: var(--color-premium-gold);
-    flex-shrink: 0;
-}
-.promo-icon .material-symbols-outlined {
-    font-size: 2.2rem;
-}
-.promo-heading {
-    font-family: var(--font-sans);
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-premium-gold);
-    letter-spacing: 0.5px;
-    margin-bottom: 2px;
-}
-.promo-desc {
-    font-family: var(--font-sans);
-    font-size: 0.8rem;
-    color: var(--color-medium-gray);
-}
-.promo-btn {
-    flex-shrink: 0;
-    padding: 12px 28px;
-}
-@media (max-width: 600px) {
-    .promo-banner {
-        flex-direction: column;
-        text-align: center;
-        padding: var(--space-lg);
-    }
-    .promo-left {
-        flex-direction: column;
-    }
-}
-</style>
 
 @endsection

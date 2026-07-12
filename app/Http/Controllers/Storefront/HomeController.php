@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Storefront;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Wishlist;
@@ -51,6 +52,15 @@ class HomeController extends Controller
             ->orderBy('sort_order')
             ->get();
 
+        // Top-level categories with active product counts
+        $topCategories = Category::whereNull('parent_id')
+            ->where('is_active', true)
+            ->withCount(['products' => function ($q) {
+                $q->where('is_active', true);
+            }])
+            ->orderBy('sort_order')
+            ->get();
+
         // Pre-fetch wishlist IDs (avoid N+1)
         $wishlistIds = [];
         if (Auth::check()) {
@@ -63,6 +73,7 @@ class HomeController extends Controller
             'featuredProducts',
             'newArrivals',
             'banners',
+            'topCategories',
             'wishlistIds'
         ));
     }

@@ -11,7 +11,7 @@ class BannerController extends Controller
 {
     public function index()
     {
-        $banners = Banner::orderBy('sort_order')->get();
+        $banners = Banner::orderBy('sort_order')->paginate(20);
         return view('admin.banners.index', compact('banners'));
     }
 
@@ -20,28 +20,23 @@ class BannerController extends Controller
         return view('admin.banners.create');
     }
 
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Admin\StoreBannerRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'nullable|string|max:255',
-            'subtitle' => 'nullable|string|max:255',
-            'cta_text' => 'nullable|string|max:255',
-            'cta_link' => 'nullable|string|max:255',
-            'position' => 'required|in:hero,category,promotional',
-            'sort_order' => 'required|integer|min:0',
-            'image' => 'required|image|max:2048',
-            'starts_at' => 'nullable|date',
-            'ends_at' => 'nullable|date|after_or_equal:starts_at',
-        ]);
+        $validated = $request->validated();
 
-        $path = $request->file('image')->store('banners', 'public');
-        
-        $validated['image_path'] = $path;
-        $validated['is_active'] = $request->has('is_active');
-        
-        Banner::create($validated);
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request) {
+                if ($request->hasFile('image')) {
+                    $validated['image_path'] = $request->file('image')->store('banners', 'public');
+                }
+                Banner::create(\Illuminate\Support\Arr::except($validated, ['image']));
+            });
 
-        return redirect()->route('admin.banners.index')->with('success', 'Banner created successfully.');
+            return redirect()->route('admin.banners.index')->with('success', 'Banner created successfully.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Banner creation failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to create banner.');
+        }
     }
 
     public function edit(Banner $banner)
@@ -49,37 +44,44 @@ class BannerController extends Controller
         return view('admin.banners.edit', compact('banner'));
     }
 
-    public function update(Request $request, Banner $banner)
+    public function update(\App\Http\Requests\Admin\UpdateBannerRequest $request, Banner $banner)
     {
-        $validated = $request->validate([
-            'title' => 'nullable|string|max:255',
-            'subtitle' => 'nullable|string|max:255',
-            'cta_text' => 'nullable|string|max:255',
-            'cta_link' => 'nullable|string|max:255',
-            'position' => 'required|in:hero,category,promotional',
-            'sort_order' => 'required|integer|min:0',
-            'image' => 'nullable|image|max:2048',
-            'starts_at' => 'nullable|date',
-            'ends_at' => 'nullable|date|after_or_equal:starts_at',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->hasFile('image')) {
-            Storage::disk('public')->delete($banner->image_path);
-            $validated['image_path'] = $request->file('image')->store('banners', 'public');
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request, $banner) {
+                if ($request->hasFile('image')) {
+                    $validated['image_path'] = $request->file('image')->store('banners', 'public');
+                    
+                    if ($banner->image_path) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($banner->image_path);
+                    }
+                }
+                
+                $banner->update(\Illuminate\Support\Arr::except($validated, ['image']));
+            });
+
+            return redirect()->route('admin.banners.index')->with('success', 'Banner updated successfully.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Banner update failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to update banner.');
         }
-
-        $validated['is_active'] = $request->has('is_active');
-        
-        $banner->update($validated);
-
-        return redirect()->route('admin.banners.index')->with('success', 'Banner updated successfully.');
     }
 
     public function destroy(Banner $banner)
     {
-        Storage::disk('public')->delete($banner->image_path);
-        $banner->delete();
-
-        return redirect()->route('admin.banners.index')->with('success', 'Banner deleted successfully.');
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($banner) {
+                if ($banner->image_path) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($banner->image_path);
+                }
+                $banner->delete();
+            });
+            
+            return redirect()->route('admin.banners.index')->with('success', 'Banner deleted successfully.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Banner deletion failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete banner.');
+        }
     }
 }

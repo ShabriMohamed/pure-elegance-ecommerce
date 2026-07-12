@@ -23,38 +23,29 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories'));
     }
 
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Admin\StoreProductRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'sku' => 'required|string|unique:products,sku|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'brand' => 'nullable|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'short_description' => 'nullable|string',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
-            'primary_image' => 'required|image|max:2048',
-        ]);
+        $validated = $request->validated();
+        $validated['slug'] = $request->slug; // injected from prepareForValidation
 
-        $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(5);
-        $validated['is_active'] = $request->has('is_active');
-        $validated['is_featured'] = $request->has('is_featured');
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request) {
+                $product = Product::create(\Illuminate\Support\Arr::except($validated, ['primary_image']));
 
-        $product = Product::create(\Illuminate\Support\Arr::except($validated, ['primary_image']));
+                if ($request->hasFile('primary_image')) {
+                    $path = $request->file('primary_image')->store('products', 'public');
+                    $product->images()->create([
+                        'image_path' => $path,
+                        'is_primary' => true,
+                    ]);
+                }
+            });
 
-        if ($request->hasFile('primary_image')) {
-            $path = $request->file('primary_image')->store('products', 'public');
-            $product->images()->create([
-                'image_path' => $path,
-                'is_primary' => true,
-            ]);
+            return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Product creation failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to create product. Please try again.');
         }
-
-        return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
 
     public function edit(Product $product)
@@ -63,54 +54,57 @@ class ProductController extends Controller
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(\App\Http\Requests\Admin\UpdateProductRequest $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'sku' => 'required|string|max:255|unique:products,sku,' . $product->id,
-            'category_id' => 'required|exists:categories,id',
-            'brand' => 'nullable|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'short_description' => 'nullable|string',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
-            'primary_image' => 'nullable|image|max:2048',
-        ]);
-
-        $validated['is_active'] = $request->has('is_active');
-        $validated['is_featured'] = $request->has('is_featured');
-
-        if ($validated['name'] !== $product->name) {
-            $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(5);
+        $validated = $request->validated();
+        if ($request->has('slug')) {
+            $validated['slug'] = $request->slug;
         }
 
-        $product->update(\Illuminate\Support\Arr::except($validated, ['primary_image']));
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request, $product) {
+                $product->update(\Illuminate\Support\Arr::except($validated, ['primary_image']));
 
-        if ($request->hasFile('primary_image')) {
-            $path = $request->file('primary_image')->store('products', 'public');
-            
-            // Remove old primary image
-            $oldImage = $product->primaryImage;
-            if ($oldImage) {
-                Storage::disk('public')->delete($oldImage->image_path);
-                $oldImage->delete();
-            }
+                if ($request->hasFile('primary_image')) {
+                    $path = $request->file('primary_image')->store('products', 'public');
+                    
+                    // Remove old primary image
+                    $oldImage = $product->primaryImage;
+                    if ($oldImage) {
+                        Storage::disk('public')->delete($oldImage->image_path);
+                        $oldImage->delete();
+                    }
 
-            $product->images()->create([
-                'image_path' => $path,
-                'is_primary' => true,
-            ]);
+                    $product->images()->create([
+                        'image_path' => $path,
+                        'is_primary' => true,
+                    ]);
+                }
+            });
+
+            return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Product update failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to update product. Please try again.');
         }
-
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
     {
-        $product->delete();
-        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($product) {
+                // Delete physical files
+                foreach ($product->images as $image) {
+                    Storage::disk('public')->delete($image->image_path);
+                }
+                
+                $product->delete();
+            });
+            
+            return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Product deletion failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete product.');
+        }
     }
 }
