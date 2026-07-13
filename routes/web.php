@@ -73,6 +73,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     Route::resource('customers', AdminCustomerController::class)->only(['index', 'show']);
     Route::patch('customers/{customer}/toggle-active', [AdminCustomerController::class, 'toggleActive'])->name('customers.toggle-active');
+    Route::delete('products/{product}/images/{image}', [AdminProductController::class, 'deleteImage'])->name('products.images.destroy');
+    Route::patch('products/{product}/images/{image}/primary', [AdminProductController::class, 'setPrimaryImage'])->name('products.images.set-primary');
     
     Route::resource('banners', AdminBannerController::class)->except(['show']);
     
