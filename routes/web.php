@@ -65,14 +65,16 @@ Route::get('/page/{slug}', function ($slug) {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
-    Route::resource('products', AdminProductController::class);
+    Route::resource('products', AdminProductController::class)->except(['show']);
     
-    Route::resource('categories', AdminCategoryController::class);
+    Route::resource('categories', AdminCategoryController::class)->except(['show']);
     
     Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);
     
     Route::resource('customers', AdminCustomerController::class)->only(['index', 'show']);
     Route::patch('customers/{customer}/toggle-active', [AdminCustomerController::class, 'toggleActive'])->name('customers.toggle-active');
+    Route::delete('products/{product}/images/{image}', [AdminProductController::class, 'deleteImage'])->name('products.images.destroy');
+    Route::patch('products/{product}/images/{image}/primary', [AdminProductController::class, 'setPrimaryImage'])->name('products.images.set-primary');
     
     Route::resource('banners', AdminBannerController::class)->except(['show']);
     

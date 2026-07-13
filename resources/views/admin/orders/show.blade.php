@@ -2,6 +2,29 @@
 
 @section('title', 'Order Details')
 
+@section('breadcrumb')
+<nav style="font-size: 0.8rem; color: var(--color-muted); display: flex; align-items: center; gap: 0.5rem;">
+    <a href="{{ route('admin.dashboard') }}" style="color: var(--color-muted);">Dashboard</a>
+    <span class="material-symbols-outlined" style="font-size: 0.9rem;">chevron_right</span>
+    <a href="{{ route('admin.orders.index') }}" style="color: var(--color-muted);">Orders</a>
+    <span class="material-symbols-outlined" style="font-size: 0.9rem;">chevron_right</span>
+    <span>#{{ $order->order_number }}</span>
+</nav>
+@endsection
+
+@push('styles')
+<style>
+.order-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+@media (min-width: 992px) {
+    .order-detail-grid { grid-template-columns: 2fr 1fr; }
+}
+</style>
+@endpush
+
 @section('content')
 <div style="margin-bottom: var(--space-lg);">
     <a href="{{ route('admin.orders.index') }}" style="color: var(--color-muted); font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.25rem;">
@@ -9,7 +32,7 @@
     </a>
 </div>
 
-<div class="grid" style="grid-template-columns: 1fr; gap: var(--space-xl); @media (min-width: 992px) { grid-template-columns: 2fr 1fr; }">
+<div class="order-detail-grid">
     
     <!-- Order Items & Details -->
     <div>

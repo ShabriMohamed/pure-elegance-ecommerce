@@ -170,13 +170,9 @@
             border-radius: 16px;
             padding: 1.5rem;
             box-shadow: var(--admin-card-shadow);
-            transition: var(--admin-transition);
         }
         
-        .admin-card:hover {
-            box-shadow: 0 15px 35px -10px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
-        }
+        .btn-block { display: block; width: 100%; text-align: center; }
         
         .admin-table {
             width: 100%;
@@ -262,7 +258,20 @@
                 opacity: 1;
             }
         }
+        .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--color-charcoal); margin-bottom: 0.4rem; letter-spacing: 0.3px; }
+        .form-control { width: 100%; padding: 0.65rem 0.9rem; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 0.875rem; color: var(--color-charcoal); background: white; transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
+        .form-control:focus { border-color: var(--color-gold); box-shadow: 0 0 0 3px rgba(212,175,55,0.12); }
+        .form-control.is-invalid { border-color: #C62828; }
+        .form-error { color: #C62828; font-size: 0.78rem; margin-top: 0.3rem; }
+        .form-group { margin-bottom: 1.1rem; }
+        select.form-control { cursor: pointer; }
+        textarea.form-control { resize: vertical; }
+        .btn-primary { background: var(--color-gold); color: white; border: none; padding: 0.65rem 1.5rem; border-radius: 10px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
+        .btn-primary:hover { background: #c9a832; box-shadow: 0 4px 12px rgba(212,175,55,0.3); }
+        .btn-outline { background: white; color: var(--color-charcoal); border: 1.5px solid rgba(0,0,0,0.12); padding: 0.65rem 1.5rem; border-radius: 10px; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; }
+        .btn-outline:hover { border-color: rgba(0,0,0,0.25); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     </style>
+    @stack('styles')
 </head>
 <body>
     <div class="admin-container">
@@ -344,18 +353,25 @@
             </header>
 
             <!-- Content -->
+            <div style="padding: 0.5rem 2rem; border-bottom: 1px solid rgba(0,0,0,0.04); background: rgba(255,255,255,0.5);">@yield('breadcrumb')</div>
             <div class="admin-content">
                 @if(session('success'))
-                    <div style="background: rgba(46, 125, 50, 0.1); color: #2E7D32; border: 1px solid rgba(46, 125, 50, 0.2); padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 4px 12px rgba(46, 125, 50, 0.05);">
+                    <div class="flash-message flash-success" style="background: rgba(46, 125, 50, 0.08); color: #2E7D32; border: 1px solid rgba(46, 125, 50, 0.2); padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 4px 12px rgba(46, 125, 50, 0.05); transition: opacity 0.5s, transform 0.5s;">
                         <span class="material-symbols-outlined">check_circle</span>
-                        <div style="font-weight: 500; font-size: 0.9rem;">{{ session('success') }}</div>
+                        <div style="font-weight: 500; font-size: 0.9rem; flex: 1;">{{ session('success') }}</div>
+                        <button onclick="this.closest('.flash-message').remove()" style="background: none; border: none; cursor: pointer; color: #2E7D32; padding: 0.1rem;">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">close</span>
+                        </button>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div style="background: rgba(198, 40, 40, 0.1); color: #C62828; border: 1px solid rgba(198, 40, 40, 0.2); padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 4px 12px rgba(198, 40, 40, 0.05);">
+                    <div class="flash-message flash-error" style="background: rgba(198, 40, 40, 0.08); color: #C62828; border: 1px solid rgba(198, 40, 40, 0.2); padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 4px 12px rgba(198, 40, 40, 0.05); transition: opacity 0.5s, transform 0.5s;">
                         <span class="material-symbols-outlined">error</span>
-                        <div style="font-weight: 500; font-size: 0.9rem;">{{ session('error') }}</div>
+                        <div style="font-weight: 500; font-size: 0.9rem; flex: 1;">{{ session('error') }}</div>
+                        <button onclick="this.closest('.flash-message').remove()" style="background: none; border: none; cursor: pointer; color: #C62828; padding: 0.1rem;">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">close</span>
+                        </button>
                     </div>
                 @endif
 
@@ -377,6 +393,16 @@
 
         menuBtn.addEventListener('click', toggleSidebar);
         overlay.addEventListener('click', toggleSidebar);
+
+        // Auto-dismiss flash messages after 5 seconds
+        document.querySelectorAll('.flash-message').forEach(function(el) {
+            setTimeout(function() {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-8px)';
+                setTimeout(function() { el.remove(); }, 500);
+            }, 5000);
+        });
     </script>
+    @stack('scripts')
 </body>
 </html>
