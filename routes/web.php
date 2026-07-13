@@ -65,9 +65,9 @@ Route::get('/page/{slug}', function ($slug) {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
-    Route::resource('products', AdminProductController::class);
+    Route::resource('products', AdminProductController::class)->except(['show']);
     
-    Route::resource('categories', AdminCategoryController::class);
+    Route::resource('categories', AdminCategoryController::class)->except(['show']);
     
     Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);
     

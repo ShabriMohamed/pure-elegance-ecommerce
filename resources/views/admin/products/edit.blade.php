@@ -225,18 +225,22 @@
                 <a href="{{ route('admin.products.index') }}" class="btn btn-outline btn-block" style="padding: 0.7rem; text-align: center;">
                     Cancel
                 </a>
-                <form method="POST" action="{{ route('admin.products.destroy', $product) }}" onsubmit="return confirm('Delete this product permanently?');" style="margin-top: 0.5rem;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-outline btn-block" style="color: #C62828; border-color: #C62828; padding: 0.7rem; width: 100%;">
-                        <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">delete_forever</span> Delete Product
-                    </button>
-                </form>
             </div>
 
         </div>
     </div>
 </form>
+
+{{-- Delete form is intentionally OUTSIDE the update form to prevent nested form bugs --}}
+<div style="max-width: 380px; margin-left: auto; margin-top: 0.5rem;">
+    <form method="POST" action="{{ route('admin.products.destroy', $product) }}" onsubmit="return confirm('Delete this product permanently? This cannot be undone.');">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-outline btn-block" style="color: #C62828; border-color: #C62828; padding: 0.7rem; width: 100%;">
+            <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">delete_forever</span> Delete Product
+        </button>
+    </form>
+</div>
 
 <div id="toast-notification" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: none;">
     <div style="background: #1A1A1D; color: white; padding: 0.9rem 1.25rem; border-radius: 12px; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.6rem; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
