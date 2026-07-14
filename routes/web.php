@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
+use App\Http\Controllers\Admin\SearchController as AdminSearchController;
 
 // Storefront Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -64,6 +65,7 @@ Route::get('/page/{slug}', function ($slug) {
 // Admin Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('search', [AdminSearchController::class, 'search'])->name('search');
     
     Route::resource('products', AdminProductController::class)->except(['show']);
     
