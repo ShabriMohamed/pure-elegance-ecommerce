@@ -87,7 +87,7 @@
     <!-- Search Trigger Bar -->
     <div class="search-bar-container">
         <div class="container">
-            <button class="sf-search-trigger" id="sf-search-trigger">
+            <button type="button" class="sf-search-trigger" id="sf-search-trigger">
                 <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--color-muted-text);">search</span>
                 <span class="sf-search-trigger-text">Search for products, brands and more...</span>
                 <kbd class="sf-search-kbd">Ctrl K</kbd>
@@ -307,8 +307,8 @@
         };
 
         // Triggers
-        document.getElementById('sf-search-trigger').addEventListener('click', sfOpenSearch);
-        document.getElementById('sf-search-trigger-icon').addEventListener('click', sfOpenSearch);
+        document.getElementById('sf-search-trigger').addEventListener('click', function(e) { e.preventDefault(); sfOpenSearch(); });
+        document.getElementById('sf-search-trigger-icon').addEventListener('click', function(e) { e.preventDefault(); sfOpenSearch(); });
         overlay.addEventListener('click', function(e) { if (e.target === overlay) sfCloseSearch(); });
 
         // Ctrl+K / Cmd+K
