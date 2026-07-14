@@ -400,12 +400,17 @@ button {
     border-bottom: 1px solid var(--color-light-gray);
 }
 
+.live-search-wrapper {
+    position: relative;
+    width: 100%;
+}
+
 .search-input-wrapper {
     position: relative;
     width: 100%;
 }
 
-.search-input-wrapper .material-symbols-outlined {
+.search-input-wrapper .search-icon {
     position: absolute;
     left: 14px;
     top: 50%;
@@ -413,18 +418,19 @@ button {
     color: var(--color-muted-text);
     font-size: 1.25rem;
     pointer-events: none;
+    transition: color 0.2s;
 }
 
 .search-input-wrapper input {
     width: 100%;
-    padding: 12px 16px 12px 44px;
-    border: 1px solid var(--color-light-gray);
+    padding: 12px 44px 12px 44px;
+    border: 1.5px solid var(--color-light-gray);
     border-radius: var(--radius-lg);
     font-family: var(--font-sans);
     font-size: 0.85rem;
     color: var(--color-primary-text);
     background: var(--color-pure-white);
-    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    transition: border-color 0.2s, box-shadow 0.2s;
     outline: none;
 }
 
@@ -436,6 +442,110 @@ button {
     border-color: var(--color-premium-gold);
     box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.1);
 }
+
+.search-input-wrapper input:focus ~ .search-icon,
+.search-input-wrapper input:focus + .search-icon {
+    color: var(--color-premium-gold);
+}
+
+.search-clear-btn {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: var(--color-muted-text);
+    padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+.search-clear-btn:hover { background: rgba(0,0,0,0.06); color: var(--color-primary-text); }
+.search-clear-btn .material-symbols-outlined { font-size: 1.1rem; }
+
+/* Live Search Dropdown */
+.live-search-dropdown {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+    background: var(--color-pure-white);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.03);
+    max-height: 460px; overflow-y: auto;
+    z-index: 1000;
+    opacity: 0; transform: translateY(-8px); pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.live-search-dropdown.visible {
+    opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+.live-search-dropdown::-webkit-scrollbar { width: 4px; }
+.live-search-dropdown::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+
+.live-search-loading {
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    padding: 1.5rem; color: var(--color-muted-text); font-size: 0.82rem;
+}
+.ls-spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(0,0,0,0.08); border-top-color: var(--color-premium-gold);
+    border-radius: 50%; animation: lsSpin 0.6s linear infinite;
+}
+@keyframes lsSpin { to { transform: rotate(360deg); } }
+
+.live-search-empty {
+    text-align: center; padding: 2rem 1rem;
+    color: var(--color-muted-text); font-size: 0.85rem;
+}
+
+.ls-section { padding: 0.35rem 0; }
+.ls-section + .ls-section { border-top: 1px solid rgba(0,0,0,0.05); }
+
+.ls-section-header {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 1rem; font-size: 0.68rem; font-weight: 700;
+    color: var(--color-muted-text); text-transform: uppercase; letter-spacing: 1.2px;
+}
+
+.ls-cat-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.55rem 1rem; font-size: 0.85rem; font-weight: 500;
+    color: var(--color-primary-text); text-decoration: none;
+    transition: background 0.12s; cursor: pointer;
+}
+.ls-cat-item:hover, .ls-cat-item.focused { background: rgba(200, 155, 60, 0.06); }
+.ls-cat-item mark { background: rgba(200, 155, 60, 0.25); color: inherit; border-radius: 2px; padding: 0 1px; }
+
+.ls-product-item {
+    display: flex; align-items: center; gap: 0.85rem;
+    padding: 0.6rem 1rem; text-decoration: none; color: var(--color-primary-text);
+    transition: background 0.12s; cursor: pointer;
+}
+.ls-product-item:hover, .ls-product-item.focused { background: rgba(200, 155, 60, 0.05); }
+
+.ls-product-img {
+    width: 50px; height: 60px; border-radius: 8px; overflow: hidden;
+    flex-shrink: 0; background: #F5F5F5; border: 1px solid rgba(0,0,0,0.05);
+}
+.ls-product-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.ls-product-info { flex: 1; min-width: 0; }
+.ls-product-name {
+    font-weight: 600; font-size: 0.85rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ls-product-name mark { background: rgba(200, 155, 60, 0.25); color: inherit; border-radius: 2px; padding: 0 1px; }
+.ls-product-meta {
+    font-size: 0.72rem; color: var(--color-muted-text); margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ls-product-meta mark { background: rgba(200, 155, 60, 0.2); color: inherit; border-radius: 2px; }
+.ls-product-prices { margin-top: 3px; display: flex; gap: 0.4rem; align-items: baseline; }
+.ls-price { font-size: 0.8rem; font-weight: 600; color: var(--color-primary-text); }
+.ls-price--sale { color: #C62828; }
+.ls-price--orig { font-size: 0.72rem; color: var(--color-muted-text); text-decoration: line-through; font-weight: 400; }
+
+.ls-view-all {
+    display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+    padding: 0.75rem; font-size: 0.82rem; font-weight: 600;
+    color: var(--color-premium-gold); text-decoration: none;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    transition: background 0.15s;
+}
+.ls-view-all:hover { background: rgba(200, 155, 60, 0.06); }
 
 /* ========================================
    BUTTONS

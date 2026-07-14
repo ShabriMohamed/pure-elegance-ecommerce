@@ -84,10 +84,28 @@
     <!-- Search Bar -->
     <div class="search-bar-container">
         <div class="container">
-            <form method="GET" action="{{ route('search') }}" class="search-input-wrapper">
-                <span class="material-symbols-outlined">search</span>
-                <input type="text" name="q" placeholder="Search for products, brands and more..." value="{{ request('q') }}">
-            </form>
+            <div class="live-search-wrapper" id="live-search-wrapper">
+                <form method="GET" action="{{ route('search') }}" class="search-input-wrapper" id="search-form" autocomplete="off">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input type="text" name="q" id="live-search-input" placeholder="Search for products, brands and more..." value="{{ request('q') }}" autocomplete="off">
+                    <button type="button" id="search-clear-btn" class="search-clear-btn" style="display: none;">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </form>
+
+                <!-- Live Search Dropdown -->
+                <div class="live-search-dropdown" id="live-search-dropdown">
+                    <div class="live-search-loading" id="ls-loading">
+                        <div class="ls-spinner"></div>
+                        <span>Searching...</span>
+                    </div>
+                    <div id="ls-results"></div>
+                    <div class="live-search-empty" id="ls-empty" style="display: none;">
+                        <span class="material-symbols-outlined" style="font-size: 2.5rem; opacity: 0.15;">search_off</span>
+                        <div style="margin-top: 0.5rem;">No products found</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -239,5 +257,137 @@
         </a>
     </nav>
 
+
+    <script>
+    (function() {
+        const input     = document.getElementById('live-search-input');
+        const dropdown  = document.getElementById('live-search-dropdown');
+        const wrapper   = document.getElementById('live-search-wrapper');
+        const results   = document.getElementById('ls-results');
+        const loading   = document.getElementById('ls-loading');
+        const empty     = document.getElementById('ls-empty');
+        const clearBtn  = document.getElementById('search-clear-btn');
+        const form      = document.getElementById('search-form');
+        const SUGGEST_URL = '{{ route("search.suggestions") }}';
+        let timer       = null;
+        let focusIdx    = -1;
+
+        function show() { dropdown.classList.add('visible'); }
+        function hide()  { dropdown.classList.remove('visible'); focusIdx = -1; }
+
+        input.addEventListener('input', function() {
+            const q = this.value.trim();
+            clearBtn.style.display = q.length > 0 ? 'flex' : 'none';
+            clearTimeout(timer);
+            focusIdx = -1;
+
+            if (q.length < 2) { hide(); return; }
+
+            results.innerHTML = '';
+            empty.style.display = 'none';
+            loading.style.display = 'flex';
+            show();
+
+            timer = setTimeout(() => {
+                fetch(SUGGEST_URL + '?q=' + encodeURIComponent(q), {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(r => r.json())
+                .then(data => { loading.style.display = 'none'; render(data); })
+                .catch(() => { loading.style.display = 'none'; empty.style.display = 'block'; });
+            }, 220);
+        });
+
+        clearBtn.addEventListener('click', function() {
+            input.value = ''; clearBtn.style.display = 'none'; hide(); input.focus();
+        });
+
+        function render(data) {
+            results.innerHTML = '';
+            let hasResults = false;
+
+            // Categories
+            if (data.categories && data.categories.length) {
+                hasResults = true;
+                const sec = el('div', 'ls-section');
+                sec.appendChild(sectionHeader('category', 'Categories'));
+                data.categories.forEach(c => {
+                    const a = el('a', 'ls-cat-item');
+                    a.href = c.url;
+                    a.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--color-premium-gold);">arrow_forward</span> ${hl(c.name, data.query)}`;
+                    sec.appendChild(a);
+                });
+                results.appendChild(sec);
+            }
+
+            // Products
+            if (data.products && data.products.length) {
+                hasResults = true;
+                const sec = el('div', 'ls-section');
+                sec.appendChild(sectionHeader('inventory_2', 'Products'));
+                data.products.forEach(p => {
+                    const a = el('a', 'ls-product-item');
+                    a.href = p.url;
+                    let priceHtml = `<span class="ls-price">LKR ${p.price}</span>`;
+                    if (p.sale_price) {
+                        priceHtml = `<span class="ls-price ls-price--sale">LKR ${p.sale_price}</span><span class="ls-price ls-price--orig">LKR ${p.price}</span>`;
+                    }
+                    a.innerHTML = `
+                        <div class="ls-product-img"><img src="${p.image}" alt="" loading="lazy"></div>
+                        <div class="ls-product-info">
+                            <div class="ls-product-name">${hl(p.name, data.query)}</div>
+                            <div class="ls-product-meta">${p.category || ''}${p.brand ? ' · ' + hl(p.brand, data.query) : ''}</div>
+                            <div class="ls-product-prices">${priceHtml}</div>
+                        </div>
+                    `;
+                    sec.appendChild(a);
+                });
+                results.appendChild(sec);
+
+                // View all link
+                const viewAll = el('a', 'ls-view-all');
+                viewAll.href = '{{ route("search") }}?q=' + encodeURIComponent(input.value.trim());
+                viewAll.innerHTML = `View all results <span class="material-symbols-outlined" style="font-size: 1rem;">arrow_forward</span>`;
+                results.appendChild(viewAll);
+            }
+
+            empty.style.display = hasResults ? 'none' : 'block';
+        }
+
+        function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
+        function sectionHeader(icon, text) {
+            const h = el('div', 'ls-section-header');
+            h.innerHTML = `<span class="material-symbols-outlined" style="font-size: 0.9rem;">${icon}</span>${text}`;
+            return h;
+        }
+        function hl(text, q) {
+            if (!q || !text) return text || '';
+            const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return text.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
+        }
+
+        // Keyboard nav
+        input.addEventListener('keydown', function(e) {
+            const items = results.querySelectorAll('.ls-product-item, .ls-cat-item');
+            if (!items.length || !dropdown.classList.contains('visible')) return;
+            if (e.key === 'ArrowDown') { e.preventDefault(); focusIdx = Math.min(focusIdx + 1, items.length - 1); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); focusIdx = Math.max(focusIdx - 1, 0); }
+            else if (e.key === 'Enter' && focusIdx >= 0) { e.preventDefault(); items[focusIdx].click(); return; }
+            else return;
+            items.forEach((el, i) => el.classList.toggle('focused', i === focusIdx));
+            items[focusIdx]?.scrollIntoView({ block: 'nearest' });
+        });
+
+        // Close on click outside
+        document.addEventListener('click', function(e) {
+            if (!wrapper.contains(e.target)) hide();
+        });
+
+        // Show on focus if there's content
+        input.addEventListener('focus', function() {
+            if (results.innerHTML.trim()) show();
+        });
+    })();
+    </script>
 </body>
 </html>
