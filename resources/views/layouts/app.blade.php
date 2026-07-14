@@ -48,6 +48,9 @@
             </nav>
 
             <div class="header-actions">
+                <button class="icon-btn" aria-label="Search" id="sf-search-trigger-icon">
+                    <span class="material-symbols-outlined">search</span>
+                </button>
                 @auth
                     <a href="{{ route('wishlist.index') }}" class="icon-btn" aria-label="Wishlist">
                         <span class="material-symbols-outlined">favorite_border</span>
@@ -81,13 +84,14 @@
         </div>
     </header>
 
-    <!-- Search Bar -->
+    <!-- Search Trigger Bar -->
     <div class="search-bar-container">
         <div class="container">
-            <form method="GET" action="{{ route('search') }}" class="search-input-wrapper">
-                <span class="material-symbols-outlined">search</span>
-                <input type="text" name="q" placeholder="Search for products, brands and more..." value="{{ request('q') }}">
-            </form>
+            <button type="button" class="sf-search-trigger" id="sf-search-trigger">
+                <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--color-muted-text);">search</span>
+                <span class="sf-search-trigger-text">Search for products, brands and more...</span>
+                <kbd class="sf-search-kbd">Ctrl K</kbd>
+            </button>
         </div>
     </div>
 
@@ -239,5 +243,180 @@
         </a>
     </nav>
 
+    <!-- Search Overlay Modal -->
+    <div id="sf-search-overlay" class="sf-search-overlay">
+        <div class="sf-search-modal">
+            <div class="sf-search-header">
+                <span class="material-symbols-outlined" style="color: var(--color-premium-gold); font-size: 1.3rem;">search</span>
+                <input type="text" id="sf-search-input" class="sf-search-input" placeholder="Search products, brands, categories..." autocomplete="off" spellcheck="false">
+                <kbd class="sf-esc-badge" onclick="sfCloseSearch()">ESC</kbd>
+            </div>
+            <div id="sf-search-results" class="sf-search-results">
+                <div class="sf-search-empty" id="sf-search-empty">
+                    <span class="material-symbols-outlined" style="font-size: 3.5rem; opacity: 0.12; display: block;">manage_search</span>
+                    <div style="margin-top: 0.75rem; font-size: 0.95rem; color: var(--color-muted-text);">Search our entire collection</div>
+                    <div style="margin-top: 0.4rem; font-size: 0.78rem; color: rgba(0,0,0,0.2);">Products · Brands · Categories</div>
+                </div>
+                <div id="sf-search-loading" class="sf-search-loading" style="display: none;">
+                    <div class="sf-spinner"></div>
+                    <span>Searching...</span>
+                </div>
+                <div id="sf-search-list"></div>
+                <div id="sf-search-no-results" style="display: none; text-align: center; padding: 2.5rem 1rem;">
+                    <span class="material-symbols-outlined" style="font-size: 2.5rem; opacity: 0.12; display: block;">search_off</span>
+                    <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--color-muted-text);">No products found</div>
+                    <div style="margin-top: 0.25rem; font-size: 0.78rem; color: rgba(0,0,0,0.2);">Try a different search term</div>
+                </div>
+            </div>
+            <div class="sf-search-footer">
+                <div style="display: flex; gap: 1.25rem; align-items: center; font-size: 0.72rem; color: rgba(0,0,0,0.25);">
+                    <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+                    <span><kbd>↵</kbd> Open</span>
+                    <span><kbd>Esc</kbd> Close</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const overlay    = document.getElementById('sf-search-overlay');
+        const input      = document.getElementById('sf-search-input');
+        const resultsList = document.getElementById('sf-search-list');
+        const emptyState = document.getElementById('sf-search-empty');
+        const loadingEl  = document.getElementById('sf-search-loading');
+        const noResults  = document.getElementById('sf-search-no-results');
+        const SUGGEST_URL = '{{ route("search.suggestions") }}';
+        let timer = null, focusIdx = -1;
+
+        // Open / Close
+        window.sfOpenSearch = function() {
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => input.focus(), 80);
+        };
+        window.sfCloseSearch = function() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+            input.value = '';
+            resultsList.innerHTML = '';
+            emptyState.style.display = 'block';
+            noResults.style.display = 'none';
+            loadingEl.style.display = 'none';
+            focusIdx = -1;
+        };
+
+        // Triggers
+        document.getElementById('sf-search-trigger').addEventListener('click', function(e) { e.preventDefault(); sfOpenSearch(); });
+        document.getElementById('sf-search-trigger-icon').addEventListener('click', function(e) { e.preventDefault(); sfOpenSearch(); });
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) sfCloseSearch(); });
+
+        // Ctrl+K / Cmd+K
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); sfOpenSearch(); }
+            if (e.key === 'Escape' && overlay.classList.contains('open')) sfCloseSearch();
+        });
+
+        // Debounced search
+        input.addEventListener('input', function() {
+            const q = this.value.trim();
+            clearTimeout(timer);
+            focusIdx = -1;
+
+            if (q.length < 2) {
+                resultsList.innerHTML = '';
+                noResults.style.display = 'none';
+                loadingEl.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            loadingEl.style.display = 'flex';
+            noResults.style.display = 'none';
+
+            timer = setTimeout(() => {
+                fetch(SUGGEST_URL + '?q=' + encodeURIComponent(q), {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(r => r.json())
+                .then(data => { loadingEl.style.display = 'none'; render(data); })
+                .catch(() => { loadingEl.style.display = 'none'; noResults.style.display = 'block'; });
+            }, 220);
+        });
+
+        function render(data) {
+            resultsList.innerHTML = '';
+            let hasResults = false;
+
+            // Categories
+            if (data.categories && data.categories.length) {
+                hasResults = true;
+                const sec = document.createElement('div'); sec.className = 'sf-result-group';
+                sec.innerHTML = `<div class="sf-group-header"><span class="material-symbols-outlined" style="font-size: 0.95rem;">category</span>Categories</div>`;
+                data.categories.forEach(c => {
+                    const a = document.createElement('a'); a.className = 'sf-result-item sf-result-cat';
+                    a.href = c.url;
+                    a.innerHTML = `<div class="sf-result-avatar"><span class="material-symbols-outlined" style="font-size: 1rem;">folder</span></div><div class="sf-result-info"><div class="sf-result-title">${hl(c.name, data.query)}</div></div><span class="material-symbols-outlined sf-result-arrow">arrow_forward</span>`;
+                    sec.appendChild(a);
+                });
+                resultsList.appendChild(sec);
+            }
+
+            // Products
+            if (data.products && data.products.length) {
+                hasResults = true;
+                const sec = document.createElement('div'); sec.className = 'sf-result-group';
+                sec.innerHTML = `<div class="sf-group-header"><span class="material-symbols-outlined" style="font-size: 0.95rem;">inventory_2</span>Products</div>`;
+                data.products.forEach(p => {
+                    const a = document.createElement('a'); a.className = 'sf-result-item';
+                    a.href = p.url;
+                    let priceHtml = `<span class="sf-result-price">LKR ${p.price}</span>`;
+                    if (p.sale_price) {
+                        priceHtml = `<span class="sf-result-price sf-result-price--sale">LKR ${p.sale_price}</span><span class="sf-result-price sf-result-price--orig">LKR ${p.price}</span>`;
+                    }
+                    a.innerHTML = `
+                        <div class="sf-result-thumb"><img src="${p.image}" alt="" loading="lazy"></div>
+                        <div class="sf-result-info">
+                            <div class="sf-result-title">${hl(p.name, data.query)}</div>
+                            <div class="sf-result-sub">${p.category || ''}${p.brand ? ' · ' + hl(p.brand, data.query) : ''}</div>
+                            <div class="sf-result-prices">${priceHtml}</div>
+                        </div>
+                        <span class="material-symbols-outlined sf-result-arrow">arrow_forward</span>
+                    `;
+                    sec.appendChild(a);
+                });
+                resultsList.appendChild(sec);
+
+                // View all
+                const va = document.createElement('a'); va.className = 'sf-view-all';
+                va.href = '{{ route("search") }}?q=' + encodeURIComponent(input.value.trim());
+                va.innerHTML = `View all results <span class="material-symbols-outlined" style="font-size: 1rem;">arrow_forward</span>`;
+                resultsList.appendChild(va);
+            }
+
+            noResults.style.display = hasResults ? 'none' : 'block';
+        }
+
+        function hl(text, q) {
+            if (!q || !text) return text || '';
+            const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return text.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
+        }
+
+        // Keyboard nav
+        input.addEventListener('keydown', function(e) {
+            const items = resultsList.querySelectorAll('.sf-result-item');
+            if (!items.length) return;
+            if (e.key === 'ArrowDown') { e.preventDefault(); focusIdx = Math.min(focusIdx + 1, items.length - 1); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); focusIdx = Math.max(focusIdx - 1, 0); }
+            else if (e.key === 'Enter' && focusIdx >= 0) { e.preventDefault(); items[focusIdx].click(); return; }
+            else if (e.key === 'Enter') { e.preventDefault(); window.location.href = '{{ route("search") }}?q=' + encodeURIComponent(input.value.trim()); return; }
+            else return;
+            items.forEach((el, i) => el.classList.toggle('focused', i === focusIdx));
+            items[focusIdx]?.scrollIntoView({ block: 'nearest' });
+        });
+    })();
+    </script>
 </body>
 </html>

@@ -270,6 +270,115 @@
         .btn-primary:hover { background: #c9a832; box-shadow: 0 4px 12px rgba(212,175,55,0.3); }
         .btn-outline { background: white; color: var(--color-charcoal); border: 1.5px solid rgba(0,0,0,0.12); padding: 0.65rem 1.5rem; border-radius: 10px; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; }
         .btn-outline:hover { border-color: rgba(0,0,0,0.25); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+        /* ─── Global Search ─── */
+        .search-trigger-btn {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.45rem 0.9rem; border: 1.5px solid rgba(0,0,0,0.1);
+            border-radius: 10px; background: rgba(0,0,0,0.02);
+            cursor: pointer; transition: all 0.2s; font-family: 'Poppins', sans-serif;
+        }
+        .search-trigger-btn:hover { border-color: var(--color-gold); background: rgba(212,175,55,0.04); box-shadow: 0 2px 12px rgba(212,175,55,0.08); }
+        .search-trigger-text { font-size: 0.82rem; color: var(--color-muted); }
+        .search-kbd { font-size: 0.65rem; color: rgba(0,0,0,0.3); background: rgba(0,0,0,0.05); padding: 0.15rem 0.4rem; border-radius: 4px; font-family: monospace; border: 1px solid rgba(0,0,0,0.08); margin-left: 0.25rem; }
+
+        .search-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 12vh; opacity: 0; pointer-events: none;
+            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .search-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .search-modal {
+            width: 640px; max-width: 94vw;
+            background: #FFFFFF; border-radius: 18px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.04);
+            transform: translateY(-16px) scale(0.98);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+        .search-overlay.open .search-modal { transform: translateY(0) scale(1); }
+
+        .search-header {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 1rem 1.25rem; border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .search-header-icon { color: var(--color-gold); font-size: 1.3rem; }
+        .search-input {
+            flex: 1; border: none; outline: none; background: transparent;
+            font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 500;
+            color: var(--color-charcoal); padding: 0.2rem 0;
+        }
+        .search-input::placeholder { color: rgba(0,0,0,0.25); font-weight: 400; }
+        .search-esc-badge { font-size: 0.65rem; background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.35); padding: 0.2rem 0.5rem; border-radius: 5px; cursor: pointer; border: 1px solid rgba(0,0,0,0.08); font-family: monospace; }
+        .search-esc-badge:hover { background: rgba(0,0,0,0.1); }
+
+        .search-results {
+            max-height: 420px; overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .search-results::-webkit-scrollbar { width: 4px; }
+        .search-results::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+
+        .search-empty-state { text-align: center; padding: 3rem 1rem; }
+        .search-loading { display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 2rem; color: var(--color-muted); font-size: 0.85rem; }
+        .search-spinner {
+            width: 20px; height: 20px; border: 2.5px solid rgba(0,0,0,0.08);
+            border-top-color: var(--color-gold); border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .search-group { padding: 0.25rem 0; }
+        .search-group-header {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1.25rem; font-size: 0.7rem; font-weight: 700;
+            color: var(--color-muted); text-transform: uppercase; letter-spacing: 1.5px;
+        }
+
+        .search-result-item {
+            display: flex; align-items: center; gap: 0.85rem;
+            padding: 0.65rem 1.25rem; text-decoration: none; color: var(--color-charcoal);
+            transition: background 0.12s; cursor: pointer; border-left: 3px solid transparent;
+        }
+        .search-result-item:hover, .search-result-item.focused {
+            background: rgba(212,175,55,0.06); border-left-color: var(--color-gold);
+        }
+        .search-item-img {
+            width: 38px; height: 38px; border-radius: 8px; overflow: hidden;
+            flex-shrink: 0; background: #F5F5F5; border: 1px solid rgba(0,0,0,0.06);
+        }
+        .search-item-img img { width: 100%; height: 100%; object-fit: cover; }
+        .search-item-avatar {
+            width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; color: var(--color-gold);
+        }
+        .search-item-info { flex: 1; min-width: 0; }
+        .search-item-title { font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .search-item-title mark { background: rgba(212,175,55,0.25); color: inherit; border-radius: 2px; padding: 0 1px; }
+        .search-item-subtitle { font-size: 0.75rem; color: var(--color-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .search-item-subtitle mark { background: rgba(212,175,55,0.2); color: inherit; border-radius: 2px; padding: 0 1px; }
+        .search-item-arrow { font-size: 1rem; color: rgba(0,0,0,0.15); transition: all 0.15s; margin-left: auto; }
+        .search-result-item:hover .search-item-arrow, .search-result-item.focused .search-item-arrow { color: var(--color-gold); transform: translateX(2px); }
+
+        .search-footer {
+            padding: 0.6rem 1.25rem; border-top: 1px solid rgba(0,0,0,0.06);
+            display: flex; justify-content: center;
+        }
+        .search-footer kbd {
+            font-family: monospace; font-size: 0.65rem; background: rgba(0,0,0,0.05);
+            padding: 0.1rem 0.35rem; border-radius: 3px; border: 1px solid rgba(0,0,0,0.08);
+            margin: 0 2px;
+        }
+
+        @media (max-width: 600px) {
+            .search-trigger-text, .search-kbd { display: none; }
+            .search-trigger-btn { padding: 0.4rem 0.6rem; }
+        }
     </style>
     @stack('styles')
 </head>
@@ -340,6 +449,11 @@
                     <h1>@yield('title')</h1>
                 </div>
                 <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <button id="search-trigger" class="search-trigger-btn" title="Search (Ctrl+K)">
+                        <span class="material-symbols-outlined" style="font-size: 1.15rem;">search</span>
+                        <span class="search-trigger-text">Search...</span>
+                        <kbd class="search-kbd">Ctrl K</kbd>
+                    </button>
                     <a href="{{ route('home') }}" target="_blank" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
                         <span class="material-symbols-outlined" style="font-size: 1.1rem;">visibility</span> View Store
                     </a>
@@ -402,6 +516,187 @@
                 setTimeout(function() { el.remove(); }, 500);
             }, 5000);
         });
+    </script>
+
+    <!-- Global Search Overlay -->
+    <div id="search-overlay" class="search-overlay">
+        <div class="search-modal">
+            <div class="search-header">
+                <span class="material-symbols-outlined search-header-icon">search</span>
+                <input type="text" id="search-input" class="search-input" placeholder="Search products, orders, customers..." autocomplete="off" spellcheck="false">
+                <kbd class="search-esc-badge" onclick="closeSearch()">ESC</kbd>
+            </div>
+            <div id="search-results" class="search-results">
+                <div class="search-empty-state" id="search-empty">
+                    <span class="material-symbols-outlined" style="font-size: 3rem; opacity: 0.2; display: block;">manage_search</span>
+                    <div style="margin-top: 0.75rem; font-size: 0.9rem; color: var(--color-muted);">Start typing to search across your store</div>
+                    <div style="margin-top: 0.5rem; font-size: 0.75rem; color: rgba(0,0,0,0.25);">Products · Orders · Customers · Categories</div>
+                </div>
+                <div id="search-loading" class="search-loading" style="display: none;">
+                    <div class="search-spinner"></div>
+                    <span>Searching...</span>
+                </div>
+                <div id="search-results-list"></div>
+                <div id="search-no-results" style="display: none; text-align: center; padding: 2.5rem 1rem;">
+                    <span class="material-symbols-outlined" style="font-size: 2.5rem; opacity: 0.2; display: block;">search_off</span>
+                    <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--color-muted);">No results found</div>
+                </div>
+            </div>
+            <div class="search-footer">
+                <div style="display: flex; gap: 1.25rem; align-items: center; font-size: 0.72rem; color: rgba(0,0,0,0.3);">
+                    <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+                    <span><kbd>↵</kbd> Open</span>
+                    <span><kbd>Esc</kbd> Close</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ─── Global Search ───
+    const searchOverlay   = document.getElementById('search-overlay');
+    const searchInput     = document.getElementById('search-input');
+    const searchResultsList = document.getElementById('search-results-list');
+    const searchEmpty     = document.getElementById('search-empty');
+    const searchLoading   = document.getElementById('search-loading');
+    const searchNoResults = document.getElementById('search-no-results');
+    const searchTrigger   = document.getElementById('search-trigger');
+    const SEARCH_URL      = '{{ route("admin.search") }}';
+    let debounceTimer     = null;
+    let currentFocus      = -1;
+
+    function openSearch() {
+        searchOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => searchInput.focus(), 80);
+    }
+
+    function closeSearch() {
+        searchOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+        searchInput.value = '';
+        searchResultsList.innerHTML = '';
+        searchEmpty.style.display = 'block';
+        searchNoResults.style.display = 'none';
+        searchLoading.style.display = 'none';
+        currentFocus = -1;
+    }
+
+    searchTrigger.addEventListener('click', openSearch);
+    searchOverlay.addEventListener('click', function(e) { if (e.target === searchOverlay) closeSearch(); });
+
+    // Ctrl+K / Cmd+K to open
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+        if (e.key === 'Escape' && searchOverlay.classList.contains('open')) closeSearch();
+    });
+
+    // Debounced live search
+    searchInput.addEventListener('input', function() {
+        const q = this.value.trim();
+        clearTimeout(debounceTimer);
+        currentFocus = -1;
+
+        if (q.length < 2) {
+            searchResultsList.innerHTML = '';
+            searchNoResults.style.display = 'none';
+            searchLoading.style.display = 'none';
+            searchEmpty.style.display = 'block';
+            return;
+        }
+
+        searchEmpty.style.display = 'none';
+        searchLoading.style.display = 'flex';
+        searchNoResults.style.display = 'none';
+
+        debounceTimer = setTimeout(() => {
+            fetch(SEARCH_URL + '?q=' + encodeURIComponent(q), {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                searchLoading.style.display = 'none';
+                renderResults(data);
+            })
+            .catch(() => {
+                searchLoading.style.display = 'none';
+                searchNoResults.style.display = 'block';
+            });
+        }, 250);
+    });
+
+    function renderResults(data) {
+        searchResultsList.innerHTML = '';
+
+        if (!data.results || data.results.length === 0) {
+            searchNoResults.style.display = 'block';
+            return;
+        }
+
+        searchNoResults.style.display = 'none';
+
+        data.results.forEach(group => {
+            const section = document.createElement('div');
+            section.className = 'search-group';
+
+            const header = document.createElement('div');
+            header.className = 'search-group-header';
+            header.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1rem;">${group.icon}</span>${group.type}`;
+            section.appendChild(header);
+
+            group.items.forEach(item => {
+                const a = document.createElement('a');
+                a.href = item.url;
+                a.className = 'search-result-item';
+
+                let imgHtml = '';
+                if (item.image) {
+                    imgHtml = `<div class="search-item-img"><img src="${item.image}" alt=""></div>`;
+                } else {
+                    const letter = item.title.charAt(0).toUpperCase();
+                    imgHtml = `<div class="search-item-avatar">${letter}</div>`;
+                }
+
+                let badgeHtml = '';
+                if (item.badge) {
+                    badgeHtml = `<span class="badge-${item.badgeType}" style="font-size: 0.65rem; padding: 0.2rem 0.5rem;">${item.badge}</span>`;
+                }
+
+                a.innerHTML = `
+                    ${imgHtml}
+                    <div class="search-item-info">
+                        <div class="search-item-title">${highlight(item.title, data.query)}</div>
+                        <div class="search-item-subtitle">${highlight(item.subtitle, data.query)}</div>
+                    </div>
+                    ${badgeHtml}
+                    <span class="material-symbols-outlined search-item-arrow">arrow_forward</span>
+                `;
+                section.appendChild(a);
+            });
+
+            searchResultsList.appendChild(section);
+        });
+    }
+
+    function highlight(text, query) {
+        if (!query || !text) return text || '';
+        const esc = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return text.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
+    }
+
+    // Keyboard navigation
+    searchInput.addEventListener('keydown', function(e) {
+        const items = searchResultsList.querySelectorAll('.search-result-item');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') { e.preventDefault(); currentFocus = Math.min(currentFocus + 1, items.length - 1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); currentFocus = Math.max(currentFocus - 1, 0); }
+        else if (e.key === 'Enter' && currentFocus >= 0) { e.preventDefault(); items[currentFocus].click(); return; }
+        else return;
+
+        items.forEach((el, i) => el.classList.toggle('focused', i === currentFocus));
+        items[currentFocus]?.scrollIntoView({ block: 'nearest' });
+    });
     </script>
     @stack('scripts')
 </body>
