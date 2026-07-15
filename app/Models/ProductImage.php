@@ -26,11 +26,10 @@ class ProductImage extends Model
     public function getUrlAttribute(): string
     {
         if ($this->image_path) {
-            $path = public_path('storage/' . $this->image_path);
-            if (file_exists($path)) {
+            if (file_exists(storage_path('app/public/' . $this->image_path))) {
                 return asset('storage/' . $this->image_path);
             }
         }
-        return asset('images/placeholder.jpg');
+        return asset('images/placeholder.svg');
     }
 }

@@ -80,12 +80,12 @@ class Product extends Model
     {
         $img = $this->primaryImage;
         if ($img && $img->image_path) {
-            $path = public_path('storage/' . $img->image_path);
-            if (file_exists($path)) {
+            // Check if file exists on disk
+            if (file_exists(storage_path('app/public/' . $img->image_path))) {
                 return asset('storage/' . $img->image_path);
             }
         }
-        return asset('images/placeholder.jpg');
+        return asset('images/placeholder.svg');
     }
 
     public function getAverageRatingAttribute(): float
