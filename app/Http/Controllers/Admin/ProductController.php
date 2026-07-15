@@ -42,7 +42,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::orderBy('name')->get();
+        $categories = Category::with('children')->whereNull('parent_id')->orderBy('sort_order')->get();
         return view('admin.products.create', compact('categories'));
     }
 
@@ -89,8 +89,8 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $product->load('images');
-        $categories = Category::orderBy('name')->get();
+        $product->load('images', 'primaryImage');
+        $categories = Category::with('children')->whereNull('parent_id')->orderBy('sort_order')->get();
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
