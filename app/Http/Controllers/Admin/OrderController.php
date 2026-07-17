@@ -71,9 +71,7 @@ class OrderController extends Controller
                 }
 
                 $order->update([
-                    'status'          => $newStatus,
-                    'payment_status'  => $validated['payment_status'] ?? $order->payment_status,
-                    'tracking_number' => $validated['tracking_number'] ?? $order->tracking_number,
+                    'status' => $newStatus,
                 ]);
 
                 Log::info('Order status updated', [

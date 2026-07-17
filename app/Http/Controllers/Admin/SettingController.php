@@ -22,6 +22,7 @@ class SettingController extends Controller
             'settings.contact_email' => 'nullable|email',
             'settings.contact_phone' => 'nullable|string',
             'settings.whatsapp_number' => 'nullable|string',
+            'settings.delivery_fee' => 'nullable|numeric',
             'settings.free_delivery_threshold' => 'nullable|numeric',
         ]);
 
@@ -30,10 +31,11 @@ class SettingController extends Controller
                 ['key' => $key],
                 ['value' => $value, 'type' => 'text']
             );
+
+            // Bust the per-key cache used by SiteSetting::getValue() so edits take effect immediately.
+            cache()->forget('site_setting_' . $key);
         }
 
-        // Cache clear or specific setting cache clear can be done here
-        
         return redirect()->route('admin.settings.index')->with('success', 'Settings updated successfully.');
     }
 }

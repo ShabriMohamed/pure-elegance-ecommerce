@@ -27,6 +27,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Capture the guest cart's session id BEFORE the session is regenerated below,
+        // so a guest cart can be merged into the user's cart after login.
+        $guestSessionId = $request->session()->getId();
+
         $request->authenticate();
 
         // Reject deactivated accounts
@@ -42,6 +46,9 @@ class AuthenticatedSessionController extends Controller
         }
 
         $request->session()->regenerate();
+
+        // Merge any guest cart (from before login) into the user's cart.
+        app(\App\Services\CartService::class)->mergeGuestCart($guestSessionId);
 
         // Record login audit trail
         $user->update([

@@ -10,11 +10,9 @@
         <form method="GET" action="{{ route('admin.orders.index') }}" style="display: flex; gap: var(--space-sm);">
             <select name="status" class="form-control" style="width: auto; padding: 0.25rem 0.5rem;" onchange="this.form.submit()">
                 <option value="">All Statuses</option>
-                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Processing</option>
-                <option value="shipped" {{ request('status') === 'shipped' ? 'selected' : '' }}>Shipped</option>
-                <option value="delivered" {{ request('status') === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                @foreach(\App\Models\Order::statuses() as $value => $label)
+                    <option value="{{ $value }}" {{ request('status') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
             </select>
         </form>
     </div>
@@ -27,7 +25,6 @@
                     <th>Customer</th>
                     <th>Date</th>
                     <th>Total</th>
-                    <th>Payment</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -43,23 +40,12 @@
                         <td>{{ $order->created_at->format('M d, Y H:i') }}</td>
                         <td>LKR {{ number_format($order->total, 2) }}</td>
                         <td>
-                            @if($order->payment_status === 'paid')
-                                <span class="badge-success">Paid</span>
-                            @elseif($order->payment_status === 'unpaid')
-                                <span class="badge-error">Unpaid</span>
+                            @if(in_array($order->status, ['pending', 'whatsapp_sent']))
+                                <span class="badge-warning">{{ $order->status_label }}</span>
+                            @elseif(in_array($order->status, ['cancelled', 'refunded']))
+                                <span class="badge-error">{{ $order->status_label }}</span>
                             @else
-                                <span class="badge-warning">{{ ucfirst($order->payment_status) }}</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($order->status === 'pending')
-                                <span class="badge-warning">Pending</span>
-                            @elseif($order->status === 'completed' || $order->status === 'delivered')
-                                <span class="badge-success">Completed</span>
-                            @elseif($order->status === 'cancelled')
-                                <span class="badge-error">Cancelled</span>
-                            @else
-                                <span class="badge-success">{{ ucfirst($order->status) }}</span>
+                                <span class="badge-success">{{ $order->status_label }}</span>
                             @endif
                         </td>
                         <td>
@@ -68,7 +54,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--color-muted); padding: var(--space-xl);">No orders found matching the criteria.</td>
+                        <td colspan="6" style="text-align: center; color: var(--color-muted); padding: var(--space-xl);">No orders found matching the criteria.</td>
                     </tr>
                 @endforelse
             </tbody>

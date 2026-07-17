@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
 class Promotion extends Model
 {
+    use HasFactory;
+
     // DB columns: id, name, code, type(enum), value, min_order_amount, max_discount_amount,
     //             usage_limit, used_count, starts_at, ends_at, is_active
     protected $fillable = [

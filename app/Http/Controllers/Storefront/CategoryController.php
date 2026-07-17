@@ -36,15 +36,16 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show a single category by slug.
-     * Includes products from child categories (recursive).
+     * Show a single category by slug. Products live on leaf categories, so a parent
+     * category page (e.g. "Men" from the homepage tiles) aggregates its whole subtree;
+     * a leaf category shows just its own products. Admin management remains flat —
+     * the hierarchy is used here for browsing only.
      */
     public function show($slug)
     {
         $category = Category::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
-        // Get all descendant category IDs (children + grandchildren)
-        $categoryIds = $this->getDescendantIds($category);
+        $categoryIds = $this->descendantIds($category);
         $categoryIds[] = $category->id;
 
         $products = Product::whereIn('category_id', $categoryIds)
@@ -109,15 +110,26 @@ class CategoryController extends Controller
     }
 
     /**
-     * Recursively get all descendant category IDs.
+     * All descendant category IDs (children, grandchildren, ...) via one query
+     * over the category table — no per-level queries.
      */
-    private function getDescendantIds(Category $category): array
+    private function descendantIds(Category $category): array
     {
+        $byParent = Category::where('is_active', true)
+            ->whereNotNull('parent_id')
+            ->get(['id', 'parent_id'])
+            ->groupBy('parent_id');
+
         $ids = [];
-        foreach ($category->children as $child) {
-            $ids[] = $child->id;
-            $ids = array_merge($ids, $this->getDescendantIds($child));
+        $queue = [$category->id];
+        while ($queue) {
+            $parentId = array_shift($queue);
+            foreach ($byParent->get($parentId, collect()) as $child) {
+                $ids[] = $child->id;
+                $queue[] = $child->id;
+            }
         }
+
         return $ids;
     }
 }

@@ -25,11 +25,13 @@ class User extends Authenticatable
         'postal_code',
         'country',
         'avatar',
-        'is_admin',
-        'is_active',
         'last_login_at',
         'last_login_ip',
     ];
+
+    // NOTE: 'is_admin' and 'is_active' are intentionally omitted from $fillable so no
+    // request payload can mass-assign them. Set them explicitly from trusted code only
+    // (e.g. $user->is_admin = true; $user->save()).
 
     protected $hidden = [
         'password',

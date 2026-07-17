@@ -97,9 +97,9 @@
                 <span>Bank Transfer / Cash</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
-                <span class="text-muted">Payment Status:</span>
-                <span style="font-weight: 500; {{ $order->payment_status === 'paid' ? 'color: var(--color-success);' : 'color: var(--color-error);' }}">
-                    {{ ucfirst($order->payment_status) }}
+                <span class="text-muted">Order Status:</span>
+                <span style="font-weight: 500; {{ in_array($order->status, ['cancelled', 'refunded']) ? 'color: var(--color-error);' : 'color: var(--color-success);' }}">
+                    {{ $order->status_label }}
                 </span>
             </div>
         </div>

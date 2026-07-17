@@ -58,7 +58,6 @@
                         <tr>
                             <td>
                                 <div style="font-weight: 500;">{{ $item->product_name }}</div>
-                                <div style="font-size: 0.75rem; color: var(--color-muted);">SKU: {{ $item->product_sku }}</div>
                                 @if($item->variant_info)
                                     <div style="font-size: 0.75rem; color: var(--color-muted);">Variant: {{ $item->variant_info }}</div>
                                 @endif
@@ -105,26 +104,10 @@
                 <div class="form-group">
                     <label class="form-label">Order Status</label>
                     <select name="status" class="form-control">
-                        <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing</option>
-                        <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Shipped</option>
-                        <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                        <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        @foreach(\App\Models\Order::statuses() as $value => $label)
+                            <option value="{{ $value }}" {{ $order->status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
                     </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Payment Status</label>
-                    <select name="payment_status" class="form-control">
-                        <option value="unpaid" {{ $order->payment_status === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
-                        <option value="paid" {{ $order->payment_status === 'paid' ? 'selected' : '' }}>Paid</option>
-                        <option value="refunded" {{ $order->payment_status === 'refunded' ? 'selected' : '' }}>Refunded</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Tracking Number</label>
-                    <input type="text" name="tracking_number" class="form-control" value="{{ $order->tracking_number }}">
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">Update Status</button>

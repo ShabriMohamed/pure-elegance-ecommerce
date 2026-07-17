@@ -86,7 +86,7 @@ class SearchController extends Controller
         }
 
         // Customers (max 5)
-        $customers = User::where('role', '!=', 'admin')
+        $customers = User::where('is_admin', false)
             ->where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
                   ->orWhere('email', 'like', "%{$query}%");

@@ -52,14 +52,48 @@ class HomeController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        // Top-level categories with active product counts
-        $topCategories = Category::whereNull('parent_id')
-            ->where('is_active', true)
-            ->withCount(['products' => function ($q) {
-                $q->where('is_active', true);
-            }])
-            ->orderBy('sort_order')
-            ->get();
+        // Shop by Category: top-level (parent) categories only. Products live on leaf
+        // categories, so each tile's count is aggregated across the whole subtree.
+        // Parents whose entire subtree is empty are hidden (a tile must never lead to
+        // an empty listing). Two small queries + PHP walk — no per-tile queries.
+        $allCategories = Category::where('is_active', true)
+            ->get(['id', 'parent_id', 'name', 'slug', 'gender', 'icon', 'image', 'sort_order']);
+
+        $directCounts = Product::where('is_active', true)
+            ->whereIn('category_id', $allCategories->pluck('id'))
+            ->selectRaw('category_id, COUNT(*) as cnt')
+            ->groupBy('category_id')
+            ->pluck('cnt', 'category_id');
+
+        $childrenByParent = $allCategories->groupBy('parent_id');
+        $subtreeCount = function ($categoryId) use (&$subtreeCount, $childrenByParent, $directCounts) {
+            $total = (int) ($directCounts[$categoryId] ?? 0);
+            foreach ($childrenByParent->get($categoryId, collect()) as $child) {
+                $total += $subtreeCount($child->id);
+            }
+            return $total;
+        };
+
+        // "Sale" is price-driven, not membership-driven: the /sale page lists products
+        // where sale_price < price, and no product is ever assigned to the Sale
+        // category itself. Its tile therefore gets the discounted-product count and
+        // (in the view) links to route('sale') instead of a category page.
+        $onSaleCount = Product::where('is_active', true)
+            ->whereNotNull('sale_price')
+            ->whereColumn('sale_price', '<', 'price')
+            ->count();
+
+        $topCategories = $allCategories
+            ->whereNull('parent_id')
+            ->sortBy('sort_order')
+            ->map(function ($category) use ($subtreeCount, $onSaleCount) {
+                $category->products_count = $category->slug === 'sale'
+                    ? $onSaleCount
+                    : $subtreeCount($category->id);
+                return $category;
+            })
+            ->filter(fn ($category) => $category->products_count > 0)
+            ->values();
 
         // Pre-fetch wishlist IDs (avoid N+1)
         $wishlistIds = [];

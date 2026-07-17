@@ -5,6 +5,8 @@ namespace App\Actions;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Promotion;
 use App\Services\PromotionService;
 use App\Models\SiteSetting;
@@ -33,9 +35,11 @@ class ProcessCheckoutAction
             $subtotal = $cart->subtotal;
             $discountAmount = 0;
 
-            // Handle Promo Code
+            // Handle Promo Code. Lock the promotion row for the transaction so the
+            // usage-limit check and the used_count increment are atomic — two concurrent
+            // checkouts cannot both slip past a usage_limit boundary.
             if ($promoCode) {
-                $promotion = Promotion::where('code', strtoupper($promoCode))->first();
+                $promotion = Promotion::where('code', strtoupper($promoCode))->lockForUpdate()->first();
                 if ($promotion && $promotion->isValid($subtotal)) {
                     $discountAmount = $this->promotionService->calculateDiscount($promotion, $subtotal);
                     $promotion->increment('used_count');
@@ -73,17 +77,21 @@ class ProcessCheckoutAction
 
             // Create order items and decrement stock
             foreach ($cart->items as $cartItem) {
-                // Validate stock
-                if ($cartItem->variant) {
-                    if ($cartItem->variant->stock_quantity < $cartItem->quantity) {
-                        throw new Exception("Not enough stock for: {$cartItem->product->name} ({$cartItem->variant->size})");
+                // Lock the stock row for the duration of the transaction and re-check
+                // stock under the lock, so concurrent checkouts cannot oversell.
+                if ($cartItem->variant_id) {
+                    $variant = ProductVariant::whereKey($cartItem->variant_id)->lockForUpdate()->first();
+                    if (!$variant || $variant->stock_quantity < $cartItem->quantity) {
+                        $size = $cartItem->variant->size ?? null;
+                        throw new Exception("Not enough stock for: {$cartItem->product->name}" . ($size ? " ({$size})" : ''));
                     }
-                    $cartItem->variant->decrement('stock_quantity', $cartItem->quantity);
+                    $variant->decrement('stock_quantity', $cartItem->quantity);
                 } else {
-                    if ($cartItem->product->stock_quantity < $cartItem->quantity) {
+                    $product = Product::whereKey($cartItem->product_id)->lockForUpdate()->first();
+                    if (!$product || $product->stock_quantity < $cartItem->quantity) {
                         throw new Exception("Not enough stock for: {$cartItem->product->name}");
                     }
-                    $cartItem->product->decrement('stock_quantity', $cartItem->quantity);
+                    $product->decrement('stock_quantity', $cartItem->quantity);
                 }
 
                 $variantInfo = null;

@@ -16,7 +16,16 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'unique:categories,name,' . $this->category->id],
-            'parent_id' => ['nullable', 'exists:categories,id'],
+            'parent_id' => [
+                'nullable',
+                'exists:categories,id',
+                // Prevent a category from becoming its own parent (a self-cycle).
+                function ($attribute, $value, $fail) {
+                    if ($value !== null && (int) $value === (int) $this->category->id) {
+                        $fail('A category cannot be its own parent.');
+                    }
+                },
+            ],
             'gender' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'sort_order' => ['required', 'integer', 'min:0'],

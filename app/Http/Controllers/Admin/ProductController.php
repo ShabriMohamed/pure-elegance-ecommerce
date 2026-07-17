@@ -18,7 +18,9 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'primaryImage'])->orderBy('created_at', 'desc');
+        $query = Product::with(['category', 'primaryImage'])
+            ->withCount('images')
+            ->orderBy('created_at', 'desc');
 
         // Search filter
         if ($request->filled('search')) {

@@ -376,10 +376,10 @@
                         priceHtml = `<span class="sf-result-price sf-result-price--sale">LKR ${p.sale_price}</span><span class="sf-result-price sf-result-price--orig">LKR ${p.price}</span>`;
                     }
                     a.innerHTML = `
-                        <div class="sf-result-thumb"><img src="${p.image}" alt="" loading="lazy"></div>
+                        <div class="sf-result-thumb"><img src="${escHtml(p.image)}" alt="" loading="lazy"></div>
                         <div class="sf-result-info">
                             <div class="sf-result-title">${hl(p.name, data.query)}</div>
-                            <div class="sf-result-sub">${p.category || ''}${p.brand ? ' · ' + hl(p.brand, data.query) : ''}</div>
+                            <div class="sf-result-sub">${escHtml(p.category)}${p.brand ? ' · ' + hl(p.brand, data.query) : ''}</div>
                             <div class="sf-result-prices">${priceHtml}</div>
                         </div>
                         <span class="material-symbols-outlined sf-result-arrow">arrow_forward</span>
@@ -398,10 +398,15 @@
             noResults.style.display = hasResults ? 'none' : 'block';
         }
 
+        function escHtml(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
         function hl(text, q) {
-            if (!q || !text) return text || '';
+            const safe = escHtml(text);
+            if (!q || !text) return safe;
             const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            return text.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
+            return safe.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
         }
 
         // Keyboard nav
