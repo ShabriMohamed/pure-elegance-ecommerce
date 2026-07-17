@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -36,23 +35,28 @@ class DashboardController extends Controller
         ];
 
         // ── Pending / Actionable Orders ────────────────────────────
-        $pendingOrdersCount = Order::where('status', Order::STATUS_PENDING)->count();
+        // Placed orders normally land in 'whatsapp_sent' (awaiting confirmation), so the
+        // "needs attention" bucket includes both pending and whatsapp_sent.
+        $pendingOrdersCount = Order::whereIn('status', [Order::STATUS_PENDING, Order::STATUS_WHATSAPP_SENT])->count();
         $processingOrdersCount = Order::where('status', Order::STATUS_PROCESSING)->count();
 
         // ── Monthly Revenue Trend (last 6 months) ──────────────────
-        $monthlyRevenue = Order::where('status', '!=', Order::STATUS_CANCELLED)
-            ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
-            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(total) as revenue, COUNT(*) as orders")
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->map(function ($row) {
-                return [
-                    'label'   => Carbon::createFromFormat('Y-m', $row->month)->format('M Y'),
-                    'revenue' => (float) $row->revenue,
-                    'orders'  => (int) $row->orders,
-                ];
-            });
+        // Built per-month in PHP so it is portable across MySQL and SQLite
+        // (the previous DATE_FORMAT() is MySQL-only and errors on SQLite).
+        $monthlyRevenue = collect(range(5, 0))->map(function ($monthsAgo) {
+            $month = now()->subMonths($monthsAgo);
+            $base = Order::where('status', '!=', Order::STATUS_CANCELLED)
+                ->whereBetween('created_at', [
+                    $month->copy()->startOfMonth(),
+                    $month->copy()->endOfMonth(),
+                ]);
+
+            return [
+                'label'   => $month->format('M Y'),
+                'revenue' => (float) (clone $base)->sum('total'),
+                'orders'  => (int) (clone $base)->count(),
+            ];
+        });
 
         // ── Low Stock Alert (products with ≤5 units) ───────────────
         $lowStockProducts = Product::where('is_active', true)

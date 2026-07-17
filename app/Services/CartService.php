@@ -123,4 +123,57 @@ class CartService
     {
         $this->getCart()->items()->delete();
     }
+
+    /**
+     * Merge a guest cart (identified by the pre-login session id) into the
+     * authenticated user's cart. Call this right after login — the guest cart is
+     * keyed by the session id that existed BEFORE the session was regenerated, so
+     * that id must be captured and passed in by the caller.
+     */
+    public function mergeGuestCart(string $guestSessionId): void
+    {
+        if (!Auth::check()) {
+            return;
+        }
+
+        $guestCart = Cart::whereNull('user_id')
+            ->where('session_id', $guestSessionId)
+            ->with('items')
+            ->first();
+
+        if (!$guestCart) {
+            return;
+        }
+
+        if ($guestCart->items->isEmpty()) {
+            $guestCart->delete();
+            return;
+        }
+
+        $userCart = Cart::firstOrCreate(
+            ['user_id' => Auth::id()],
+            ['session_id' => Session::getId()]
+        );
+
+        foreach ($guestCart->items as $item) {
+            $existing = CartItem::where('cart_id', $userCart->id)
+                ->where('product_id', $item->product_id)
+                ->where('variant_id', $item->variant_id)
+                ->first();
+
+            if ($existing) {
+                // Same product+variant already in the user cart: combine quantities
+                // and keep the latest price snapshot.
+                $existing->increment('quantity', $item->quantity);
+                $existing->update(['price' => $item->price]);
+            } else {
+                // Move the guest line into the user cart.
+                $item->update(['cart_id' => $userCart->id]);
+            }
+        }
+
+        // Remove the (now-empty or fully-merged) guest cart and any leftover items.
+        $guestCart->items()->delete();
+        $guestCart->delete();
+    }
 }

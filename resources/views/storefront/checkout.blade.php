@@ -121,28 +121,21 @@
                         @endforeach
                     </div>
                     
-                    @php
-                        $subtotal = $cart->subtotal;
-                        $discount = session('applied_promo')['discount'] ?? 0;
-                        $deliveryFee = 500.00;
-                        $total = ($subtotal - $discount) + $deliveryFee;
-                    @endphp
-
                     <div class="order-summary-row">
                         <span>Subtotal</span>
                         <span style="font-weight: 500; color: var(--color-rich-black);">LKR {{ number_format($subtotal, 2) }}</span>
                     </div>
-                    
+
                     @if($discount > 0)
                         <div class="order-summary-row" style="color: var(--color-error);">
                             <span>Discount</span>
                             <span style="font-weight: 600;">- LKR {{ number_format($discount, 2) }}</span>
                         </div>
                     @endif
-                    
+
                     <div class="order-summary-row">
                         <span>Delivery Fee</span>
-                        <span style="font-weight: 500; color: var(--color-rich-black);">LKR {{ number_format($deliveryFee, 2) }}</span>
+                        <span style="font-weight: 500; color: var(--color-rich-black);">{{ $deliveryFee > 0 ? 'LKR ' . number_format($deliveryFee, 2) : 'FREE' }}</span>
                     </div>
                     
                     <div class="order-summary-total">

@@ -18,7 +18,9 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'primaryImage'])->orderBy('created_at', 'desc');
+        $query = Product::with(['category', 'primaryImage'])
+            ->withCount('images')
+            ->orderBy('created_at', 'desc');
 
         // Search filter
         if ($request->filled('search')) {
@@ -42,7 +44,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::with('children')->whereNull('parent_id')->orderBy('sort_order')->get();
+        $categories = Category::orderBy('name')->get();
         return view('admin.products.create', compact('categories'));
     }
 
@@ -89,8 +91,8 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $product->load('images', 'primaryImage');
-        $categories = Category::with('children')->whereNull('parent_id')->orderBy('sort_order')->get();
+        $product->load('images');
+        $categories = Category::orderBy('name')->get();
         return view('admin.products.edit', compact('product', 'categories'));
     }
 

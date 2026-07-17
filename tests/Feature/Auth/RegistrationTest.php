@@ -18,14 +18,17 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
+        // This app registers with first_name/last_name and enforces a strong password.
         $response = $this->post('/register', [
-            'name' => 'Test User',
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'phone' => '0771234567',
+            'password' => 'Password1!',
+            'password_confirmation' => 'Password1!',
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('home', absolute: false));
     }
 }

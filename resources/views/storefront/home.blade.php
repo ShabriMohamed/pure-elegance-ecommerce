@@ -115,6 +115,9 @@
         <div class="shop-categories-grid">
             @php
                 $categoryIcons = [
+                    'men' => 'man',
+                    'women' => 'woman',
+                    'sale' => 'sell',
                     'clothing' => 'checkroom',
                     'footwear' => 'steps',
                     'watches' => 'watch',
@@ -128,7 +131,8 @@
                 ];
             @endphp
             @foreach($topCategories as $index => $category)
-                <a href="{{ route('categories') }}?category={{ $category->slug }}"
+                {{-- Sale is price-driven: its tile goes to the dedicated /sale page --}}
+                <a href="{{ $category->slug === 'sale' ? route('sale') : route('category.show', $category->slug) }}"
                    class="shop-cat-card stagger-item"
                    style="transition-delay: {{ $index * 0.08 }}s;">
                     <div class="shop-cat-icon">

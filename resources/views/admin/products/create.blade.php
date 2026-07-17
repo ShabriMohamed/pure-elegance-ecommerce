@@ -46,20 +46,8 @@
                         <label for="category_id" class="form-label">Category <span class="required-star">*</span></label>
                         <select id="category_id" name="category_id" class="form-control @error('category_id') is-invalid @enderror" required>
                             <option value="" disabled selected>Select Category</option>
-                            @foreach($categories as $parentCategory)
-                                @if($parentCategory->children->count() > 0)
-                                    <optgroup label="{{ $parentCategory->name }}">
-                                        @foreach($parentCategory->children as $child)
-                                            <option value="{{ $child->id }}" {{ old('category_id') == $child->id ? 'selected' : '' }}>
-                                                {{ $child->name }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                @else
-                                    <option value="{{ $parentCategory->id }}" {{ old('category_id') == $parentCategory->id ? 'selected' : '' }}>
-                                        {{ $parentCategory->name }}
-                                    </option>
-                                @endif
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                             @endforeach
                         </select>
                         @error('category_id')<div class="form-error">{{ $message }}</div>@enderror

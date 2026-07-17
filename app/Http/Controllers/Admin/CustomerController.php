@@ -10,7 +10,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = User::where('is_admin', false)->latest()->paginate(20);
+        $customers = User::where('is_admin', false)->withCount('orders')->latest()->paginate(20);
         return view('admin.customers.index', compact('customers'));
     }
 
@@ -29,7 +29,9 @@ class CustomerController extends Controller
             return back()->with('error', 'Cannot disable admin users.');
         }
 
-        $customer->update(['is_active' => !$customer->is_active]);
+        // is_active is not mass-assignable — set it directly on this trusted, admin-gated path.
+        $customer->is_active = !$customer->is_active;
+        $customer->save();
         
         return back()->with('success', 'Customer status updated successfully.');
     }

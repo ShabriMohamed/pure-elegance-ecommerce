@@ -20,11 +20,6 @@ class UpdateOrderStatusRequest extends FormRequest
                 'required',
                 Rule::in(array_keys(Order::statuses())),
             ],
-            'payment_status' => [
-                'nullable',
-                Rule::in(['unpaid', 'paid', 'refunded']),
-            ],
-            'tracking_number' => ['nullable', 'string', 'max:100'],
         ];
     }
 }

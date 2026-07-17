@@ -9,6 +9,7 @@ use App\Services\PromotionService;
 use App\Services\WhatsAppNotificationService;
 use App\Actions\ProcessCheckoutAction;
 use App\Models\Order;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -40,7 +41,36 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        return view('storefront.checkout', compact('cart'));
+        $subtotal = $cart->subtotal;
+
+        // Re-validate any applied promo against the current subtotal so the displayed
+        // discount matches what ProcessCheckoutAction will actually charge.
+        $discount = 0;
+        $applied = session('applied_promo');
+        if ($applied && !empty($applied['code'])) {
+            $promotion = $this->promotionService->findByCode($applied['code']);
+            if ($promotion && $promotion->isValid($subtotal)) {
+                $discount = $this->promotionService->calculateDiscount($promotion, $subtotal);
+                session(['applied_promo' => [
+                    'code' => $promotion->code,
+                    'name' => $promotion->name,
+                    'discount' => $discount,
+                ]]);
+            } else {
+                session()->forget('applied_promo');
+            }
+        }
+
+        // Delivery fee mirrors ProcessCheckoutAction so the quote equals the charged total.
+        $deliveryFee = (float) SiteSetting::getValue('delivery_fee', 350);
+        $freeThreshold = (float) SiteSetting::getValue('free_delivery_threshold', 10000);
+        if ($subtotal >= $freeThreshold) {
+            $deliveryFee = 0;
+        }
+
+        $total = ($subtotal - $discount) + $deliveryFee;
+
+        return view('storefront.checkout', compact('cart', 'subtotal', 'discount', 'deliveryFee', 'total'));
     }
 
     public function process(CheckoutRequest $request)

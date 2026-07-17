@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -21,34 +22,44 @@ class DatabaseSeeder extends Seeder
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $customerRole = Role::firstOrCreate(['name' => 'customer']);
 
-        // 2. Create Admin User
+        // 2. Create Admin User.
+        // Password comes from the ADMIN_PASSWORD env var (never hardcoded). If unset,
+        // a strong random one is generated and printed once so it is not baked into code.
+        $adminPassword = env('ADMIN_PASSWORD');
+        if (empty($adminPassword)) {
+            $adminPassword = Str::password(16);
+            $this->command?->warn("ADMIN_PASSWORD not set — generated admin password: {$adminPassword}");
+        }
+
         $admin = User::firstOrCreate(
             ['email' => 'admin@pureelegance.com'],
             [
                 'name' => 'Store Admin',
                 'first_name' => 'Store',
                 'last_name' => 'Admin',
-                'password' => Hash::make('Admin@123'),
-                'is_admin' => true,
-                'is_active' => true,
+                'password' => Hash::make($adminPassword),
                 'email_verified_at' => now(),
             ]
         );
+        // Privilege flags are not mass-assignable — set explicitly.
+        $admin->is_admin = true;
+        $admin->is_active = true;
+        $admin->save();
         $admin->assignRole('admin');
 
-        // Create a test customer
+        // Create a test customer (non-production convenience account).
         $customer = User::firstOrCreate(
             ['email' => 'customer@example.com'],
             [
                 'name' => 'Test Customer',
                 'first_name' => 'Test',
                 'last_name' => 'Customer',
-                'password' => Hash::make('password'),
-                'is_admin' => false,
-                'is_active' => true,
+                'password' => Hash::make(env('CUSTOMER_PASSWORD', 'password')),
                 'email_verified_at' => now(),
             ]
         );
+        $customer->is_active = true;
+        $customer->save();
         $customer->assignRole('customer');
 
         // 3. Create Basic Categories if empty

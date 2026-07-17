@@ -48,6 +48,10 @@ class Banner extends Model
 
     public function getImageUrlAttribute(): string
     {
-        return asset('storage/' . $this->image_path);
+        if ($this->image_path && file_exists(storage_path('app/public/' . $this->image_path))) {
+            return asset('storage/' . $this->image_path);
+        }
+
+        return asset('images/placeholder.svg');
     }
 }

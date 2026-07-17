@@ -651,9 +651,9 @@
 
                 let imgHtml = '';
                 if (item.image) {
-                    imgHtml = `<div class="search-item-img"><img src="${item.image}" alt=""></div>`;
+                    imgHtml = `<div class="search-item-img"><img src="${escHtml(item.image)}" alt=""></div>`;
                 } else {
-                    const letter = item.title.charAt(0).toUpperCase();
+                    const letter = escHtml(item.title.charAt(0).toUpperCase());
                     imgHtml = `<div class="search-item-avatar">${letter}</div>`;
                 }
 
@@ -678,10 +678,15 @@
         });
     }
 
+    function escHtml(s) {
+        return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
     function highlight(text, query) {
-        if (!query || !text) return text || '';
+        const safe = escHtml(text);
+        if (!query || !text) return safe;
         const esc = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        return text.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
+        return safe.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
     }
 
     // Keyboard navigation

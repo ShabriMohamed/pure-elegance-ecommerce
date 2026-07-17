@@ -47,6 +47,8 @@ class RegisteredUserController extends Controller
             ],
         ]);
 
+        // is_admin/is_active are not mass-assignable; new users get the safe DB
+        // defaults (is_admin = false, is_active = true).
         $user = User::create([
             'name'       => trim($validated['first_name'] . ' ' . $validated['last_name']),
             'first_name' => $validated['first_name'],
@@ -54,8 +56,6 @@ class RegisteredUserController extends Controller
             'email'      => $validated['email'],
             'phone'      => $validated['phone'] ?? null,
             'password'   => Hash::make($validated['password']),
-            'is_admin'   => false,
-            'is_active'  => true,
         ]);
 
         // Assign customer role (Spatie)
