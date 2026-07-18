@@ -9,7 +9,10 @@
     <meta property="og:description" content="@yield('meta_description', 'Pure Elegance - Premium fashion for Men & Women.')">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Pure Elegance">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="@yield('og_image', asset('images/hero-banner.jpg'))">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/hero-banner.jpg'))">
     <title>@yield('title', 'Pure Elegance') | Timeless Fashion</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,11 +22,16 @@
 </head>
 <body>
 
-    <!-- Top Notification Bar -->
-    <div class="top-notification-bar">
-        <span class="material-symbols-outlined">local_shipping</span>
-        FREE DELIVERY ON ORDERS OVER <strong style="color: var(--color-premium-gold); margin-left: 4px;">LKR 10,000</strong>
-    </div>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <!-- Top Notification Bar (admin-configurable; falls back to the real delivery threshold) -->
+    @if(site_bool('announcement_bar_enabled', true))
+        <div class="top-notification-bar">
+            <span class="material-symbols-outlined">local_shipping</span>
+            {{ site('announcement_bar_text', 'FREE DELIVERY ON ORDERS OVER') }}
+            <strong style="color: var(--gold-text); margin-left: 4px;">{{ site('announcement_bar_highlight', money(\App\Support\DeliveryFee::threshold())) }}</strong>
+        </div>
+    @endif
 
     <!-- Header -->
     <header class="store-header">
@@ -59,11 +67,10 @@
                 <a href="{{ route('cart.index') }}" class="icon-btn" aria-label="Cart">
                     <span class="material-symbols-outlined">shopping_bag</span>
                     @php
+                        // Read-only count — never creates a cart row just to render the badge.
                         try {
-                            $cartService = app(\App\Services\CartService::class);
-                            $headerCart = $cartService->getCart();
-                            $cartCount = $headerCart->items->sum('quantity');
-                        } catch (\Exception $e) {
+                            $cartCount = app(\App\Services\CartService::class)->getCartCount();
+                        } catch (\Throwable $e) {
                             $cartCount = 0;
                         }
                     @endphp
@@ -153,7 +160,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main>
+    <main id="main">
         @if(session('success'))
             <div class="container" style="margin-top: var(--space-md);">
                 <div class="alert alert-success">
@@ -209,8 +216,11 @@
                 </div>
                 <div class="footer-col">
                     <h4 class="footer-heading">Contact</h4>
-                    <p style="font-size: 0.85rem; color: var(--color-medium-gray);">info@pureelegance.lk</p>
-                    <p style="font-size: 0.85rem; color: var(--color-medium-gray);">+94 77 123 4567</p>
+                    <a href="mailto:{{ site('contact_email', 'info@pureelegance.lk') }}">{{ site('contact_email', 'info@pureelegance.lk') }}</a>
+                    <a href="tel:{{ preg_replace('/\s+/', '', site('contact_phone', '+94771234567')) }}">{{ site('contact_phone', '+94 77 123 4567') }}</a>
+                    <a href="{{ route('page.show', 'about') }}">About Us</a>
+                    <a href="{{ route('page.show', 'privacy') }}">Privacy Policy</a>
+                    <a href="{{ route('page.show', 'terms') }}">Terms &amp; Conditions</a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -243,11 +253,16 @@
         </a>
     </nav>
 
+    <!-- Back to top -->
+    <button type="button" id="back-to-top" class="back-to-top" aria-label="Back to top">
+        <span class="material-symbols-outlined" aria-hidden="true">arrow_upward</span>
+    </button>
+
     <!-- Search Overlay Modal -->
-    <div id="sf-search-overlay" class="sf-search-overlay">
-        <div class="sf-search-modal">
+    <div id="sf-search-overlay" class="sf-search-overlay" aria-hidden="true">
+        <div class="sf-search-modal" role="dialog" aria-modal="true" aria-label="Search products">
             <div class="sf-search-header">
-                <span class="material-symbols-outlined" style="color: var(--color-premium-gold); font-size: 1.3rem;">search</span>
+                <span class="material-symbols-outlined" style="color: var(--gold-text); font-size: 1.3rem;">search</span>
                 <input type="text" id="sf-search-input" class="sf-search-input" placeholder="Search products, brands, categories..." autocomplete="off" spellcheck="false">
                 <kbd class="sf-esc-badge" onclick="sfCloseSearch()">ESC</kbd>
             </div>
@@ -398,16 +413,10 @@
             noResults.style.display = hasResults ? 'none' : 'block';
         }
 
-        function escHtml(s) {
-            return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-        }
-
-        function hl(text, q) {
-            const safe = escHtml(text);
-            if (!q || !text) return safe;
-            const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            return safe.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
-        }
+        // Shared helpers (defined once in resources/js/app.js). Late-bound so they
+        // resolve after the deferred bundle has loaded.
+        const escHtml = (s) => window.peEscHtml(s);
+        const hl = (text, q) => window.peHighlight(text, q);
 
         // Keyboard nav
         input.addEventListener('keydown', function(e) {

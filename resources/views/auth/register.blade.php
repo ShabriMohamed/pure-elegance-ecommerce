@@ -77,7 +77,7 @@
 
     <div style="text-align: center; margin-top: var(--space-lg); font-size: 0.85rem; color: var(--color-muted-text);">
         Already have an account?
-        <a href="{{ route('login') }}" style="color: var(--color-premium-gold); font-weight: 600;">Sign In</a>
+        <a href="{{ route('login') }}" style="color: var(--gold-text); font-weight: 600;">Sign In</a>
     </div>
 </div>
 @endsection
