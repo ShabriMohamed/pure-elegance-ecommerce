@@ -16,7 +16,9 @@ class CheckoutRequest extends FormRequest
         return [
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|max:255',
-            'phone'       => 'required|string|max:20',
+            // Must look like a real phone (digits, optional +, spaces/dashes) since
+            // fulfilment is phone/WhatsApp-based — rejects garbage like "abc".
+            'phone'       => ['required', 'string', 'max:20', 'regex:/^\+?[0-9][0-9\s\-]{8,19}$/'],
             'address'     => 'required|string|max:1000',
             'city'        => 'nullable|string|max:255',
             'postal_code' => 'nullable|string|max:10',
@@ -30,6 +32,7 @@ class CheckoutRequest extends FormRequest
             'name.required'    => 'Please enter your full name.',
             'email.required'   => 'Please enter your email address.',
             'phone.required'   => 'Please enter your phone number.',
+            'phone.regex'      => 'Please enter a valid phone number.',
             'address.required' => 'Please enter your delivery address.',
         ];
     }

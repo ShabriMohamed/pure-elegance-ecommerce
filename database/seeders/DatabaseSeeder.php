@@ -131,5 +131,12 @@ class DatabaseSeeder extends Seeder
                 'is_featured' => true,
             ]);
         }
+
+        // 5. Site settings, content pages, and demo reviews.
+        $this->call([
+            SiteSettingSeeder::class,
+            PageContentSeeder::class,
+            ReviewSeeder::class,
+        ]);
     }
 }

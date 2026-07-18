@@ -15,7 +15,7 @@
     <div class="container">
         @if($cart->items->isEmpty())
             <div style="text-align: center; padding: var(--space-2xl) 0; background: var(--color-pure-white); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
-                <div style="color: var(--color-premium-gold); margin-bottom: var(--space-md);">
+                <div style="color: var(--gold-text); margin-bottom: var(--space-md);">
                     <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.5;">shopping_cart</span>
                 </div>
                 <h2 class="section-title" style="justify-content: center; font-size: 1.5rem; margin-bottom: var(--space-sm);">Your cart is empty</h2>
@@ -52,7 +52,7 @@
                                         @if($item->variant->color) | Color: <strong>{{ $item->variant->color }}</strong> @endif
                                     </div>
                                 @endif
-                                <div class="cart-item-price">LKR {{ number_format($item->price, 2) }}</div>
+                                <div class="cart-item-price">{{ money($item->price) }}</div>
                                 
                                 <form method="POST" action="{{ route('cart.remove', $item->id) }}">
                                     @csrf
@@ -82,7 +82,7 @@
 
                             <!-- Item Total -->
                             <div class="cart-item-total">
-                                LKR {{ number_format($item->price * $item->quantity, 2) }}
+                                {{ money($item->price * $item->quantity) }}
                             </div>
                         </div>
                     @endforeach
@@ -95,7 +95,7 @@
                         
                         <div class="order-summary-row">
                             <span>Subtotal</span>
-                            <span style="font-weight: 500;">LKR {{ number_format($cart->subtotal, 2) }}</span>
+                            <span style="font-weight: 500;">{{ money($cart->subtotal) }}</span>
                         </div>
                         
                         <div class="order-summary-row">
@@ -105,7 +105,7 @@
                         
                         <div class="order-summary-total">
                             <span class="order-summary-total-label">Estimated Total</span>
-                            <span class="order-summary-total-value">LKR {{ number_format($cart->subtotal, 2) }}</span>
+                            <span class="order-summary-total-value">{{ money($cart->subtotal) }}</span>
                         </div>
 
                         <a href="{{ route('checkout.index') }}" class="btn btn-primary btn-block" style="padding: 1.2rem; font-size: 0.85rem; letter-spacing: 1.5px;">

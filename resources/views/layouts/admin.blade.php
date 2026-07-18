@@ -113,7 +113,12 @@
             color: var(--color-gold);
             background-color: var(--admin-sidebar-active);
         }
-        
+
+        /* Admin username: hidden on mobile, shown from tablet up (was a broken
+           @media-inside-style-attribute that hid it at every size). */
+        .admin-username { display: none; }
+        @media (min-width: 768px) { .admin-username { display: inline; } }
+
         .admin-nav-item.active::before {
             content: '';
             position: absolute;
@@ -398,9 +403,8 @@
                 <a href="{{ route('admin.orders.index') }}" class="admin-nav-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                     <span class="material-symbols-outlined">shopping_cart</span> 
                     <span>Orders</span>
-                    @php $pendingCount = \App\Models\Order::where('status', 'pending')->count(); @endphp
-                    @if($pendingCount > 0)
-                        <span style="margin-left: auto; background: #C62828; color: white; font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 10px; font-weight: 600;">{{ $pendingCount }}</span>
+                    @if(($pendingOrdersCount ?? 0) > 0)
+                        <span style="margin-left: auto; background: #C62828; color: white; font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 10px; font-weight: 600;">{{ $pendingOrdersCount }}</span>
                     @endif
                 </a>
                 <a href="{{ route('admin.products.index') }}" class="admin-nav-item {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
@@ -420,8 +424,19 @@
                     <span>Promotions</span>
                 </a>
                 <a href="{{ route('admin.customers.index') }}" class="admin-nav-item {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
-                    <span class="material-symbols-outlined">group</span> 
+                    <span class="material-symbols-outlined">group</span>
                     <span>Customers</span>
+                </a>
+                <a href="{{ route('admin.reviews.index') }}" class="admin-nav-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                    <span class="material-symbols-outlined">reviews</span>
+                    <span>Reviews</span>
+                    @if(($pendingReviewsCount ?? 0) > 0)
+                        <span style="margin-left: auto; background: #C62828; color: white; font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 10px; font-weight: 600;">{{ $pendingReviewsCount }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('admin.activity.index') }}" class="admin-nav-item {{ request()->routeIs('admin.activity.*') ? 'active' : '' }}">
+                    <span class="material-symbols-outlined">history</span>
+                    <span>Activity</span>
                 </a>
                 <a href="{{ route('admin.settings.index') }}" class="admin-nav-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                     <span class="material-symbols-outlined">settings</span> 
@@ -461,7 +476,7 @@
                         <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-gold); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">
                             {{ substr(Auth::user()->name, 0, 1) }}
                         </div>
-                        <span style="display: none; @media(min-width: 768px) { display: inline; }">{{ Auth::user()->name }}</span>
+                        <span class="admin-username">{{ Auth::user()->name }}</span>
                     </div>
                 </div>
             </header>
@@ -678,16 +693,10 @@
         });
     }
 
-    function escHtml(s) {
-        return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    }
-
-    function highlight(text, query) {
-        const safe = escHtml(text);
-        if (!query || !text) return safe;
-        const esc = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        return safe.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
-    }
+    // Shared helpers (defined once in resources/js/app.js). Late-bound so they
+    // resolve after the deferred bundle has loaded.
+    const escHtml = (s) => window.peEscHtml(s);
+    const highlight = (text, query) => window.peHighlight(text, query);
 
     // Keyboard navigation
     searchInput.addEventListener('keydown', function(e) {

@@ -6,7 +6,7 @@
 <div class="container" style="max-width: 440px; padding: var(--space-3xl) var(--space-md);">
     <div style="text-align: center; margin-bottom: var(--space-xl);">
         <div style="width: 64px; height: 64px; border-radius: var(--radius-full); background: var(--color-soft-gray); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-md);">
-            <span class="material-symbols-outlined" style="font-size: 1.8rem; color: var(--color-premium-gold);">shield_lock</span>
+            <span class="material-symbols-outlined" style="font-size: 1.8rem; color: var(--gold-text);">shield_lock</span>
         </div>
         <h1 style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 600; color: var(--color-primary-text); margin-bottom: var(--space-xs);">Secure Area</h1>
         <p style="font-family: var(--font-sans); font-size: 0.85rem; color: var(--color-muted-text); line-height: 1.6;">

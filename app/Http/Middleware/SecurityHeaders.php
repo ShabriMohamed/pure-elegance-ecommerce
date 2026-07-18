@@ -27,13 +27,32 @@ class SecurityHeaders
         // escaping this still meaningfully hardens the app (blocks plugins, foreign framing,
         // base-tag hijacking and non-allowlisted hosts). The font hosts match the <link>
         // tags in the layouts (Google Fonts + Bunny Fonts).
+        $scriptSrc  = "script-src 'self' 'unsafe-inline'";
+        $styleSrc   = "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net";
+        $connectSrc = "connect-src 'self'";
+
+        // Local dev only: when the Vite dev server is running (`npm run dev`), it serves the
+        // HMR client + assets from a cross-origin host and opens an HMR WebSocket — both of
+        // which the strict 'self' policy would block, leaving a blank dev page. public/hot
+        // exists only while the dev server runs, never in a built deployment, so production
+        // keeps the strict policy untouched.
+        if (app()->environment('local') && is_file(public_path('hot'))) {
+            $devHost = trim((string) file_get_contents(public_path('hot')));
+            if ($devHost !== '') {
+                $wsHost = preg_replace('#^http#i', 'ws', $devHost);
+                $scriptSrc  .= " {$devHost}";
+                $styleSrc   .= " {$devHost}";
+                $connectSrc .= " {$devHost} {$wsHost}";
+            }
+        }
+
         $csp = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline'",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net",
+            $scriptSrc,
+            $styleSrc,
             "font-src 'self' data: https://fonts.gstatic.com https://fonts.bunny.net",
             "img-src 'self' data: https:",
-            "connect-src 'self'",
+            $connectSrc,
             "object-src 'none'",
             "base-uri 'self'",
             "frame-ancestors 'self'",

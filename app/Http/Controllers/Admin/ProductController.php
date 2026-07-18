@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -61,7 +62,7 @@ class ProductController extends Controller
 
                 // Save primary image
                 if ($request->hasFile('primary_image')) {
-                    $path = $request->file('primary_image')->store('products', 'public');
+                    $path = app(ImageService::class)->store($request->file('primary_image'), 'products');
                     $product->images()->create([
                         'image_path' => $path,
                         'is_primary' => true,
@@ -72,7 +73,7 @@ class ProductController extends Controller
                 // Save additional images
                 if ($request->hasFile('additional_images')) {
                     foreach ($request->file('additional_images') as $index => $image) {
-                        $path = $image->store('products', 'public');
+                        $path = app(ImageService::class)->store($image, 'products');
                         $product->images()->create([
                             'image_path' => $path,
                             'is_primary' => false,
@@ -113,7 +114,7 @@ class ProductController extends Controller
 
                 // Replace primary image if provided
                 if ($request->hasFile('primary_image')) {
-                    $path = $request->file('primary_image')->store('products', 'public');
+                    $path = app(ImageService::class)->store($request->file('primary_image'), 'products');
 
                     $oldPrimary = $product->primaryImage;
                     if ($oldPrimary) {
@@ -132,7 +133,7 @@ class ProductController extends Controller
                 if ($request->hasFile('additional_images')) {
                     $maxOrder = $product->images()->max('sort_order') ?? 0;
                     foreach ($request->file('additional_images') as $index => $image) {
-                        $path = $image->store('products', 'public');
+                        $path = app(ImageService::class)->store($image, 'products');
                         $product->images()->create([
                             'image_path' => $path,
                             'is_primary' => false,

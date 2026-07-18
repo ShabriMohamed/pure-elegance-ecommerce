@@ -77,7 +77,7 @@
                                 {{ $order->status }}
                             </span>
                         </td>
-                        <td style="padding: var(--space-md) var(--space-sm); text-align: right; font-weight: 500;">LKR {{ number_format($order->total, 2) }}</td>
+                        <td style="padding: var(--space-md) var(--space-sm); text-align: right; font-weight: 500;">{{ money($order->total) }}</td>
                     </tr>
                 @endforeach
             </tbody>

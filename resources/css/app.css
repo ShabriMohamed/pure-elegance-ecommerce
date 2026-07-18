@@ -3,7 +3,9 @@
    Pixel-perfect match to UI DESIGN specs
    ======================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap');
+/* NOTE: Fonts are loaded via <link rel="preconnect"> + <link> in the page <head>
+   (faster, non-render-blocking). A CSS @import here would block first paint, so it
+   was removed intentionally. */
 
 /* ========================================
    CSS Custom Properties
@@ -16,9 +18,20 @@
     --color-pure-white: #FFFFFF;
     --color-warm-beige: #F5F2EC;
 
+    /* Accessible gold for TEXT on light surfaces. The brand gold #C89B3C only
+       reaches 2.56:1 on white (WCAG AA needs 4.5:1); this darker gold hits 4.92:1
+       while staying unmistakably gold. Brand gold is retained for dark surfaces,
+       borders, backgrounds and gradients, where it measures 7.69:1. */
+    --color-gold-ink: #A16207;
+
+    /* Contextual gold for text: accessible by default, switched back to the brand
+       gold inside dark-surface containers (see the surface block below). Inline
+       styles that use var(--gold-text) resolve correctly per surface too. */
+    --gold-text: var(--color-gold-ink);
+
     /* Neutral Colours */
     --color-dark-charcoal: #1E1E1E;
-    --color-medium-gray: #9A9A9A;
+    --color-medium-gray: #6F6F6F;
     --color-light-gray: #EAEAEA;
     --color-soft-gray: #F2F2F2;
     --color-off-white: #FAFAFA;
@@ -33,17 +46,19 @@
     --color-primary-text: #0B0B0B;
     --color-secondary-text: #333333;
     --color-paragraph-text: #666666;
-    --color-accent: #C89B3C;
-    --color-muted-text: #999999;
+    --color-accent: var(--color-gold-ink);
+    /* #999 measured 2.85:1 on white — below the 4.5:1 AA floor. #6F6F6F is 5.02:1. */
+    --color-muted-text: #6F6F6F;
     --color-error: #D32F2F;
-    --color-success: #388E3C;
+    /* #388E3C measured 4.12:1 on white; #2E7D32 is 5.13:1. */
+    --color-success: #2E7D32;
 
     /* Aliases (backward compat for existing views) */
     --color-border: #EAEAEA;
     --color-gold: #C89B3C;
     --color-cream: #F5F2EC;
     --color-charcoal: #1E1E1E;
-    --color-muted: #999999;
+    --color-muted: #6F6F6F;
 
     /* Gradient Styles */
     --gradient-black-gold: linear-gradient(90deg, #0B0B0B, #C89B3C);
@@ -75,10 +90,36 @@
     --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
     --shadow-xl: 0 16px 48px rgba(0,0,0,0.15);
 
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-base: 250ms ease;
-    --transition-slow: 400ms ease;
+    /* Motion scale — the 150-300ms band reads as responsive without feeling sluggish.
+       (--ease-out is defined with the transition tokens just below.) */
+    --dur-fast: 150ms;
+    --dur-base: 220ms;
+    --dur-slow: 300ms;
+
+    /* Transitions — premium easing (ease-out-quint family) for a fluid, weighted feel.
+       Every component transition inherits these, so the whole app moves consistently. */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --transition-fast: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 280ms var(--ease-out);
+    --transition-slow: 480ms var(--ease-out);
+}
+
+/* ========================================
+   Surfaces
+   Dark-background containers restore the brighter brand gold for text, which
+   measures 7.69:1 on rich black. On light surfaces --gold-text stays the
+   accessible #A16207 (4.92:1). Add data-surface="dark" to any other dark panel
+   (including inline-styled ones) to opt it in.
+   ======================================== */
+.top-notification-bar,
+.site-footer,
+.hero-section,
+.promo-banner,
+.newsletter-section,
+.back-to-top,
+.shop-cat-card:hover .shop-cat-icon,
+[data-surface="dark"] {
+    --gold-text: var(--color-premium-gold);
 }
 
 /* ========================================
@@ -174,6 +215,25 @@ button {
     }
 }
 
+/* Large-screen ladder. Previously the container stopped at 1200px and there was no
+   breakpoint above 992px at all, so 1440/1920/2560px displays rendered the same
+   cramped column with vast empty gutters. */
+@media (min-width: 1440px) {
+    .container { max-width: 1340px; }
+}
+
+@media (min-width: 1720px) {
+    .container {
+        max-width: 1560px;
+        padding-left: var(--space-2xl);
+        padding-right: var(--space-2xl);
+    }
+}
+
+@media (min-width: 2200px) {
+    .container { max-width: 1780px; }
+}
+
 /* ========================================
    Responsive Visibility
    ======================================== */
@@ -213,11 +273,19 @@ button {
    HEADER
    ======================================== */
 .store-header {
-    background-color: var(--color-pure-white);
+    background-color: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
     border-bottom: 1px solid var(--color-light-gray);
     position: sticky;
     top: 0;
     z-index: 100;
+    transition: box-shadow var(--transition-base);
+}
+
+/* Applied by JS once the page scrolls — lifts the header off the content */
+.store-header.is-scrolled {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
 }
 
 .header-inner {
@@ -254,14 +322,14 @@ button {
     font-family: var(--font-sans);
     font-size: 0.5rem;
     font-weight: 600;
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-top: 2px;
 }
 
 .store-logo-crown {
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     font-size: 0.75rem;
     margin-top: 2px;
 }
@@ -480,7 +548,7 @@ button {
 .sf-result-avatar {
     width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
     background: linear-gradient(135deg, rgba(200,155,60,0.15), rgba(200,155,60,0.05));
-    display: flex; align-items: center; justify-content: center; color: var(--color-premium-gold);
+    display: flex; align-items: center; justify-content: center; color: var(--gold-text);
 }
 .sf-result-thumb {
     width: 54px; height: 68px; border-radius: 8px; overflow: hidden;
@@ -498,12 +566,12 @@ button {
 .sf-result-price--sale { color: #C62828; }
 .sf-result-price--orig { font-size: 0.75rem; color: var(--color-muted-text); text-decoration: line-through; font-weight: 400; }
 .sf-result-arrow { font-size: 1.1rem; color: rgba(0,0,0,0.15); transition: all 0.2s; margin-left: auto; }
-.sf-result-item:hover .sf-result-arrow, .sf-result-item.focused .sf-result-arrow { color: var(--color-premium-gold); transform: translateX(3px); }
+.sf-result-item:hover .sf-result-arrow, .sf-result-item.focused .sf-result-arrow { color: var(--gold-text); transform: translateX(3px); }
 
 .sf-view-all {
     display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     padding: 1rem; font-size: 0.85rem; font-weight: 600;
-    color: var(--color-premium-gold); text-decoration: none;
+    color: var(--gold-text); text-decoration: none;
     border-top: 1px solid rgba(0,0,0,0.08); background: #FFFFFF;
     transition: background 0.15s;
 }
@@ -586,7 +654,7 @@ button {
 .btn-outline-gold {
     background-color: transparent;
     border-color: var(--color-premium-gold);
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
 }
 
 .btn-outline-gold:hover {
@@ -708,9 +776,9 @@ textarea.form-control {
 
 .product-img-wrapper {
     position: relative;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 5;
     overflow: hidden;
-    background: var(--color-soft-gray);
+    background: linear-gradient(160deg, #faf7f2 0%, #f1ece3 100%);
 }
 
 .product-img {
@@ -770,6 +838,36 @@ textarea.form-control {
     font-weight: 400;
 }
 
+/* Product star rating (matches reference: gold stars + review count) */
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+}
+
+.product-stars {
+    --rating: 0;
+    font-size: 0.82rem;
+    line-height: 1;
+    letter-spacing: 1.5px;
+    background: linear-gradient(
+        90deg,
+        var(--color-premium-gold) calc(var(--rating) / 5 * 100%),
+        var(--color-light-gray) calc(var(--rating) / 5 * 100%)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.product-rating-count {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: var(--color-muted-text);
+    font-weight: 400;
+}
+
 .product-badge {
     position: absolute;
     top: 8px;
@@ -821,7 +919,9 @@ textarea.form-control {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: var(--color-pure-white);
+    background-color: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
     border-top: 1px solid var(--color-light-gray);
     display: flex;
     justify-content: space-around;
@@ -856,7 +956,7 @@ textarea.form-control {
 }
 
 .nav-item.active {
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
 }
 
 .nav-item.active .material-symbols-outlined {
@@ -869,19 +969,53 @@ textarea.form-control {
 .site-footer {
     background: var(--color-rich-black);
     color: var(--color-pure-white);
-    padding: var(--space-3xl) 0 var(--space-xl);
-    margin-top: var(--space-3xl);
+    padding: var(--space-2xl) 0 var(--space-xl);
+    margin-top: var(--space-2xl);
+}
+
+/* On mobile the footer now shows (previously hidden). Pad the bottom so its content
+   clears the fixed mobile bottom-nav (its height + iOS safe-area inset). */
+@media (max-width: 768px) {
+    .site-footer {
+        padding-bottom: calc(var(--space-lg) + 64px + env(safe-area-inset-bottom, 0px));
+        text-align: center;
+    }
+}
+
+@media (min-width: 769px) {
+    .site-footer {
+        padding: var(--space-3xl) 0 var(--space-xl);
+        margin-top: var(--space-3xl);
+    }
+}
+
+/* Mobile-first: 2 columns, brand block spans full width. Desktop: 2fr 1fr 1fr 1fr. */
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg) var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.footer-col:first-child {
+    grid-column: 1 / -1;
 }
 
 @media (max-width: 768px) {
-    .site-footer { display: none; }
+    .footer-col:first-child .store-logo {
+        align-items: center;
+    }
 }
 
-.footer-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: var(--space-2xl);
-    margin-bottom: var(--space-2xl);
+@media (min-width: 769px) {
+    .footer-grid {
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: var(--space-2xl);
+        margin-bottom: var(--space-2xl);
+    }
+    .footer-col:first-child {
+        grid-column: auto;
+    }
 }
 
 .footer-col {
@@ -896,7 +1030,7 @@ textarea.form-control {
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     margin-bottom: var(--space-sm);
 }
 
@@ -927,13 +1061,20 @@ textarea.form-control {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--space-lg);
+    /* Wrap so the larger display title never crowds the "view all" link on narrow screens */
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
 }
 
 .section-title {
     font-family: var(--font-serif);
-    font-size: 1.5rem;
+    /* Editorial display scale. Oversized, tightly-tracked serif headings are the
+       core of the luxury-fashion direction — a flat 1.5rem read as generic. */
+    font-size: clamp(1.9rem, 4.2vw, 3rem);
     font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
     color: var(--color-primary-text);
     display: flex;
     align-items: center;
@@ -954,7 +1095,7 @@ textarea.form-control {
 }
 
 .section-link:hover {
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
 }
 
 /* ========================================
@@ -1145,7 +1286,7 @@ textarea.form-control {
 }
 
 .skeleton-img {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 5;
     width: 100%;
 }
 
@@ -1160,7 +1301,13 @@ textarea.form-control {
     gap: var(--space-md);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 600px) {
+    .skeleton-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 769px) {
     .skeleton-grid {
         grid-template-columns: repeat(4, 1fr);
     }
@@ -1176,7 +1323,7 @@ textarea.form-control {
    UTILITY CLASSES
    ======================================== */
 .text-center { text-align: center; }
-.text-gold { color: var(--color-premium-gold); }
+.text-gold { color: var(--gold-text); }
 .text-muted { color: var(--color-muted-text); }
 .mt-md { margin-top: var(--space-md); }
 .mb-md { margin-bottom: var(--space-md); }
@@ -1347,7 +1494,7 @@ textarea.form-control {
 }
 
 .cart-item-name:hover {
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
 }
 
 .cart-item-variant {
@@ -1645,7 +1792,11 @@ textarea.form-control {
 .hero-section {
     position: relative;
     width: 100%;
+    /* Fluid height. Fixed 480/660px meant the hero stayed a short letterbox on large
+       displays while object-fit: cover cropped ever more of the image away.
+       svh avoids the mobile URL-bar resize jump; the px value is the fallback. */
     height: 480px;
+    height: clamp(440px, 62svh, 620px);
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -1653,7 +1804,25 @@ textarea.form-control {
 }
 
 @media (min-width: 769px) {
-    .hero-section { height: 660px; }
+    .hero-section {
+        height: 660px;
+        height: clamp(560px, 76svh, 820px);
+    }
+}
+
+@media (min-width: 1440px) {
+    .hero-section { height: clamp(660px, 78svh, 900px); }
+}
+
+/* Ultra-wide (21:9 and wider): cap height so the hero doesn't become a thin band
+   and the subject isn't cropped to a sliver. */
+@media (min-aspect-ratio: 2/1) {
+    .hero-section { height: clamp(420px, 88svh, 720px); }
+}
+
+/* Short landscape (e.g. phone rotated): never exceed the viewport */
+@media (max-height: 520px) and (orientation: landscape) {
+    .hero-section { height: 92svh; }
 }
 
 .hero-bg {
@@ -1663,7 +1832,15 @@ textarea.form-control {
 
 .hero-bg-img {
     width: 100%; height: 100%; object-fit: cover;
+    /* Bias the crop slightly above centre: on wide screens `cover` trims top and
+       bottom, and fashion imagery keeps its subject in the upper half. */
+    object-position: center 35%;
     animation: heroZoom 8s ease-out forwards;
+}
+
+/* On tall/narrow viewports the crop should favour the centre instead */
+@media (max-aspect-ratio: 1/1) {
+    .hero-bg-img { object-position: center center; }
 }
 
 .hero-overlay {
@@ -1688,7 +1865,7 @@ textarea.form-control {
     font-family: var(--font-sans);
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: var(--space-sm);
@@ -1697,10 +1874,12 @@ textarea.form-control {
 
 .hero-heading {
     font-family: var(--font-serif);
-    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    /* Statement display type — the hero is the single biggest brand moment. */
+    font-size: clamp(2.6rem, 7vw, 5.25rem);
     font-weight: 700;
+    letter-spacing: -0.03em;
     color: var(--color-pure-white);
-    line-height: 1.08;
+    line-height: 1.02;
     margin-bottom: var(--space-md);
     animation: fadeInUp 0.8s ease-out 0.4s both;
 }
@@ -1904,7 +2083,7 @@ textarea.form-control {
 }
 
 .value-prop:hover .value-prop-icon {
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
 }
 
 .value-prop-title {
@@ -2019,7 +2198,7 @@ textarea.form-control {
 }
 
 .shop-cat-card:hover .shop-cat-icon .material-symbols-outlined {
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
 }
 
 .shop-cat-name {
@@ -2039,35 +2218,37 @@ textarea.form-control {
 /* ========================================
    HOMEPAGE — PRODUCT GRIDS
    ======================================== */
+/* Responsive product grid: 2 columns on mobile, 3 on tablet, 4 on desktop.
+   (Was a flex horizontal-scroll, but the skeleton-loader forces display:grid on
+   the real grid once loaded, which collapsed it to 1 column on mobile.) */
 .home-product-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-md);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: var(--space-sm);
 }
 
-.home-product-grid::-webkit-scrollbar { display: none; }
-
-.home-product-item {
-    flex: 0 0 calc(50% - 8px);
-    min-width: 150px;
-    scroll-snap-align: start;
+@media (min-width: 600px) {
+    .home-product-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (min-width: 769px) {
+    .home-product-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Wide displays: 4 columns inside a 1560px container makes each card oversized
+   and sparse, so step up rather than stretching. */
+@media (min-width: 1720px) {
     .home-product-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr);
-        overflow-x: visible;
-    }
-    .home-product-item {
-        flex: unset;
-        min-width: 0;
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--space-lg);
     }
 }
+
+@media (min-width: 2200px) {
+    .home-product-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+.home-product-item { min-width: 0; }
 
 .section-bg-beige {
     background: var(--color-warm-beige);
@@ -2107,7 +2288,7 @@ textarea.form-control {
     font-family: var(--font-sans);
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: var(--space-sm);
@@ -2154,7 +2335,7 @@ textarea.form-control {
 }
 
 .brand-story-btn:hover {
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     gap: 12px;
 }
 
@@ -2188,7 +2369,7 @@ textarea.form-control {
     font-weight: 600;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     margin-bottom: 2px;
 }
 
@@ -2231,7 +2412,7 @@ textarea.form-control {
 }
 
 .promo-icon {
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     flex-shrink: 0;
 }
 
@@ -2243,7 +2424,7 @@ textarea.form-control {
     font-family: var(--font-sans);
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     letter-spacing: 0.5px;
     margin-bottom: 2px;
 }
@@ -2300,7 +2481,7 @@ textarea.form-control {
     font-family: var(--font-sans);
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: var(--space-sm);
@@ -2392,6 +2573,482 @@ textarea.form-control {
 
 .newsletter-trust .material-symbols-outlined {
     font-size: 0.9rem;
-    color: var(--color-premium-gold);
+    color: var(--gold-text);
     opacity: 0.6;
+}
+
+/* ========================================
+   ACCESSIBILITY & MODERN POLISH
+   (enhancement layer — applies site-wide)
+   ======================================== */
+
+/* Brand-tinted text selection */
+::selection { background: rgba(200, 155, 60, 0.28); color: var(--color-rich-black); }
+
+/* Accessible keyboard focus — visible ring for keyboard users only, not on mouse click.
+   Inputs already show a gold focus box-shadow, so suppress the extra outline there. */
+:focus-visible {
+    /* WCAG 1.4.11 wants >=3:1 for focus indicators. The brand gold is only 2.56:1
+       on white, so use the contextual gold (4.92:1 on light, brand gold on dark). */
+    outline: 2px solid var(--gold-text);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+.form-control:focus-visible,
+.newsletter-input:focus-visible,
+.sf-search-input:focus-visible { outline: none; }
+
+/* Kill the grey tap flash on mobile — we provide our own hover/active states */
+a, button, .icon-btn, .nav-item, .btn, .shop-cat-card, .product-card {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch targets — on coarse pointers (phones/tablets) every control meets the
+   44x44 minimum. Scoped to touch so the desktop layout keeps its compact
+   proportions, where a fine pointer only needs ~24px. */
+@media (hover: none) and (pointer: coarse) {
+    .qty-control { height: 44px; }
+    .qty-btn { width: 44px; }
+    .pe-page-link { min-width: 44px; height: 44px; }
+    .product-wishlist-btn { width: 44px; height: 44px; }
+}
+
+/* Comfortable touch targets on small screens (WCAG 2.5.5 — min 44px) */
+@media (max-width: 768px) {
+    .icon-btn { width: 44px; height: 44px; }
+    .nav-item { min-height: 44px; justify-content: center; }
+    .cart-item-remove { padding: 8px 0; }
+}
+
+/* Button micro-interactions */
+.btn:active { transform: translateY(1px); }
+.btn-gold:active { transform: translateY(-1px); }
+
+/* Consistent disabled state everywhere */
+button:disabled, .btn:disabled, .btn.disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Belt-and-suspenders: never allow horizontal page scroll */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* Refined, unobtrusive page scrollbar on desktop */
+@media (min-width: 769px) {
+    html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.2) transparent; }
+    body::-webkit-scrollbar { width: 12px; }
+    body::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.2);
+        border-radius: 8px;
+        border: 3px solid var(--color-pure-white);
+    }
+    body::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.32); }
+}
+
+/* Respect users who prefer reduced motion — neutralise non-essential animation */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+    .reveal, .stagger-item { opacity: 1 !important; transform: none !important; }
+    .hero-bg-img { animation: none !important; }
+}
+
+/* Screen-reader-only helper for icon-only controls / skip links */
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+.skip-link {
+    position: absolute; left: 50%; transform: translateX(-50%) translateY(-120%);
+    top: 0; z-index: 10000; background: var(--color-rich-black); color: #fff;
+    padding: 10px 20px; border-radius: 0 0 var(--radius-md) var(--radius-md);
+    font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600;
+    transition: transform var(--transition-base);
+}
+.skip-link:focus { transform: translateX(-50%) translateY(0); }
+
+/* ========================================
+   HOMEPAGE — SHOP BY BRAND (auto-scroll marquee)
+   ======================================== */
+.brand-section {
+    padding: var(--space-2xl) 0 var(--space-3xl);
+    background:
+        radial-gradient(circle at 50% -20%, rgba(200,155,60,0.06), transparent 60%),
+        var(--color-pure-white);
+    overflow: hidden;
+}
+
+.brand-section-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-text);
+    margin-bottom: 6px;
+}
+
+.brand-section-head { text-align: center; margin-bottom: var(--space-md); }
+
+/* Marquee viewport: fades at both edges */
+.brand-marquee {
+    margin-top: var(--space-xl);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.brand-marquee-track {
+    display: flex;
+    gap: var(--space-md);
+    width: max-content;
+    animation: brandScroll 42s linear infinite;
+}
+
+/* Pause on hover / focus-within so users can read & click */
+.brand-marquee:hover .brand-marquee-track,
+.brand-marquee:focus-within .brand-marquee-track {
+    animation-play-state: paused;
+}
+
+@keyframes brandScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-33.333%); }
+}
+
+.brand-chip {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: 10px var(--space-lg) 10px 10px;
+    background: var(--color-pure-white);
+    border: 1px solid var(--color-light-gray);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    color: var(--color-primary-text);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.brand-chip:hover {
+    border-color: var(--color-premium-gold);
+    box-shadow: 0 12px 32px rgba(200,155,60,0.18);
+    transform: translateY(-4px);
+}
+
+.brand-chip-monogram {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-black-gold);
+    color: var(--color-pure-white);
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    transition: transform var(--transition-base);
+}
+
+.brand-chip:hover .brand-chip-monogram { transform: scale(1.08) rotate(-3deg); }
+
+.brand-chip-info { display: flex; flex-direction: column; line-height: 1.25; }
+
+.brand-chip-name {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+
+.brand-chip-count {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: var(--color-muted-text);
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .brand-chip { padding: 8px var(--space-md) 8px 8px; }
+    .brand-chip-monogram { width: 46px; height: 46px; font-size: 1rem; }
+    .brand-chip-name { font-size: 0.88rem; }
+}
+
+/* Reduced motion: stop the scroll and let users swipe the row instead */
+@media (prefers-reduced-motion: reduce) {
+    .brand-marquee {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .brand-marquee::-webkit-scrollbar { display: none; }
+    .brand-marquee-track { animation: none; }
+}
+
+/* ========================================
+   FLUID MOTION LAYER
+   (page fade, image fade-in, back-to-top)
+   All neutralised by the global
+   prefers-reduced-motion rule above.
+   ======================================== */
+
+/* Gentle page-entry: main content fades and settles on every load */
+@keyframes pageEnter {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+main { animation: pageEnter 0.5s var(--ease-out) both; }
+
+/* Images fade in as they finish loading (classes applied by JS; cached images
+   skip straight to visible so there is never a hidden-image flash) */
+img.img-loading { opacity: 0; }
+img.img-loaded  { opacity: 1; transition: opacity 0.45s var(--ease-out); }
+
+/* Anchored sections stop below the sticky header instead of underneath it */
+[id] { scroll-margin-top: 96px; }
+
+/* Section underlines: gold gradient tail for a richer accent */
+.section-title-underline,
+.brand-story-divider,
+.hero-divider {
+    background: linear-gradient(90deg, var(--color-premium-gold) 55%, rgba(200, 155, 60, 0.25));
+}
+
+/* Floating back-to-top control */
+.back-to-top {
+    position: fixed;
+    right: var(--space-md);
+    bottom: var(--space-lg);
+    z-index: 250;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(200, 155, 60, 0.45);
+    background: var(--color-rich-black);
+    color: var(--gold-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    transition: opacity var(--transition-base), transform var(--transition-base),
+                visibility var(--transition-base), background var(--transition-base);
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.back-to-top:hover {
+    background: var(--color-premium-gold);
+    color: var(--color-rich-black);
+    transform: translateY(-3px);
+}
+
+.back-to-top .material-symbols-outlined { font-size: 1.3rem; }
+
+/* Keep it clear of the fixed bottom nav on mobile */
+@media (max-width: 768px) {
+    .back-to-top {
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    }
+}
+/* ========================================
+   REVIEWS — write/edit form + guest prompt
+   ======================================== */
+.review-form-card,
+.review-login-card {
+    background: linear-gradient(165deg, var(--color-warm-beige) 0%, var(--color-pure-white) 62%);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(var(--space-lg), 4vw, var(--space-xl));
+    margin-bottom: var(--space-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+.review-form-head {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.review-form-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--color-rich-black);
+    color: var(--color-premium-gold);
+    font-size: 1.25rem;
+}
+
+.review-form-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    letter-spacing: var(--tracking-snug);
+    color: var(--color-primary-text);
+    margin: 0 0 2px;
+}
+
+.review-form-sub {
+    font-size: var(--text-sm);
+    color: var(--color-muted-text);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* --- Star rating input -------------------------------------------------
+   Inputs are rendered 5→1, so `~` selects the stars visually to the LEFT of
+   the checked one. Keyboard focus is preserved via :focus-visible on the label. */
+.star-input {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 2px;
+}
+
+.star-input input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.star-input label {
+    cursor: pointer;
+    /* Comfortably tappable on touch without inflating the visual size */
+    padding: 6px;
+    line-height: 1;
+    color: var(--color-light-gray);
+    transition: color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.star-input label .material-symbols-outlined {
+    font-size: 2rem;
+    font-variation-settings: 'FILL' 1;
+    display: block;
+}
+
+.star-input input:checked ~ label,
+.star-input label:hover,
+.star-input label:hover ~ label {
+    color: var(--color-premium-gold);
+}
+
+.star-input label:hover,
+.star-input label:hover ~ label {
+    transform: scale(1.08);
+}
+
+.star-input input:focus-visible + label {
+    outline: 2px solid var(--gold-text);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+.review-optional {
+    color: var(--color-muted-text);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.review-textarea {
+    resize: vertical;
+    min-height: 108px;
+    line-height: 1.6;
+}
+
+.review-form-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    margin-top: var(--space-sm);
+}
+
+.review-form-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-xs);
+    color: var(--color-muted-text);
+}
+
+.review-form-note .material-symbols-outlined { font-size: 1rem; }
+
+/* --- Guest prompt ------------------------------------------------------ */
+.review-login-card { text-align: center; }
+
+.review-login-stars {
+    display: block;
+    font-size: 1.5rem;
+    letter-spacing: 4px;
+    color: var(--color-premium-gold);
+    margin-bottom: var(--space-sm);
+}
+
+.review-login-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    letter-spacing: var(--tracking-snug);
+    color: var(--color-primary-text);
+    margin: 0 0 4px;
+}
+
+.review-login-sub {
+    font-size: var(--text-base);
+    color: var(--color-paragraph-text);
+    margin: 0 0 var(--space-lg);
+}
+
+.review-login-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+.review-login-link {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-primary-text);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+    transition: color var(--dur-fast) var(--ease-out);
+}
+
+.review-login-link:hover { color: var(--gold-text); }
+
+@media (max-width: 480px) {
+    .review-form-head { gap: var(--space-sm); }
+    .star-input label .material-symbols-outlined { font-size: 1.75rem; }
+    .review-form-actions .btn,
+    .review-login-actions .btn { width: 100%; }
 }

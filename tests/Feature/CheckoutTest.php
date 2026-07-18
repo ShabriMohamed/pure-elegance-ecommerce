@@ -35,6 +35,8 @@ class CheckoutTest extends TestCase
 
     public function test_checkout_creates_order_decrements_stock_and_clears_cart(): void
     {
+        \App\Models\SiteSetting::setValue('whatsapp_number', '94771234567');
+
         $user = User::factory()->create();
         $product = Product::factory()->create(['stock_quantity' => 10, 'price' => 5000]);
         $this->cartFor($user, $product, 2, 5000);
@@ -47,18 +49,62 @@ class CheckoutTest extends TestCase
             'city' => 'Colombo',
         ]);
 
-        $response->assertRedirect();
-        $this->assertStringContainsString('wa.me', $response->headers->get('Location'));
-
         $order = Order::first();
         $this->assertNotNull($order);
+
+        // Payment-gateway handoff pattern: land on the confirmation anchor first…
+        $response->assertRedirect(route('checkout.confirmation', $order));
+
+        // …which auto-opens the tracked WhatsApp handoff; hitting it marks the order and
+        // returns the wa.me URL as JSON (the browser navigates via the anchor href).
+        $handoff = $this->actingAs($user)->post(route("checkout.whatsapp", $order));
+        $handoff->assertOk();
+        $this->assertStringContainsString('wa.me', (string) $handoff->json('url'));
+
+        $order->refresh();
         $this->assertSame($user->id, $order->user_id);
         $this->assertSame('whatsapp_sent', $order->status);
+        $this->assertNotNull($order->whatsapp_sent_at);
         $this->assertEquals(10000, (float) $order->subtotal);
 
         $this->assertSame(2, $order->items->first()->quantity);
         $this->assertSame(8, $product->fresh()->stock_quantity);
         $this->assertDatabaseCount('cart_items', 0);
+    }
+
+    public function test_checkout_without_whatsapp_configured_shows_confirmation_page(): void
+    {
+        // No whatsapp_number configured → must NOT redirect to a fallback number;
+        // instead lands on the on-site confirmation page.
+        $user = User::factory()->create();
+        $product = Product::factory()->create(['stock_quantity' => 5, 'price' => 3000]);
+        $this->cartFor($user, $product, 1, 3000);
+
+        $response = $this->actingAs($user)->post('/checkout/process', [
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'phone' => '0771234567',
+            'address' => '5 Marine Drive',
+            'city' => 'Colombo',
+        ]);
+
+        $order = Order::first();
+        $response->assertRedirect(route('checkout.confirmation', $order));
+        $this->assertStringNotContainsString('wa.me', (string) $response->headers->get('Location'));
+    }
+
+    public function test_checkout_rejects_invalid_phone(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create(['stock_quantity' => 5, 'price' => 3000]);
+        $this->cartFor($user, $product, 1, 3000);
+
+        $this->actingAs($user)->post('/checkout/process', [
+            'name' => 'Jane', 'email' => 'jane@example.com',
+            'phone' => 'not-a-phone', 'address' => 'X', 'city' => 'Colombo',
+        ])->assertSessionHasErrors('phone');
+
+        $this->assertDatabaseCount('orders', 0);
     }
 
     public function test_checkout_applies_promo_and_increments_usage_atomically(): void

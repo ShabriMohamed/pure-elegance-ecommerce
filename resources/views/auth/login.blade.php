@@ -36,7 +36,7 @@
                 Remember me
             </label>
             @if(Route::has('password.request'))
-                <a href="{{ route('password.request') }}" style="font-size: 0.8rem; color: var(--color-premium-gold); font-weight: 500;">Forgot Password?</a>
+                <a href="{{ route('password.request') }}" style="font-size: 0.8rem; color: var(--gold-text); font-weight: 500;">Forgot Password?</a>
             @endif
         </div>
 
@@ -47,7 +47,7 @@
 
     <div style="text-align: center; margin-top: var(--space-lg); font-size: 0.85rem; color: var(--color-muted-text);">
         Don't have an account? 
-        <a href="{{ route('register') }}" style="color: var(--color-premium-gold); font-weight: 600;">Create one</a>
+        <a href="{{ route('register') }}" style="color: var(--gold-text); font-weight: 600;">Create one</a>
     </div>
 </div>
 @endsection

@@ -59,7 +59,7 @@
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid var(--color-light-gray);">
                 <div style="font-size: 0.9rem; font-weight: 600; color: var(--color-primary-text);">
-                    LKR {{ number_format($order->total, 2) }}
+                    {{ money($order->total) }}
                 </div>
                 <a href="{{ route('account.orders.show', $order) }}" class="btn btn-sm btn-outline" style="padding: 6px 16px; font-size: 0.7rem;">
                     VIEW ORDER

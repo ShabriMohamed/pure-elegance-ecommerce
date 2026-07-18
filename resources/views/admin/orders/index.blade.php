@@ -38,7 +38,7 @@
                             <div style="font-size: 0.75rem; color: var(--color-muted);">{{ $order->customer_email }}</div>
                         </td>
                         <td>{{ $order->created_at->format('M d, Y H:i') }}</td>
-                        <td>LKR {{ number_format($order->total, 2) }}</td>
+                        <td>{{ money($order->total) }}</td>
                         <td>
                             @if(in_array($order->status, ['pending', 'whatsapp_sent']))
                                 <span class="badge-warning">{{ $order->status_label }}</span>

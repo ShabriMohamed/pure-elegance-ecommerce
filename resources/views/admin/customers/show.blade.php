@@ -78,7 +78,7 @@
                         <tr>
                             <td style="font-weight: 500;">{{ $order->order_number }}</td>
                             <td style="font-size: 0.85rem;">{{ $order->created_at->format('M d, Y') }}</td>
-                            <td>LKR {{ number_format($order->total, 2) }}</td>
+                            <td>{{ money($order->total) }}</td>
                             <td>
                                 @php
                                     $badgeClass = match($order->status) {

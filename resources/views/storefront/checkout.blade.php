@@ -23,7 +23,7 @@
                     <!-- Customer Information -->
                     <div style="background: var(--color-pure-white); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: var(--space-xl); margin-bottom: var(--space-lg);">
                         <h2 class="font-h2" style="font-size: 1.25rem; margin-bottom: var(--space-lg); display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-sm); color: var(--color-rich-black);">
-                            <span class="material-symbols-outlined" style="color: var(--color-premium-gold);">person</span>
+                            <span class="material-symbols-outlined" style="color: var(--gold-text);">person</span>
                             Contact Information
                         </h2>
 
@@ -50,7 +50,7 @@
                     <!-- Delivery Details -->
                     <div style="background: var(--color-pure-white); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: var(--space-xl);">
                         <h2 class="font-h2" style="font-size: 1.25rem; margin-bottom: var(--space-lg); display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-sm); color: var(--color-rich-black);">
-                            <span class="material-symbols-outlined" style="color: var(--color-premium-gold);">local_shipping</span>
+                            <span class="material-symbols-outlined" style="color: var(--gold-text);">local_shipping</span>
                             Delivery Details
                         </h2>
 
@@ -115,7 +115,7 @@
                                     <div style="font-size: 0.75rem; color: var(--color-medium-gray);">Qty: {{ $item->quantity }}</div>
                                 </div>
                                 <div style="font-weight: 600; color: var(--color-rich-black); font-size: 0.9rem;">
-                                    LKR {{ number_format($item->price * $item->quantity, 2) }}
+                                    {{ money($item->price * $item->quantity) }}
                                 </div>
                             </div>
                         @endforeach
@@ -123,24 +123,24 @@
                     
                     <div class="order-summary-row">
                         <span>Subtotal</span>
-                        <span style="font-weight: 500; color: var(--color-rich-black);">LKR {{ number_format($subtotal, 2) }}</span>
+                        <span style="font-weight: 500; color: var(--color-rich-black);">{{ money($subtotal) }}</span>
                     </div>
 
                     @if($discount > 0)
                         <div class="order-summary-row" style="color: var(--color-error);">
                             <span>Discount</span>
-                            <span style="font-weight: 600;">- LKR {{ number_format($discount, 2) }}</span>
+                            <span style="font-weight: 600;">- {{ money($discount) }}</span>
                         </div>
                     @endif
 
                     <div class="order-summary-row">
                         <span>Delivery Fee</span>
-                        <span style="font-weight: 500; color: var(--color-rich-black);">{{ $deliveryFee > 0 ? 'LKR ' . number_format($deliveryFee, 2) : 'FREE' }}</span>
+                        <span style="font-weight: 500; color: var(--color-rich-black);">{{ $deliveryFee > 0 ? money($deliveryFee) : 'FREE' }}</span>
                     </div>
                     
                     <div class="order-summary-total">
                         <span class="order-summary-total-label">Total</span>
-                        <span class="order-summary-total-value">LKR {{ number_format($total, 2) }}</span>
+                        <span class="order-summary-total-value">{{ money($total) }}</span>
                     </div>
 
                     <button type="button" class="btn btn-primary btn-block" style="padding: 1.25rem; font-size: 0.9rem; letter-spacing: 1.5px; margin-bottom: var(--space-sm);" onclick="document.getElementById('checkout-form').submit();">

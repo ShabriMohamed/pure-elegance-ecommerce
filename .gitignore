@@ -26,3 +26,6 @@ Thumbs.db
 # Database dumps / local SQLite (may contain real credentials & PII — never commit)
 *.sql
 /database/*.sqlite
+
+# Local design references (not part of the app)
+/UI DESIGN

@@ -27,7 +27,7 @@ class BannerController extends Controller
         try {
             \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request) {
                 if ($request->hasFile('image')) {
-                    $validated['image_path'] = $request->file('image')->store('banners', 'public');
+                    $validated['image_path'] = app(\App\Services\ImageService::class)->store($request->file('image'), 'banners');
                 }
                 Banner::create(\Illuminate\Support\Arr::except($validated, ['image']));
             });
@@ -51,7 +51,7 @@ class BannerController extends Controller
         try {
             \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $request, $banner) {
                 if ($request->hasFile('image')) {
-                    $validated['image_path'] = $request->file('image')->store('banners', 'public');
+                    $validated['image_path'] = app(\App\Services\ImageService::class)->store($request->file('image'), 'banners');
                     
                     if ($banner->image_path) {
                         \Illuminate\Support\Facades\Storage::disk('public')->delete($banner->image_path);

@@ -3,12 +3,20 @@
 @php
     $title = $pageTitle
         ?? (isset($category) ? $category->name : null)
+        ?? (request()->filled('brand') ? request('brand') : null)
         ?? (request('gender') === 'men' ? "Men's Collection" : null)
         ?? (request('gender') === 'women' ? "Women's Collection" : null)
         ?? 'All Products';
+
+    $metaDescription = (isset($category) && $category->meta_description)
+        ? $category->meta_description
+        : ((isset($category) && $category->description)
+            ? \Illuminate\Support\Str::limit(strip_tags($category->description), 155)
+            : 'Shop ' . $title . ' at Pure Elegance — premium fashion delivered to your door.');
 @endphp
 
-@section('title', $title)
+@section('title', (isset($category) && $category->meta_title) ? $category->meta_title : $title)
+@section('meta_description', $metaDescription)
 
 @section('content')
 <section style="padding: var(--space-xl) 0 var(--space-3xl);">

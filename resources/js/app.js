@@ -1,10 +1,20 @@
 import './bootstrap';
 
-import Alpine from 'alpinejs';
+// ========================================
+// Shared search helpers
+// The command-palette search markup lives in each layout, but the XSS-escaping
+// and highlight logic is defined ONCE here (was duplicated in both layouts).
+// ========================================
+window.peEscHtml = function (s) {
+    return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+};
 
-window.Alpine = Alpine;
-
-Alpine.start();
+window.peHighlight = function (text, query) {
+    const safe = window.peEscHtml(text);
+    if (!query || !text) return safe;
+    const esc = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return safe.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
+};
 
 // ========================================
 // Mobile Drawer Menu Toggle
@@ -36,6 +46,57 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') closeDrawer();
     });
 });
+
+// ========================================
+// Fluid Motion Layer
+// - header elevation on scroll
+// - back-to-top control
+// - image fade-in on load
+// ========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Header elevation
+    const header = document.querySelector('.store-header');
+    const backToTop = document.getElementById('back-to-top');
+
+    const onScroll = () => {
+        if (header) header.classList.toggle('is-scrolled', window.scrollY > 8);
+        if (backToTop) backToTop.classList.toggle('visible', window.scrollY > 600);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    backToTop?.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Image fade-in: only for images still loading — cached images stay visible,
+    // so there is never a blank flash.
+    document.querySelectorAll('main img').forEach((img) => {
+        if (img.complete) return;
+        img.classList.add('img-loading');
+        const reveal = () => img.classList.replace('img-loading', 'img-loaded');
+        img.addEventListener('load', reveal, { once: true });
+        img.addEventListener('error', reveal, { once: true }); // never leave a hidden broken image
+    });
+
+    // Broken-image fallback: swap any image that fails to load to the placeholder.
+    // Replaces the per-render file_exists() disk stat that used to run server-side.
+    const PLACEHOLDER = '/images/placeholder.svg';
+    document.querySelectorAll('img').forEach((img) => {
+        if (img.complete && img.naturalWidth === 0 && !img.src.endsWith(PLACEHOLDER)) {
+            img.src = PLACEHOLDER;
+        }
+    });
+});
+
+// 'error' does not bubble, so listen in the capture phase for any image that 404s.
+document.addEventListener('error', (e) => {
+    const el = e.target;
+    if (el && el.tagName === 'IMG' && el.dataset.fallback !== '1' && !el.src.endsWith('/images/placeholder.svg')) {
+        el.dataset.fallback = '1';
+        el.src = '/images/placeholder.svg';
+    }
+}, true);
 
 // ========================================
 // Toast Notification System
@@ -147,3 +208,56 @@ window.toggleWishlist = async function(productId) {
         showToast('A network error occurred.', 'error');
     }
 };
+
+// ========================================
+// WhatsApp order handoff
+// Navigation to wa.me goes through the anchor's own href (a top-level navigation,
+// which CSP form-action does NOT govern). The "handoff opened" state change is a
+// separate same-origin fetch (governed by connect-src 'self'). This intentionally
+// replaces the old <form> that redirected off-site — a pattern that CSP
+// `form-action 'self'` blocks because the directive also applies to redirect targets.
+// ========================================
+(function () {
+    function markHandoff(markUrl) {
+        if (!markUrl) return;
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        try {
+            // keepalive lets the POST survive the imminent navigation to wa.me.
+            fetch(markUrl, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'same-origin',
+                keepalive: true,
+            }).catch(() => {});
+        } catch (e) { /* best-effort: the anchor navigation still proceeds */ }
+    }
+
+    // Manual button/link: record the handoff, then let the anchor navigate normally.
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('[data-wa-open]');
+        if (!link) return;
+        markHandoff(link.getAttribute('data-wa-mark'));
+    }, true);
+
+    // Auto-open (confirmation page): show the order number for a beat, then open
+    // WhatsApp in the same tab — a timed, gesture-less window.open would be blocked.
+    document.addEventListener('DOMContentLoaded', function () {
+        const auto = document.querySelector('[data-wa-auto]');
+        if (!auto) return;
+        const url = auto.getAttribute('href');
+        const markUrl = auto.getAttribute('data-wa-mark');
+        setTimeout(function () {
+            markHandoff(markUrl);
+            if (url) window.location.href = url;
+        }, 1500);
+    });
+
+    // Returning via Back (bfcache) should reflect the true post-handoff state.
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted && document.querySelector('[data-wa-auto]')) window.location.reload();
+    });
+})();

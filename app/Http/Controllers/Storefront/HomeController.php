@@ -20,6 +20,7 @@ class HomeController extends Controller
         $featuredProducts = Product::where('is_active', true)
             ->where('is_featured', true)
             ->with('primaryImage')
+            ->withRatings()
             ->take(8)
             ->get();
 
@@ -27,6 +28,7 @@ class HomeController extends Controller
         $newArrivals = Product::where('is_active', true)
             ->where('is_new_arrival', true)
             ->with('primaryImage')
+            ->withRatings()
             ->latest()
             ->take(8)
             ->get();
@@ -35,6 +37,7 @@ class HomeController extends Controller
         if ($newArrivals->isEmpty()) {
             $newArrivals = Product::where('is_active', true)
                 ->with('primaryImage')
+                ->withRatings()
                 ->latest()
                 ->take(8)
                 ->get();
@@ -95,6 +98,17 @@ class HomeController extends Controller
             ->filter(fn ($category) => $category->products_count > 0)
             ->values();
 
+        // Shop by Brand: distinct brands across active products, most-stocked first.
+        // Single grouped query — the carousel links each brand to its filtered listing.
+        $brands = Product::where('is_active', true)
+            ->whereNotNull('brand')
+            ->where('brand', '!=', '')
+            ->selectRaw('brand, COUNT(*) as products_count')
+            ->groupBy('brand')
+            ->orderByDesc('products_count')
+            ->orderBy('brand')
+            ->get();
+
         // Pre-fetch wishlist IDs (avoid N+1)
         $wishlistIds = [];
         if (Auth::check()) {
@@ -108,6 +122,7 @@ class HomeController extends Controller
             'newArrivals',
             'banners',
             'topCategories',
+            'brands',
             'wishlistIds'
         ));
     }

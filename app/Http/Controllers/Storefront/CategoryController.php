@@ -12,20 +12,25 @@ use App\Models\Wishlist;
 class CategoryController extends Controller
 {
     /**
-     * Product listing page with optional gender filter.
-     * /categories           → all active products
-     * /categories?gender=men   → men's products (by product.gender column)
-     * /categories?gender=women → women's products
+     * Product listing page with optional gender / brand filters.
+     * /categories                → all active products
+     * /categories?gender=men      → men's products (by product.gender column)
+     * /categories?gender=women    → women's products
+     * /categories?brand=Maison    → products of a given brand (Shop by Brand carousel)
      */
     public function index(Request $request)
     {
-        $query = Product::where('is_active', true)->with('primaryImage');
+        $query = Product::where('is_active', true)->with('primaryImage')->withRatings();
 
         if ($request->has('gender') && in_array($request->gender, ['men', 'women'])) {
             $query->where('gender', $request->gender);
         }
 
-        $products = $query->latest()->paginate(12);
+        if ($request->filled('brand')) {
+            $query->where('brand', $request->brand);
+        }
+
+        $products = $query->latest()->paginate(12)->withQueryString();
 
         $wishlistIds = [];
         if (Auth::check()) {
@@ -51,6 +56,7 @@ class CategoryController extends Controller
         $products = Product::whereIn('category_id', $categoryIds)
             ->where('is_active', true)
             ->with('primaryImage')
+            ->withRatings()
             ->latest()
             ->paginate(12);
 
@@ -71,6 +77,7 @@ class CategoryController extends Controller
             ->whereNotNull('sale_price')
             ->whereColumn('sale_price', '<', 'price')
             ->with('primaryImage')
+            ->withRatings()
             ->latest()
             ->paginate(12);
 
@@ -94,6 +101,7 @@ class CategoryController extends Controller
         $products = Product::where('is_active', true)
             ->where('is_new_arrival', true)
             ->with('primaryImage')
+            ->withRatings()
             ->latest()
             ->paginate(12);
 

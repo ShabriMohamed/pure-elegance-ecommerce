@@ -49,6 +49,23 @@
         </div>
 
         <div class="form-group">
+            <label for="icon" class="form-label">Icon (Material Symbols name)</label>
+            <input type="text" id="icon" name="icon" class="form-control" value="{{ old('icon', $category->icon ?? '') }}" placeholder="e.g. checkroom, watch, diamond">
+            <small style="color: var(--color-muted); font-size: 0.72rem;">Use a <a href="https://fonts.google.com/icons" target="_blank" rel="noopener" style="color: var(--color-gold);">Material Symbols</a> name (lowercase, underscores). Shown on the homepage category grid.</small>
+            @error('icon')<div class="form-error">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="form-group">
+            <label for="meta_title" class="form-label">Meta Title (SEO)</label>
+            <input type="text" id="meta_title" name="meta_title" class="form-control" value="{{ old('meta_title', $category->meta_title ?? '') }}" maxlength="255">
+        </div>
+
+        <div class="form-group">
+            <label for="meta_description" class="form-label">Meta Description (SEO)</label>
+            <textarea id="meta_description" name="meta_description" class="form-control" rows="2" maxlength="255">{{ old('meta_description', $category->meta_description ?? '') }}</textarea>
+        </div>
+
+        <div class="form-group">
             <label for="sort_order" class="form-label">Sort Order</label>
             <input type="number" id="sort_order" name="sort_order" class="form-control" value="{{ old('sort_order', $category->sort_order ?? 0) }}" min="0" required>
         </div>

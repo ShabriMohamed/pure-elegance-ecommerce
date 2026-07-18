@@ -28,6 +28,9 @@ class UpdateCategoryRequest extends FormRequest
             ],
             'gender' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
+            'icon' => ['nullable', 'string', 'max:60', 'regex:/^[a-z0-9_]+$/'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['required', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ];

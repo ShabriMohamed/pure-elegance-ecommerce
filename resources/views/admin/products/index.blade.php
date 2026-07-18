@@ -87,9 +87,9 @@
                         <td style="font-family: monospace; font-size: 0.85rem; color: var(--color-muted);">{{ $product->sku }}</td>
                         <td>{{ $product->category->name ?? '—' }}</td>
                         <td>
-                            <div style="font-weight: 600;">LKR {{ number_format($product->price, 2) }}</div>
+                            <div style="font-weight: 600;">{{ money($product->price) }}</div>
                             @if($product->sale_price)
-                                <div style="font-size: 0.75rem; color: #2E7D32; margin-top: 1px;">Sale: LKR {{ number_format($product->sale_price, 2) }}</div>
+                                <div style="font-size: 0.75rem; color: #2E7D32; margin-top: 1px;">Sale: {{ money($product->sale_price) }}</div>
                             @endif
                         </td>
                         <td>

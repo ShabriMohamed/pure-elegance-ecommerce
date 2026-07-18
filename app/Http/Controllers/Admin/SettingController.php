@@ -18,15 +18,28 @@ class SettingController extends Controller
     {
         $validated = $request->validate([
             'settings' => 'required|array',
-            'settings.site_name' => 'nullable|string',
-            'settings.contact_email' => 'nullable|email',
-            'settings.contact_phone' => 'nullable|string',
-            'settings.whatsapp_number' => 'nullable|string',
-            'settings.delivery_fee' => 'nullable|numeric',
-            'settings.free_delivery_threshold' => 'nullable|numeric',
+            'settings.site_name' => 'nullable|string|max:255',
+            'settings.currency_symbol' => 'nullable|string|max:8',
+            'settings.contact_email' => 'nullable|email|max:255',
+            'settings.contact_phone' => 'nullable|string|max:30',
+            'settings.whatsapp_number' => 'nullable|string|max:30',
+            'settings.whatsapp_enabled' => 'nullable|boolean',
+            'settings.delivery_fee' => 'nullable|numeric|min:0',
+            'settings.free_delivery_threshold' => 'nullable|numeric|min:0',
+            'settings.announcement_bar_enabled' => 'nullable|boolean',
+            'settings.announcement_bar_text' => 'nullable|string|max:120',
+            'settings.announcement_bar_highlight' => 'nullable|string|max:60',
         ]);
 
-        foreach ($validated['settings'] as $key => $value) {
+        $settings = $validated['settings'];
+
+        // Normalise the WhatsApp number to digits only (country code, no + or spaces)
+        // so the wa.me link is always valid.
+        if (array_key_exists('whatsapp_number', $settings) && $settings['whatsapp_number'] !== null) {
+            $settings['whatsapp_number'] = preg_replace('/\D+/', '', $settings['whatsapp_number']);
+        }
+
+        foreach ($settings as $key => $value) {
             SiteSetting::updateOrCreate(
                 ['key' => $key],
                 ['value' => $value, 'type' => 'text']
