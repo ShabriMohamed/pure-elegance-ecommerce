@@ -46,9 +46,26 @@ class Product extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class)->where('is_approved', true);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Eager-load approved-review count + average rating so product grids can render
+     * star ratings without an N+1 query per card.
+     * Exposes: $product->reviews_count and $product->reviews_avg
+     */
+    public function scopeWithRatings($query)
+    {
+        return $query
+            ->withCount(['approvedReviews as reviews_count'])
+            ->withAvg(['approvedReviews as reviews_avg'], 'rating');
     }
 
     public function scopeFeatured($query)
@@ -78,18 +95,22 @@ class Product extends Model
 
     public function getPrimaryImageUrlAttribute(): string
     {
+        // No per-render disk stat — a missing file falls back to the placeholder
+        // client-side (img onerror handler in app.js).
         $img = $this->primaryImage;
-        if ($img && $img->image_path) {
-            // Check if file exists on disk
-            if (file_exists(storage_path('app/public/' . $img->image_path))) {
-                return asset('storage/' . $img->image_path);
-            }
-        }
-        return asset('images/placeholder.svg');
+
+        return ($img && $img->image_path)
+            ? asset('storage/' . $img->image_path)
+            : asset('images/placeholder.svg');
     }
 
     public function getAverageRatingAttribute(): float
     {
-        return $this->reviews()->where('is_approved', true)->avg('rating') ?? 0;
+        // Prefer the eager-loaded aggregate (scopeWithRatings) to avoid an extra query.
+        if (array_key_exists('reviews_avg', $this->attributes)) {
+            return (float) ($this->attributes['reviews_avg'] ?? 0);
+        }
+
+        return (float) ($this->approvedReviews()->avg('rating') ?? 0);
     }
 }

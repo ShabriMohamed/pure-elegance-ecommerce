@@ -84,15 +84,70 @@ class CartService
     }
 
     /**
-     * Update quantity for a specific cart item. Validates ownership.
+     * Find the current cart WITHOUT creating one (read-only paths like the header badge).
+     */
+    public function findCart(): ?Cart
+    {
+        if (Auth::check()) {
+            return Cart::where('user_id', Auth::id())->first();
+        }
+
+        return Cart::whereNull('user_id')
+            ->where('session_id', Session::getId())
+            ->first();
+    }
+
+    /**
+     * Total item count for the current cart, without ever creating a cart row.
+     * Used by the header badge so merely rendering a page never writes to the DB.
+     */
+    public function getCartCount(): int
+    {
+        $cart = $this->findCart();
+
+        return $cart ? (int) $cart->items()->sum('quantity') : 0;
+    }
+
+    /**
+     * Quantity of a given product+variant already in the current cart (0 if none).
+     */
+    public function currentQuantity(Product $product, ?ProductVariant $variant): int
+    {
+        $cart = $this->findCart();
+
+        if (! $cart) {
+            return 0;
+        }
+
+        return (int) CartItem::where('cart_id', $cart->id)
+            ->where('product_id', $product->id)
+            ->where('variant_id', $variant?->id)
+            ->sum('quantity');
+    }
+
+    /**
+     * Update quantity for a specific cart item. Validates ownership and clamps to
+     * available stock and the per-line cap so an impossible cart can't reach checkout.
      */
     public function updateQuantity(int $cartItemId, int $quantity): void
     {
-        $cartItem = CartItem::findOrFail($cartItemId);
+        $cartItem = CartItem::with(['product', 'variant'])->findOrFail($cartItemId);
 
         if ($cartItem->cart_id !== $this->getCart()->id) {
             abort(403, 'Unauthorized access to cart item.');
         }
+
+        if ($quantity <= 0) {
+            $cartItem->delete();
+            return;
+        }
+
+        $available = $cartItem->variant
+            ? (int) $cartItem->variant->stock_quantity
+            : (int) ($cartItem->product->stock_quantity ?? 0);
+
+        $cap = (int) config('shop.max_qty_per_line');
+        $quantity = min($quantity, $available, $cap);
 
         if ($quantity <= 0) {
             $cartItem->delete();
