@@ -42,54 +42,54 @@ class OrderController extends Controller
      */
     public function updateStatus(\App\Http\Requests\Admin\UpdateOrderStatusRequest $request, Order $order)
     {
-        $validated = $request->validated();
+        $newStatus = $request->validated()['status'];
         $oldStatus = $order->status;
-        $newStatus = $validated['status'];
+
+        // Enforce the status state machine — no illegal jumps (e.g. delivered -> pending).
+        if (! $order->canTransitionTo($newStatus)) {
+            return back()->with('error', "Cannot change status from '{$order->status_label}' to '" . (Order::statuses()[$newStatus] ?? $newStatus) . "'.");
+        }
+
+        if ($newStatus === $oldStatus) {
+            return back()->with('success', 'Order status unchanged.');
+        }
 
         try {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $order, $oldStatus, $newStatus) {
-                // Handle stock restoration if order is cancelled or refunded
-                // and the previous status was not already cancelled or refunded
-                $isRestoringStatus = in_array($newStatus, ['cancelled', 'refunded']);
-                $wasAlreadyRestored = in_array($oldStatus, ['cancelled', 'refunded']);
+            \Illuminate\Support\Facades\DB::transaction(function () use ($order, $oldStatus, $newStatus) {
+                $order->load(['items.variant', 'items.product']);
 
-                if ($isRestoringStatus && !$wasAlreadyRestored) {
+                // Restore inventory when moving from a stock-committed state into a
+                // terminal cancelled/refunded state — restoring to the exact SKU that
+                // was decremented (variant when present, else the base product).
+                $entersRestore = in_array($newStatus, [Order::STATUS_CANCELLED, Order::STATUS_REFUNDED], true);
+
+                if ($entersRestore && $order->isStockCommitted()) {
                     foreach ($order->items as $item) {
-                        if ($item->product) {
+                        if ($item->variant_id && $item->variant) {
+                            $item->variant->increment('stock_quantity', $item->quantity);
+                        } elseif ($item->product) {
                             $item->product->increment('stock_quantity', $item->quantity);
-                        }
-                    }
-                } 
-                // Handle stock deduction if order is moved back to an active state
-                elseif (!$isRestoringStatus && $wasAlreadyRestored) {
-                    foreach ($order->items as $item) {
-                        if ($item->product) {
-                            // Ideally, we'd check if enough stock exists, but for admin override, we deduct.
-                            $item->product->decrement('stock_quantity', $item->quantity);
                         }
                     }
                 }
 
-                $order->update([
-                    'status' => $newStatus,
-                ]);
+                $order->update(['status' => $newStatus]);
 
                 Log::info('Order status updated', [
-                    'order_id'   => $order->id,
+                    'order_id' => $order->id,
                     'order_number' => $order->order_number,
                     'old_status' => $oldStatus,
                     'new_status' => $newStatus,
-                    'admin_id'   => auth()->id(),
+                    'admin_id' => auth()->id(),
                 ]);
             });
-
-            return redirect()
-                ->route('admin.orders.show', $order)
-                ->with('success', "Order #{$order->order_number} status updated to " . ucfirst($newStatus) . ".");
-                
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Order status update failed: ' . $e->getMessage());
             return back()->with('error', 'Failed to update order status.');
         }
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', "Order #{$order->order_number} status updated to " . ($order->status_label) . ".");
     }
 }

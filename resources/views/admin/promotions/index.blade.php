@@ -36,14 +36,14 @@
                             @if($promo->type === 'percentage')
                                 {{ number_format($promo->value, 0) }}%
                             @else
-                                LKR {{ number_format($promo->value, 2) }}
+                                {{ money($promo->value) }}
                             @endif
                             @if($promo->max_discount_amount)
-                                <div style="font-size: 0.7rem; color: var(--color-muted);">Max: LKR {{ number_format($promo->max_discount_amount, 2) }}</div>
+                                <div style="font-size: 0.7rem; color: var(--color-muted);">Max: {{ money($promo->max_discount_amount) }}</div>
                             @endif
                         </td>
                         <td style="font-size: 0.85rem; color: var(--color-muted);">
-                            {{ $promo->min_order_amount ? 'LKR ' . number_format($promo->min_order_amount, 2) : '—' }}
+                            {{ $promo->min_order_amount ? money($promo->min_order_amount) : '—' }}
                         </td>
                         <td style="font-size: 0.85rem;">
                             <span style="font-weight: 500;">{{ $promo->used_count ?? 0 }}</span>

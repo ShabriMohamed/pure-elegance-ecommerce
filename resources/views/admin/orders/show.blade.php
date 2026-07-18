@@ -44,7 +44,9 @@
                 </div>
             </div>
 
-            <table class="admin-table" style="margin-bottom: var(--space-lg);">
+            {{-- Scroll container so the line-item table doesn't overflow the page on mobile --}}
+            <div style="overflow-x: auto; margin-bottom: var(--space-lg);">
+            <table class="admin-table">
                 <thead>
                     <tr>
                         <th>Item</th>
@@ -62,30 +64,31 @@
                                     <div style="font-size: 0.75rem; color: var(--color-muted);">Variant: {{ $item->variant_info }}</div>
                                 @endif
                             </td>
-                            <td>LKR {{ number_format($item->unit_price, 2) }}</td>
+                            <td>{{ money($item->unit_price) }}</td>
                             <td>{{ $item->quantity }}</td>
-                            <td style="text-align: right; font-weight: 500;">LKR {{ number_format($item->total_price, 2) }}</td>
+                            <td style="text-align: right; font-weight: 500;">{{ money($item->total_price) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+            </div>
 
             <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; padding-top: var(--space-md); border-top: 1px solid var(--color-border);">
-                <div style="display: flex; justify-content: space-between; width: 250px; color: var(--color-muted);">
+                <div style="display: flex; justify-content: space-between; width: min(250px, 100%); color: var(--color-muted);">
                     <span>Subtotal</span>
-                    <span>LKR {{ number_format($order->subtotal, 2) }}</span>
+                    <span>{{ money($order->subtotal) }}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; width: 250px; color: var(--color-muted);">
+                <div style="display: flex; justify-content: space-between; width: min(250px, 100%); color: var(--color-muted);">
                     <span>Discount</span>
-                    <span>- LKR {{ number_format($order->discount_amount, 2) }}</span>
+                    <span>- {{ money($order->discount_amount) }}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; width: 250px; color: var(--color-muted);">
+                <div style="display: flex; justify-content: space-between; width: min(250px, 100%); color: var(--color-muted);">
                     <span>Delivery</span>
-                    <span>LKR {{ number_format($order->delivery_fee, 2) }}</span>
+                    <span>{{ money($order->delivery_fee) }}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; width: 250px; font-weight: 600; font-size: 1.125rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--color-border);">
+                <div style="display: flex; justify-content: space-between; width: min(250px, 100%); font-weight: 600; font-size: 1.125rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--color-border);">
                     <span>Total</span>
-                    <span>LKR {{ number_format($order->total, 2) }}</span>
+                    <span>{{ money($order->total) }}</span>
                 </div>
             </div>
         </div>
@@ -101,16 +104,26 @@
                 @csrf
                 @method('PATCH')
                 
+                @php $allowedStatuses = array_merge([$order->status], $order->nextStatuses()); @endphp
                 <div class="form-group">
                     <label class="form-label">Order Status</label>
-                    <select name="status" class="form-control">
+                    <select name="status" class="form-control" {{ empty($order->nextStatuses()) ? 'disabled' : '' }}>
                         @foreach(\App\Models\Order::statuses() as $value => $label)
-                            <option value="{{ $value }}" {{ $order->status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @if(in_array($value, $allowedStatuses, true))
+                                <option value="{{ $value }}" {{ $order->status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endif
                         @endforeach
                     </select>
+                    <p style="font-size: 0.72rem; color: var(--color-muted); margin-top: 6px;">
+                        Only valid next transitions are shown.
+                    </p>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Update Status</button>
+                @if(empty($order->nextStatuses()))
+                    <p style="font-size: 0.8rem; color: var(--color-muted);">This order is in a final state ({{ $order->status_label }}).</p>
+                @else
+                    <button type="submit" class="btn btn-primary btn-block">Update Status</button>
+                @endif
             </form>
         </div>
 

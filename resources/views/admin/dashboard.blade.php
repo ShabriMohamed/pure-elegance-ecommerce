@@ -42,12 +42,12 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
                 <div style="color: var(--color-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--space-xs);">Total Revenue</div>
-                <div style="font-size: 1.75rem; font-family: var(--font-serif); font-weight: 600; color: var(--color-gold);">LKR {{ number_format($stats['total_revenue'], 2) }}</div>
+                <div style="font-size: 1.75rem; font-family: var(--font-serif); font-weight: 600; color: var(--color-gold);">{{ money($stats['total_revenue']) }}</div>
             </div>
             <span class="material-symbols-outlined" style="font-size: 2rem; color: var(--color-gold); opacity: 0.3;">payments</span>
         </div>
         <div style="margin-top: var(--space-sm); font-size: 0.75rem; color: var(--color-muted);">
-            Today: LKR {{ number_format($today['revenue'], 2) }}
+            Today: {{ money($today['revenue']) }}
         </div>
     </div>
 
@@ -136,7 +136,7 @@
                     <div>
                         <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
                             <span style="color: var(--color-charcoal); font-weight: 500;">{{ $month['label'] }}</span>
-                            <span style="color: var(--color-muted);">LKR {{ number_format($month['revenue'], 0) }} ({{ $month['orders'] }} orders)</span>
+                            <span style="color: var(--color-muted);">{{ money($month['revenue']) }} ({{ $month['orders'] }} orders)</span>
                         </div>
                         <div style="height: 8px; background: var(--color-soft-gray); border-radius: 4px; overflow: hidden;">
                             <div style="height: 100%; width: {{ ($month['revenue'] / $maxRevenue) * 100 }}%; background: linear-gradient(90deg, var(--color-gold), #D4A03C); border-radius: 4px; transition: width 0.5s;"></div>
@@ -174,7 +174,7 @@
                                 <div style="font-size: 0.7rem; color: var(--color-muted);">{{ $product->sku }}</div>
                             </td>
                             <td>{{ $product->units_sold }}</td>
-                            <td style="text-align: right; font-weight: 500;">LKR {{ number_format($product->total_revenue, 2) }}</td>
+                            <td style="text-align: right; font-weight: 500;">{{ money($product->total_revenue) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -253,7 +253,7 @@
                         <td style="font-weight: 500;">{{ $order->order_number }}</td>
                         <td>{{ $order->customer_name }}</td>
                         <td>{{ $order->created_at->format('M d, Y') }}</td>
-                        <td>LKR {{ number_format($order->total, 2) }}</td>
+                        <td>{{ money($order->total) }}</td>
                         <td>
                             @php
                                 $badgeClass = match($order->status) {

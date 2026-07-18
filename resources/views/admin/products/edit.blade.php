@@ -68,6 +68,16 @@
                     <label for="description" class="form-label">Full Description</label>
                     <textarea id="description" name="description" class="form-control" rows="6">{{ old('description', $product->description) }}</textarea>
                 </div>
+                <div class="form-group">
+                    <label for="meta_title" class="form-label">Meta Title (SEO, optional)</label>
+                    <input type="text" id="meta_title" name="meta_title" class="form-control" value="{{ old('meta_title', $product->meta_title) }}" maxlength="255">
+                    @error('meta_title')<div class="form-error">{{ $message }}</div>@enderror
+                </div>
+                <div class="form-group">
+                    <label for="meta_description" class="form-label">Meta Description (SEO, optional)</label>
+                    <textarea id="meta_description" name="meta_description" class="form-control" rows="2" maxlength="255">{{ old('meta_description', $product->meta_description) }}</textarea>
+                    @error('meta_description')<div class="form-error">{{ $message }}</div>@enderror
+                </div>
             </div>
 
             {{-- Pricing & Inventory --}}
