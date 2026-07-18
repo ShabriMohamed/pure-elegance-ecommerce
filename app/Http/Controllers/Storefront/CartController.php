@@ -27,29 +27,42 @@ class CartController extends Controller
 
     public function add(Request $request)
     {
-        $request->validate([
+        $cap = (int) config('shop.max_qty_per_line');
+
+        $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1|max:' . $cap,
             'variant_id' => 'nullable|exists:product_variants,id',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
-        $variant = $request->variant_id
-            ? ProductVariant::findOrFail($request->variant_id)
-            : null;
+        $product = Product::where('is_active', true)->findOrFail($validated['product_id']);
 
-        // Stock validation
-        $availableStock = $variant
-            ? $variant->stock_quantity
-            : $product->stock_quantity;
+        $variant = null;
+        if (! empty($validated['variant_id'])) {
+            // The variant MUST belong to this product — prevents pairing product A
+            // with product B's variant (price/stock tampering).
+            $variant = $product->variants()->where('is_active', true)->find($validated['variant_id']);
 
-        if ($request->quantity > $availableStock) {
-            return redirect()->back()->with('error', 'Not enough stock available.');
+            if (! $variant) {
+                return back()->with('error', 'Please choose a valid option for this product.');
+            }
         }
 
-        $this->cartService->addItem($product, $variant, $request->quantity);
+        $available = (int) ($variant ? $variant->stock_quantity : $product->stock_quantity);
+        $alreadyInCart = $this->cartService->currentQuantity($product, $variant);
+        $requestedTotal = $alreadyInCart + (int) $validated['quantity'];
 
-        return redirect()->back()->with('success', 'Product added to cart!');
+        if ($requestedTotal > $available) {
+            return back()->with('error', 'Not enough stock available for the requested quantity.');
+        }
+
+        if ($requestedTotal > $cap) {
+            return back()->with('error', "You can add at most {$cap} of this item per order.");
+        }
+
+        $this->cartService->addItem($product, $variant, (int) $validated['quantity']);
+
+        return back()->with('success', 'Product added to cart!');
     }
 
     public function update(Request $request, $itemId)

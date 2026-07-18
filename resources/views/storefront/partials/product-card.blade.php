@@ -42,11 +42,25 @@
         <div class="product-title">{{ $product->name }}</div>
         <div class="product-price">
             @if($product->is_on_sale)
-                <span class="price-sale">LKR {{ number_format($product->sale_price, 2) }}</span>
-                <span class="price-original">LKR {{ number_format($product->price, 2) }}</span>
+                <span class="price-sale">{{ money($product->sale_price) }}</span>
+                <span class="price-original">{{ money($product->price) }}</span>
             @else
-                <span>LKR {{ number_format($product->price, 2) }}</span>
+                <span>{{ money($product->price) }}</span>
             @endif
         </div>
+
+        @php
+            // Prefer eager-loaded aggregates (scopeWithRatings); fall back to a query
+            // only if this card was rendered without them.
+            $reviewCount = $product->reviews_count ?? $product->approvedReviews()->count();
+            $reviewAvg = (float) ($product->reviews_avg
+                ?? ($reviewCount ? $product->approvedReviews()->avg('rating') : 0));
+        @endphp
+        @if($reviewCount > 0)
+            <div class="product-rating" aria-label="Rated {{ number_format($reviewAvg, 1) }} out of 5 from {{ $reviewCount }} reviews">
+                <span class="product-stars" style="--rating: {{ $reviewAvg }};" aria-hidden="true">★★★★★</span>
+                <span class="product-rating-count">({{ $reviewCount }})</span>
+            </div>
+        @endif
     </div>
 </a>

@@ -7,7 +7,24 @@
     </a>
 </div>
 
-<h1 style="font-size: 2rem; margin-bottom: var(--space-xl); font-family: var(--font-serif);">Order Details</h1>
+<h1 style="font-size: 2rem; margin-bottom: var(--space-lg); font-family: var(--font-serif);">Order Details</h1>
+
+@php($__waService = app(\App\Services\WhatsAppNotificationService::class))
+@if($__waService->isConfigured() && !in_array($order->status, ['cancelled', 'refunded', 'delivered']))
+    {{-- Anchor navigates to wa.me via href (CSP-allowed); app.js records the handoff
+         with a same-origin fetch. Opens in a new tab so this page is preserved. --}}
+    <div style="margin-bottom: var(--space-xl);">
+        <a href="{{ $__waService->generateUrl($order) }}" class="btn btn-gold"
+           data-wa-open data-wa-mark="{{ route('checkout.whatsapp', $order, false) }}"
+           target="_blank" rel="noopener">
+            <span class="material-symbols-outlined" style="font-size: 1.1rem;">chat</span>
+            {{ $order->whatsapp_sent_at ? 'Re-send this order on WhatsApp' : 'Send this order on WhatsApp' }}
+        </a>
+        <span style="display: block; font-size: 0.75rem; color: var(--color-muted); margin-top: 0.4rem;">
+            Opens WhatsApp with your order details for our team.
+        </span>
+    </div>
+@endif
 
 <div class="card" style="border: none; box-shadow: var(--shadow-sm); margin-bottom: var(--space-xl);">
     <div style="background: var(--color-cream); padding: var(--space-lg); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border);">
@@ -37,14 +54,14 @@
                 <div style="flex-grow: 1;">
                     <div style="display: flex; justify-content: space-between;">
                         <a href="{{ $item->product ? route('product.show', $item->product->slug) : '#' }}" style="font-weight: 500; font-size: 1.125rem;">{{ $item->product_name }}</a>
-                        <div style="font-weight: 500;">LKR {{ number_format($item->total_price, 2) }}</div>
+                        <div style="font-weight: 500;">{{ money($item->total_price) }}</div>
                     </div>
                     <div style="font-size: 0.875rem; color: var(--color-muted); margin-top: 0.25rem;">
                         @if($item->variant_info)
                             Variant: {{ $item->variant_info }} <br>
                         @endif
                         Qty: {{ $item->quantity }} <br>
-                        Price: LKR {{ number_format($item->unit_price, 2) }} each
+                        Price: {{ money($item->unit_price) }} each
                     </div>
                 </div>
             </div>
@@ -53,21 +70,21 @@
         <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; margin-top: var(--space-lg);">
             <div style="display: flex; justify-content: space-between; width: 300px; color: var(--color-muted);">
                 <span>Subtotal</span>
-                <span>LKR {{ number_format($order->subtotal, 2) }}</span>
+                <span>{{ money($order->subtotal) }}</span>
             </div>
             @if($order->discount_amount > 0)
                 <div style="display: flex; justify-content: space-between; width: 300px; color: var(--color-error);">
                     <span>Discount</span>
-                    <span>- LKR {{ number_format($order->discount_amount, 2) }}</span>
+                    <span>- {{ money($order->discount_amount) }}</span>
                 </div>
             @endif
             <div style="display: flex; justify-content: space-between; width: 300px; color: var(--color-muted);">
                 <span>Delivery Fee</span>
-                <span>LKR {{ number_format($order->delivery_fee, 2) }}</span>
+                <span>{{ money($order->delivery_fee) }}</span>
             </div>
             <div style="display: flex; justify-content: space-between; width: 300px; font-weight: 600; font-size: 1.25rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--color-obsidian);">
                 <span>Total</span>
-                <span>LKR {{ number_format($order->total, 2) }}</span>
+                <span>{{ money($order->total) }}</span>
             </div>
         </div>
     </div>
