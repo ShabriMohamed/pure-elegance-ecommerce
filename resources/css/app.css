@@ -3052,3 +3052,243 @@ img.img-loaded  { opacity: 1; transition: opacity 0.45s var(--ease-out); }
     .review-form-actions .btn,
     .review-login-actions .btn { width: 100%; }
 }
+
+/* ========================================
+   SHOP BY BRAND – Premium Dark Showcase
+   Inspired by PCBuilders.LK brand strip
+   ======================================== */
+.brand-showcase {
+    background: linear-gradient(180deg, #0A0A0A 0%, #111111 50%, #0A0A0A 100%);
+    padding: 4.5rem 0;
+    position: relative;
+    overflow: hidden;
+    --gold-text: var(--color-premium-gold);
+}
+
+/* Subtle decorative glow behind the section */
+.brand-showcase::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 600px; height: 300px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(ellipse, rgba(200, 155, 60, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.brand-showcase-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+    position: relative;
+    z-index: 1;
+}
+
+/* ---- Header ---- */
+.brand-showcase-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.brand-showcase-eyebrow {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--color-premium-gold);
+    margin-bottom: 0.75rem;
+    position: relative;
+    padding: 0 1.5rem;
+}
+.brand-showcase-eyebrow::before,
+.brand-showcase-eyebrow::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-premium-gold));
+}
+.brand-showcase-eyebrow::before { right: 100%; }
+.brand-showcase-eyebrow::after  { left: 100%; background: linear-gradient(90deg, var(--color-premium-gold), transparent); }
+
+.brand-showcase-title {
+    font-family: var(--font-serif, var(--font-sans));
+    font-size: clamp(1.15rem, 2vw, 1.6rem);
+    font-weight: 600;
+    color: #FFFFFF;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.brand-showcase-highlight {
+    color: var(--color-premium-gold);
+    font-weight: 700;
+}
+
+/* ---- Carousel Wrapper ---- */
+.brand-carousel-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+/* Navigation arrows */
+.brand-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+.brand-arrow:hover {
+    border-color: var(--color-premium-gold);
+    color: var(--color-premium-gold);
+    background: rgba(200, 155, 60, 0.12);
+    box-shadow: 0 0 20px rgba(200, 155, 60, 0.15);
+}
+.brand-arrow--left  { left: -8px; }
+.brand-arrow--right { right: -8px; }
+.brand-arrow .material-symbols-outlined { font-size: 1.4rem; }
+
+/* Scrolling track */
+.brand-carousel-track {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 1.5rem 2rem;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.brand-carousel-track::-webkit-scrollbar { display: none; }
+
+/* ---- Brand Card ---- */
+.brand-card {
+    flex: 0 0 auto;
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1.75rem 1.25rem;
+    background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover glow ring */
+.brand-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: linear-gradient(135deg, transparent 30%, rgba(200,155,60,0.5) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.brand-card:hover::before { opacity: 1; }
+
+.brand-card:hover {
+    transform: translateY(-6px);
+    background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(200,155,60,0.06) 100%);
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.4),
+        0 0 30px rgba(200, 155, 60, 0.08);
+}
+
+/* Monogram logo */
+.brand-card-logo {
+    width: 64px; height: 64px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(200,155,60,0.15), rgba(200,155,60,0.05));
+    border: 1px solid rgba(200,155,60,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+.brand-card:hover .brand-card-logo {
+    background: linear-gradient(135deg, rgba(200,155,60,0.25), rgba(200,155,60,0.1));
+    border-color: rgba(200,155,60,0.4);
+    box-shadow: 0 0 20px rgba(200, 155, 60, 0.1);
+}
+
+.brand-card-monogram {
+    font-family: var(--font-serif, var(--font-sans));
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--color-premium-gold);
+    letter-spacing: 1.5px;
+    line-height: 1;
+}
+
+.brand-card-name {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    text-align: center;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    transition: color 0.25s ease;
+}
+.brand-card:hover .brand-card-name { color: var(--color-premium-gold); }
+
+.brand-card-count {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.5px;
+    text-transform: lowercase;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .brand-showcase { padding: 3rem 0; }
+    .brand-showcase-title { font-size: 1rem; letter-spacing: 1.5px; }
+    .brand-arrow { width: 36px; height: 36px; }
+    .brand-arrow--left  { left: 4px; }
+    .brand-arrow--right { right: 4px; }
+    .brand-card { width: 150px; padding: 1.25rem 1rem; }
+    .brand-card-logo { width: 52px; height: 52px; }
+    .brand-card-monogram { font-size: 1.1rem; }
+    .brand-carousel-track { gap: 1rem; padding: 1rem; }
+}
+
+@media (max-width: 480px) {
+    .brand-showcase-eyebrow::before,
+    .brand-showcase-eyebrow::after { display: none; }
+    .brand-card { width: 130px; padding: 1rem 0.75rem; }
+    .brand-card-logo { width: 46px; height: 46px; border-radius: 10px; }
+    .brand-card-monogram { font-size: 1rem; }
+    .brand-card-name { font-size: 0.78rem; }
+}
