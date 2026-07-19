@@ -2723,67 +2723,41 @@ html, body { max-width: 100%; overflow-x: hidden; }
     to   { transform: translateX(-33.333%); }
 }
 
-.brand-chip {
+.brand-logo-link {
     flex: 0 0 auto;
     display: flex;
     align-items: center;
-    gap: var(--space-md);
-    padding: 10px var(--space-lg) 10px 10px;
-    background: var(--color-pure-white);
-    border: 1px solid var(--color-light-gray);
-    border-radius: var(--radius-full);
-    text-decoration: none;
-    color: var(--color-primary-text);
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
-}
-
-.brand-chip:hover {
-    border-color: var(--color-premium-gold);
-    box-shadow: 0 12px 32px rgba(200,155,60,0.18);
-    transform: translateY(-4px);
-}
-
-.brand-chip-monogram {
-    width: 52px;
-    height: 52px;
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
     justify-content: center;
-    background: var(--gradient-black-gold);
-    color: var(--color-pure-white);
-    font-family: var(--font-serif);
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    flex-shrink: 0;
-    transition: transform var(--transition-base);
+    padding: 0 40px;
+    height: 60px;
+    text-decoration: none;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    will-change: transform, opacity;
 }
 
-.brand-chip:hover .brand-chip-monogram { transform: scale(1.08) rotate(-3deg); }
-
-.brand-chip-info { display: flex; flex-direction: column; line-height: 1.25; }
-
-.brand-chip-name {
-    font-family: var(--font-sans);
-    font-size: 0.95rem;
-    font-weight: 600;
-    white-space: nowrap;
-    letter-spacing: 0.2px;
+/* When the user hovers anywhere on the track, gracefully dim and shrink all logos */
+.brand-marquee-track:hover .brand-logo-link {
+    opacity: 0.35;
+    transform: scale(0.96);
 }
 
-.brand-chip-count {
-    font-family: var(--font-sans);
-    font-size: 0.72rem;
-    color: var(--color-muted-text);
-    white-space: nowrap;
+/* But for the specific logo being hovered, bring it to full focus */
+.brand-marquee-track .brand-logo-link:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.brand-logo-img {
+    height: 32px;
+    width: auto;
+    max-width: 140px;
+    object-fit: contain;
+    transition: transform 0.4s ease;
 }
 
 @media (max-width: 768px) {
-    .brand-chip { padding: 8px var(--space-md) 8px 8px; }
-    .brand-chip-monogram { width: 46px; height: 46px; font-size: 1rem; }
-    .brand-chip-name { font-size: 0.88rem; }
+    .brand-logo-link { padding: 0 20px; }
+    .brand-logo-img { height: 24px; }
 }
 
 /* Reduced motion: stop the scroll and let users swipe the row instead */

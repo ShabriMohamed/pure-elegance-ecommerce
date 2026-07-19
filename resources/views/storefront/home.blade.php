@@ -216,18 +216,14 @@
         <div class="brand-marquee-track">
             @for($rep = 0; $rep < 3; $rep++)
                 @foreach($brands as $brand)
-                    @php
-                        $words = preg_split('/\s+/', trim($brand->brand));
-                        $monogram = strtoupper(mb_substr($words[0], 0, 1) . (isset($words[1]) ? mb_substr($words[1], 0, 1) : ''));
-                    @endphp
                     <a href="{{ route('categories', ['brand' => $brand->brand]) }}"
-                       class="brand-chip"
+                       class="brand-logo-link"
                        @if($rep > 0) aria-hidden="true" tabindex="-1" @endif>
-                        <span class="brand-chip-monogram" aria-hidden="true">{{ $monogram }}</span>
-                        <span class="brand-chip-info">
-                            <span class="brand-chip-name">{{ $brand->brand }}</span>
-                            <span class="brand-chip-count">{{ $brand->products_count }} {{ Str::plural('item', $brand->products_count) }}</span>
-                        </span>
+                        <img src="{{ asset('images/brands/' . Str::slug($brand->brand) . '.png') }}" 
+                             onerror="this.onerror=null;this.src='https://placehold.co/140x50/transparent/333333/png?text={{ urlencode($brand->brand) }}'"
+                             alt="{{ $brand->brand }} logo" 
+                             class="brand-logo-img"
+                             loading="lazy">
                     </a>
                 @endforeach
             @endfor
