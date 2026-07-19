@@ -261,3 +261,33 @@ window.toggleWishlist = async function(productId) {
         if (e.persisted && document.querySelector('[data-wa-auto]')) window.location.reload();
     });
 })();
+
+// ========================================
+// Shop-by-Brand logo strip
+// Arrow buttons page the rail horizontally; they hide at each end so users aren't
+// offered a control that does nothing. Touch users just swipe (arrows are hidden
+// via CSS on coarse pointers).
+// ========================================
+document.addEventListener('DOMContentLoaded', () => {
+    const track = document.getElementById('brand-strip-track');
+    const left = document.getElementById('brand-strip-left');
+    const right = document.getElementById('brand-strip-right');
+    if (!track || !left || !right) return;
+
+    const page = () => Math.max(track.clientWidth * 0.8, 200);
+
+    const syncArrows = () => {
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        // Nothing to scroll: drop both controls entirely.
+        const scrollable = maxScroll > 4;
+        left.hidden = !scrollable || track.scrollLeft <= 2;
+        right.hidden = !scrollable || track.scrollLeft >= maxScroll - 2;
+    };
+
+    left.addEventListener('click', () => track.scrollBy({ left: -page(), behavior: 'smooth' }));
+    right.addEventListener('click', () => track.scrollBy({ left: page(), behavior: 'smooth' }));
+
+    track.addEventListener('scroll', syncArrows, { passive: true });
+    window.addEventListener('resize', syncArrows);
+    syncArrows();
+});

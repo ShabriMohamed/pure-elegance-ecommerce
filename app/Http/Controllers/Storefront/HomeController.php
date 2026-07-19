@@ -95,7 +95,7 @@ class HomeController extends Controller
                     : $subtreeCount($category->id);
                 return $category;
             })
-            ->filter(fn ($category) => $category->products_count > 0)
+            ->filter(fn($category) => $category->products_count > 0)
             ->values();
 
         // Shop by Brand: distinct brands across active products, most-stocked first.

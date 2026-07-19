@@ -196,101 +196,40 @@
 @endif
 
 {{-- ============================================
-    SHOP BY BRAND – Premium Dark Carousel
-    Inspired by PCBuilders.LK reference design
+    SHOP BY BRAND (data-driven carousel)
 ============================================= --}}
 @if($brands->count() > 0)
-<section class="brand-showcase" id="brand-showcase">
-    <div class="brand-showcase-inner">
-        <div class="brand-showcase-header reveal">
-            <span class="brand-showcase-eyebrow">Trusted Labels</span>
-            <h2 class="brand-showcase-title">Premium Brands Available at <span class="brand-showcase-highlight">Pure Elegance</span></h2>
+<section class="brand-section">
+    <div class="container">
+        <div class="brand-section-head reveal">
+            <div class="brand-section-eyebrow">Trusted Labels</div>
+            <h2 class="section-title" style="justify-content: center;">Shop by Brand</h2>
+            <div class="section-title-underline" style="margin: 6px auto 0;"></div>
         </div>
+    </div>
 
-        <div class="brand-carousel-wrapper">
-            {{-- Left arrow --}}
-            <button class="brand-arrow brand-arrow--left" id="brand-arrow-left" aria-label="Scroll left">
-                <span class="material-symbols-outlined">chevron_left</span>
-            </button>
-
-            {{-- Scrolling track --}}
-            <div class="brand-carousel-track" id="brand-carousel-track">
+    {{-- Auto-scrolling marquee. The brand set is rendered 3× so the CSS loop
+        (translateX -33.333%) is seamless; copies past the first are hidden from
+        AT / keyboard. Pauses on hover/focus; falls back to a swipe row under
+        prefers-reduced-motion. --}}
+    <div class="brand-marquee">
+        <div class="brand-marquee-track">
+            @for($rep = 0; $rep < 3; $rep++)
                 @foreach($brands as $brand)
-                    @php
-                        $words = preg_split('/\s+/', trim($brand->brand));
-                        $monogram = strtoupper(mb_substr($words[0], 0, 1) . (isset($words[1]) ? mb_substr($words[1], 0, 1) : ''));
-                    @endphp
-                    <a href="{{ route('categories', ['brand' => $brand->brand]) }}" class="brand-card" title="{{ $brand->brand }}">
-                        <div class="brand-card-logo">
-                            <span class="brand-card-monogram">{{ $monogram }}</span>
-                        </div>
-                        <span class="brand-card-name">{{ $brand->brand }}</span>
-                        <span class="brand-card-count">{{ $brand->products_count }} {{ Str::plural('item', $brand->products_count) }}</span>
+                    <a href="{{ route('categories', ['brand' => $brand->brand]) }}"
+                       class="brand-logo-link"
+                       @if($rep > 0) aria-hidden="true" tabindex="-1" @endif>
+                        <img src="{{ asset('images/brands/' . Str::slug($brand->brand) . '.png') }}" 
+                             onerror="this.onerror=null;this.src='https://placehold.co/140x50/transparent/333333/png?text={{ urlencode($brand->brand) }}'"
+                             alt="{{ $brand->brand }} logo" 
+                             class="brand-logo-img"
+                             loading="lazy">
                     </a>
                 @endforeach
-                {{-- Duplicate set for infinite scroll illusion --}}
-                @foreach($brands as $brand)
-                    @php
-                        $words = preg_split('/\s+/', trim($brand->brand));
-                        $monogram = strtoupper(mb_substr($words[0], 0, 1) . (isset($words[1]) ? mb_substr($words[1], 0, 1) : ''));
-                    @endphp
-                    <a href="{{ route('categories', ['brand' => $brand->brand]) }}" class="brand-card" aria-hidden="true" tabindex="-1" title="{{ $brand->brand }}">
-                        <div class="brand-card-logo">
-                            <span class="brand-card-monogram">{{ $monogram }}</span>
-                        </div>
-                        <span class="brand-card-name">{{ $brand->brand }}</span>
-                        <span class="brand-card-count">{{ $brand->products_count }} {{ Str::plural('item', $brand->products_count) }}</span>
-                    </a>
-                @endforeach
-            </div>
-
-            {{-- Right arrow --}}
-            <button class="brand-arrow brand-arrow--right" id="brand-arrow-right" aria-label="Scroll right">
-                <span class="material-symbols-outlined">chevron_right</span>
-            </button>
+            @endfor
         </div>
     </div>
 </section>
-
-{{-- Brand Carousel JS --}}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const track = document.getElementById('brand-carousel-track');
-    if (!track) return;
-
-    const leftBtn = document.getElementById('brand-arrow-left');
-    const rightBtn = document.getElementById('brand-arrow-right');
-    const scrollAmt = 260;
-    let autoScroll, isPaused = false;
-
-    function startAutoScroll() {
-        autoScroll = setInterval(() => {
-            if (!isPaused) {
-                track.scrollLeft += 1;
-                // Reset to start for infinite loop
-                if (track.scrollLeft >= track.scrollWidth / 2) {
-                    track.scrollLeft = 0;
-                }
-            }
-        }, 20);
-    }
-
-    leftBtn?.addEventListener('click', () => {
-        track.scrollBy({ left: -scrollAmt, behavior: 'smooth' });
-    });
-    rightBtn?.addEventListener('click', () => {
-        track.scrollBy({ left: scrollAmt, behavior: 'smooth' });
-    });
-
-    track.addEventListener('mouseenter', () => isPaused = true);
-    track.addEventListener('mouseleave', () => isPaused = false);
-
-    // Reduced motion: disable auto-scroll
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        startAutoScroll();
-    }
-});
-</script>
 @endif
 
 {{-- ============================================
