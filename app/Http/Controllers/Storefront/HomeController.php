@@ -55,10 +55,10 @@ class HomeController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        // Shop by Category: top-level (parent) categories only. Products live on leaf
-        // categories, so each tile's count is aggregated across the whole subtree.
-        // Parents whose entire subtree is empty are hidden (a tile must never lead to
-        // an empty listing). Two small queries + PHP walk — no per-tile queries.
+        // Shop by Category tiles. Products live on leaf categories, so each tile's
+        // count is aggregated across its whole subtree, and anything whose subtree is
+        // empty is hidden (a tile must never lead to an empty listing).
+        // Two small queries + a PHP walk — no per-tile queries.
         $allCategories = Category::where('is_active', true)
             ->get(['id', 'parent_id', 'name', 'slug', 'gender', 'icon', 'image', 'sort_order']);
 
@@ -86,17 +86,51 @@ class HomeController extends Controller
             ->whereColumn('sale_price', '<', 'price')
             ->count();
 
-        $topCategories = $allCategories
-            ->whereNull('parent_id')
-            ->sortBy('sort_order')
-            ->map(function ($category) use ($subtreeCount, $onSaleCount) {
-                $category->products_count = $category->slug === 'sale'
-                    ? $onSaleCount
-                    : $subtreeCount($category->id);
-                return $category;
-            })
-            ->filter(fn($category) => $category->products_count > 0)
-            ->values();
+        /*
+         * The catalogue's top level is only Men / Women / Sale — the same three the
+         * collections strip higher up the page already shows. So the tiles are drawn
+         * one level down (Clothing, Footwear, Watches, Accessories, Beauty …), which
+         * is the layer customers actually browse by, and each tile carries its parent
+         * as a label so the two "Clothing" departments stay distinguishable.
+         *
+         * A top-level category with no stocked children falls back to being its own
+         * tile, so a flat or single-level catalogue still renders correctly.
+         */
+        $topCategories = collect();
+
+        foreach ($allCategories->whereNull('parent_id')->sortBy('sort_order') as $root) {
+            // Sale is price-driven and never has children or assigned products.
+            if ($root->slug === 'sale') {
+                $root->products_count = $onSaleCount;
+                $root->parent_label = null;
+                if ($onSaleCount > 0) {
+                    $topCategories->push($root);
+                }
+                continue;
+            }
+
+            $stocked = $childrenByParent->get($root->id, collect())
+                ->sortBy('sort_order')
+                ->map(function ($child) use ($subtreeCount, $root) {
+                    $child->products_count = $subtreeCount($child->id);
+                    $child->parent_label = $root->name;
+                    return $child;
+                })
+                ->filter(fn ($child) => $child->products_count > 0);
+
+            if ($stocked->isNotEmpty()) {
+                $topCategories = $topCategories->concat($stocked);
+                continue;
+            }
+
+            $root->products_count = $subtreeCount($root->id);
+            $root->parent_label = null;
+            if ($root->products_count > 0) {
+                $topCategories->push($root);
+            }
+        }
+
+        $topCategories = $topCategories->values();
 
         // Shop by Brand: distinct brands across active products, most-stocked first.
         // Single grouped query — the carousel links each brand to its filtered listing.

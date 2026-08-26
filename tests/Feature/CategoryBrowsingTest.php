@@ -11,7 +11,7 @@ class CategoryBrowsingTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_homepage_shows_parent_categories_with_subtree_counts(): void
+    public function test_homepage_tiles_second_level_departments_with_subtree_counts(): void
     {
         // 3-level tree mirroring the real catalog: Men > Clothing > Shirts (product on leaf).
         $parent = Category::factory()->create(['name' => 'Men Section', 'sort_order' => 1]);
@@ -25,9 +25,43 @@ class CategoryBrowsingTest extends TestCase
         $response = $this->get('/');
 
         $response->assertOk();
-        $response->assertSee('Men Section');          // parent tile shown
-        $response->assertDontSee('Shirts Leaf');       // leaves are not tiles
-        $response->assertDontSee('Empty Section');     // empty subtree hidden
+        // The 2nd level is the browsable department, so it is what gets tiled —
+        // the top level is only Men / Women / Sale, which the collections strip
+        // higher up the page already covers.
+        $response->assertSee('<div class="shop-cat-name">Clothing Sub</div>', false);
+        $response->assertSee('Men Section');            // rendered as the tile's parent label
+        $response->assertDontSee('Shirts Leaf');        // the 3rd level is not tiled
+        $response->assertDontSee('Empty Section');      // empty subtree hidden
+    }
+
+    public function test_stocked_top_level_category_without_children_is_tiled_itself(): void
+    {
+        // Fallback for a flat catalog: with nothing at the second level to tile,
+        // the top-level category has to stand in for itself or it would vanish.
+        $flat = Category::factory()->create(['name' => 'Standalone Dept']);
+        Product::factory()->create(['category_id' => $flat->id]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('<div class="shop-cat-name">Standalone Dept</div>', false);
+    }
+
+    public function test_department_tiles_are_labelled_by_parent_so_duplicates_stay_distinct(): void
+    {
+        // "Clothing" exists under both Men and Women in the real catalog; without
+        // the parent label the two tiles would be indistinguishable.
+        $men = Category::factory()->create(['name' => 'Men', 'sort_order' => 1]);
+        $women = Category::factory()->create(['name' => 'Women', 'sort_order' => 2]);
+        $menClothing = Category::factory()->create(['name' => 'Clothing', 'parent_id' => $men->id]);
+        $womenClothing = Category::factory()->create(['name' => 'Clothing', 'parent_id' => $women->id]);
+        Product::factory()->create(['category_id' => $menClothing->id]);
+        Product::factory()->create(['category_id' => $womenClothing->id]);
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('<span class="pe-category__parent">Men</span>', false);
+        $response->assertSee('<span class="pe-category__parent">Women</span>', false);
     }
 
     public function test_sale_tile_uses_discounted_product_count_and_links_to_sale_page(): void

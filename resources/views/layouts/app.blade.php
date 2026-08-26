@@ -19,22 +19,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 <body>
 
     <a class="skip-link" href="#main">Skip to main content</a>
 
-    <!-- Top Notification Bar (admin-configurable; falls back to the real delivery threshold) -->
-    @if(site_bool('announcement_bar_enabled', true))
-        <div class="top-notification-bar">
-            <span class="material-symbols-outlined">local_shipping</span>
-            {{ site('announcement_bar_text', 'FREE DELIVERY ON ORDERS OVER') }}
-            <strong style="color: var(--gold-text); margin-left: 4px;">{{ site('announcement_bar_highlight', money(\App\Support\DeliveryFee::threshold())) }}</strong>
-        </div>
-    @endif
-
     <!-- Header -->
     <header class="store-header">
+        {{-- Announcement bar lives inside the pinned header so the whole bar is one
+             unit; it collapses away on scroll, leaving a compact nav. --}}
+        @if(site_bool('announcement_bar_enabled', true))
+            <div class="top-notification-bar">
+                <span class="material-symbols-outlined">local_shipping</span>
+                {{ site('announcement_bar_text', 'FREE DELIVERY ON ORDERS OVER') }}
+                <strong style="color: var(--gold-text); margin-left: 4px;">{{ site('announcement_bar_highlight', money(\App\Support\DeliveryFee::threshold())) }}</strong>
+            </div>
+        @endif
+
         <div class="container header-inner">
             <button class="icon-btn mobile-only" aria-label="Menu" id="menu-toggle">
                 <span class="material-symbols-outlined">menu</span>
@@ -89,18 +91,17 @@
                 @endauth
             </div>
         </div>
-    </header>
 
-    <!-- Search Trigger Bar -->
-    <div class="search-bar-container">
-        <div class="container">
-            <button type="button" class="sf-search-trigger" id="sf-search-trigger">
-                <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--color-muted-text);">search</span>
-                <span class="sf-search-trigger-text">Search for products, brands and more...</span>
-                <kbd class="sf-search-kbd">Ctrl K</kbd>
-            </button>
+        <!-- Search Trigger Bar (inside header so it stays fixed) -->
+        <div class="search-bar-container">
+            <div class="container">
+                <button type="button" class="sf-search-trigger" id="sf-search-trigger">
+                    <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--color-muted-text);">search</span>
+                    <span class="sf-search-trigger-text">Search for products, brands and more...</span>
+                </button>
+            </div>
         </div>
-    </div>
+    </header>
 
     <!-- Mobile Drawer Menu -->
     <div class="mobile-drawer-overlay" id="drawer-overlay"></div>
@@ -264,7 +265,9 @@
             <div class="sf-search-header">
                 <span class="material-symbols-outlined" style="color: var(--gold-text); font-size: 1.3rem;">search</span>
                 <input type="text" id="sf-search-input" class="sf-search-input" placeholder="Search products, brands, categories..." autocomplete="off" spellcheck="false">
-                <kbd class="sf-esc-badge" onclick="sfCloseSearch()">ESC</kbd>
+                <button class="sf-close-btn" onclick="sfCloseSearch()" aria-label="Close search">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
             </div>
             <div id="sf-search-results" class="sf-search-results">
                 <div class="sf-search-empty" id="sf-search-empty">
@@ -281,13 +284,6 @@
                     <span class="material-symbols-outlined" style="font-size: 2.5rem; opacity: 0.12; display: block;">search_off</span>
                     <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--color-muted-text);">No products found</div>
                     <div style="margin-top: 0.25rem; font-size: 0.78rem; color: rgba(0,0,0,0.2);">Try a different search term</div>
-                </div>
-            </div>
-            <div class="sf-search-footer">
-                <div style="display: flex; gap: 1.25rem; align-items: center; font-size: 0.72rem; color: rgba(0,0,0,0.25);">
-                    <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
-                    <span><kbd>↵</kbd> Open</span>
-                    <span><kbd>Esc</kbd> Close</span>
                 </div>
             </div>
         </div>

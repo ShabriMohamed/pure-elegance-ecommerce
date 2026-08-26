@@ -54,13 +54,67 @@ document.addEventListener('DOMContentLoaded', () => {
 // - image fade-in on load
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Header elevation
+    // Sticky navbar: always visible, condenses on scroll.
     const header = document.querySelector('.store-header');
     const backToTop = document.getElementById('back-to-top');
 
+    if (header) {
+        /* Reserve space equal to the header's EXPANDED height — never its
+           condensed one, or the page would jump upward the moment it shrank.
+           When a resize lands while the header is condensed (rotating a phone
+           mid-scroll) we expand it just long enough to measure, with
+           transitions suppressed so the round trip is never painted. */
+        const measureExpanded = () => {
+            const condensed = header.classList.contains('is-scrolled');
+            if (condensed) header.classList.add('is-measuring');
+            header.classList.remove('is-scrolled');
+
+            const height = header.offsetHeight; // forces layout, reads true value
+
+            if (condensed) {
+                header.classList.add('is-scrolled');
+                void header.offsetHeight; // flush before re-enabling transitions
+                header.classList.remove('is-measuring');
+            }
+            document.documentElement.style.setProperty('--header-h', height + 'px');
+        };
+
+        measureExpanded();
+
+        // Breakpoints change the header's height, so re-measure on resize.
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(measureExpanded, 150);
+        }, { passive: true });
+    }
+
+    /* Condense/expand thresholds differ on purpose. A single threshold makes the
+       header flicker open/shut when the user hovers right at that scroll offset,
+       because collapsing the header changes layout, which nudges scrollY back
+       across the line. The 40px gap between them absorbs that. */
+    const CONDENSE_AT = 60;
+    const EXPAND_AT = 20;
+    let ticking = false;
+
     const onScroll = () => {
-        if (header) header.classList.toggle('is-scrolled', window.scrollY > 8);
-        if (backToTop) backToTop.classList.toggle('visible', window.scrollY > 600);
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            const y = window.scrollY;
+
+            if (header) {
+                const condensed = header.classList.contains('is-scrolled');
+                if (!condensed && y > CONDENSE_AT) {
+                    header.classList.add('is-scrolled');
+                } else if (condensed && y < EXPAND_AT) {
+                    header.classList.remove('is-scrolled');
+                }
+            }
+
+            if (backToTop) backToTop.classList.toggle('visible', y > 600);
+            ticking = false;
+        });
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
