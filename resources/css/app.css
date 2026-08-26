@@ -254,7 +254,7 @@ button {
     background-color: var(--color-rich-black);
     color: var(--color-pure-white);
     text-align: center;
-    padding: 8px var(--space-md);
+    padding: 6px var(--space-md);
     font-family: var(--font-sans);
     font-size: 0.7rem;
     font-weight: 600;
@@ -272,34 +272,93 @@ button {
 /* ========================================
    HEADER
    ======================================== */
+/* Pinned to the viewport at all times — it never slides away. What changes on
+   scroll is its HEIGHT: the announcement bar and the search row collapse, so a
+   198px marketing header becomes a ~64px working nav without ever leaving. */
 .store-header {
-    background-color: rgba(255, 255, 255, 0.92);
-    -webkit-backdrop-filter: saturate(180%) blur(14px);
-    backdrop-filter: saturate(180%) blur(14px);
-    border-bottom: 1px solid var(--color-light-gray);
-    position: sticky;
+    background-color: rgba(255, 255, 255, 0.96);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    position: fixed;
     top: 0;
-    z-index: 100;
-    transition: box-shadow var(--transition-base);
+    left: 0;
+    right: 0;
+    z-index: 200;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
-/* Applied by JS once the page scrolls — lifts the header off the content */
+/* Elevated once the page has scrolled */
 .store-header.is-scrolled {
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+    background-color: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.09);
+}
+
+/* --- Condense on scroll -------------------------------------------------
+   Both rows collapse via max-height/opacity rather than display:none so the
+   change animates. The search row is safe to hide: the magnifier icon in
+   header-actions opens the same modal. */
+.store-header .top-notification-bar,
+.store-header .search-bar-container {
+    overflow: hidden;
+    max-height: 80px;
+    opacity: 1;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s ease,
+                padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.store-header.is-scrolled .top-notification-bar,
+.store-header.is-scrolled .search-bar-container {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Nav row tightens slightly to complete the condensed look */
+.store-header.is-scrolled .header-inner {
+    min-height: 56px;
+    padding: 4px 0;
+}
+
+/* Body offset so the fixed header never overlaps content. Locked by JS to the
+   header's EXPANDED height — if it tracked the condensed height the page would
+   jump upward the moment the header shrank. */
+body {
+    padding-top: var(--header-h, 140px);
+}
+
+/* Suppresses transitions while JS expands the header to take a measurement, so
+   that round trip is never painted. */
+.store-header.is-measuring,
+.store-header.is-measuring * {
+    transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .store-header,
+    .store-header * {
+        transition: none !important;
+    }
 }
 
 .header-inner {
     display: grid;
     grid-template-columns: auto 1fr auto;
+    grid-row: 1;
     align-items: center;
     gap: var(--space-md);
     padding: var(--space-sm) 0;
     min-height: 60px;
+    transition: min-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Logo */
 .store-logo {
     grid-column: 2;
+    grid-row: 1;
     justify-self: center;
     display: flex;
     flex-direction: column;
@@ -334,9 +393,38 @@ button {
     margin-top: 2px;
 }
 
+/* Logo condenses with the rest of the header. The stacked lockup is what makes
+   the expanded header tall, so the wordmark and crown collapse and the monogram
+   shrinks — leaving a compact "PE" mark that still reads as the brand. */
+.store-logo-pe,
+.store-logo-text,
+.store-logo-crown {
+    transition: font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s ease,
+                margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.store-logo-text,
+.store-logo-crown {
+    overflow: hidden;
+    max-height: 20px;
+    opacity: 1;
+}
+
+.store-header.is-scrolled .store-logo-pe { font-size: 1.5rem; }
+
+.store-header.is-scrolled .store-logo-text,
+.store-header.is-scrolled .store-logo-crown {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+}
+
 /* Header actions (right side icons) */
 .header-actions {
     grid-column: 3;
+    grid-row: 1;
     display: flex;
     align-items: center;
     gap: 2px;
@@ -345,6 +433,7 @@ button {
 /* Desktop navigation */
 .desktop-nav {
     display: none;
+    grid-row: 1;
 }
 
 .desktop-nav a {
@@ -384,13 +473,13 @@ button {
 @media (min-width: 769px) {
     .header-inner {
         grid-template-columns: 1fr auto 1fr;
-        min-height: 70px;
+        min-height: 64px;
     }
     
     .desktop-nav {
         display: flex;
         align-items: center;
-        gap: var(--space-xl);
+        gap: var(--space-lg);
         grid-column: 1;
         justify-self: start;
     }
@@ -405,7 +494,7 @@ button {
     }
     
     .store-logo-pe {
-        font-size: 2.8rem;
+        font-size: 2.35rem;
     }
     
     .store-logo-text {
@@ -466,21 +555,19 @@ button {
    SEARCH TRIGGER BAR
    ======================================== */
 .search-bar-container {
-    padding: var(--space-sm) 0;
-    background-color: var(--color-pure-white);
-    border-bottom: 1px solid var(--color-light-gray);
+    padding: 4px 0 6px;
     display: flex; justify-content: center;
 }
 .sf-search-trigger {
     width: 100%; max-width: 600px; margin: 0 auto;
     display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.65rem 1.25rem; border: 1.5px solid rgba(0,0,0,0.1);
+    padding: 0.5rem 1.25rem; border: 1.5px solid rgba(0,0,0,0.1);
     border-radius: 12px; background: rgba(0,0,0,0.02);
     cursor: pointer; transition: all 0.2s; font-family: var(--font-sans);
 }
 .sf-search-trigger:hover { border-color: var(--color-premium-gold); background: rgba(200,155,60,0.04); box-shadow: 0 4px 16px rgba(200,155,60,0.08); }
 .sf-search-trigger-text { flex: 1; text-align: left; font-size: 0.9rem; color: var(--color-muted-text); }
-.sf-search-kbd { font-size: 0.7rem; color: rgba(0,0,0,0.4); background: rgba(0,0,0,0.05); padding: 0.2rem 0.5rem; border-radius: 4px; font-family: monospace; border: 1px solid rgba(0,0,0,0.08); }
+
 
 /* ========================================
    SEARCH OVERLAY MODAL (COMMAND PALETTE)
@@ -514,8 +601,9 @@ button {
     color: var(--color-primary-text); padding: 0.2rem 0;
 }
 .sf-search-input::placeholder { color: rgba(0,0,0,0.25); font-weight: 400; }
-.sf-esc-badge { font-size: 0.7rem; background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.4); padding: 0.25rem 0.6rem; border-radius: 6px; cursor: pointer; border: 1px solid rgba(0,0,0,0.08); font-family: monospace; transition: background 0.15s; }
-.sf-esc-badge:hover { background: rgba(0,0,0,0.1); }
+.sf-close-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: none; background: transparent; cursor: pointer; color: rgba(0,0,0,0.35); transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+.sf-close-btn:hover { background: rgba(0,0,0,0.07); color: rgba(0,0,0,0.7); }
+.sf-close-btn .material-symbols-outlined { font-size: 1.2rem; }
 
 .sf-search-results {
     max-height: 480px; overflow-y: auto; scroll-behavior: smooth;
@@ -577,22 +665,15 @@ button {
 }
 .sf-view-all:hover { background: rgba(200,155,60,0.06); }
 
-.sf-search-footer {
-    padding: 0.8rem 1.5rem; border-top: 1px solid rgba(0,0,0,0.08);
-    display: flex; justify-content: center; background: #FFFFFF;
-}
-.sf-search-footer kbd {
-    font-family: monospace; font-size: 0.65rem; background: rgba(0,0,0,0.05);
-    padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid rgba(0,0,0,0.08); margin: 0 3px;
-}
-
 @media (max-width: 768px) {
+    .search-bar-container { display: none; }
+    .header-inner { min-height: 56px; padding: 4px 0; }
+    .store-logo-pe { font-size: 2rem; }
     .sf-search-trigger-text { display: none; }
     .sf-search-trigger { max-width: none; padding: 0.5rem; justify-content: center; }
-    .sf-search-kbd { display: none; }
+
     .sf-search-modal { max-height: 90vh; }
     .sf-search-results { max-height: calc(90vh - 120px); }
-    .sf-search-footer { display: none; }
 }
 
 /* ========================================

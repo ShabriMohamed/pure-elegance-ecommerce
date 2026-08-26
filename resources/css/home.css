@@ -1,0 +1,1475 @@
+/* ==========================================================================
+   Pure Elegance — Landing Page
+   Loaded after app.css (via @stack('styles')), so this file owns every
+   homepage-only surface. app.css stays the site-wide design system.
+
+   Direction: "Exaggerated Minimalism" — oversized, tightly-tracked serif
+   display type, generous negative space, one gold accent, restrained motion.
+   Palette + type follow design-system/pure-elegance/MASTER.md:
+     ink #0B0B0B · brand gold #C89B3C (dark surfaces only)
+     gold ink #A16207 as gold text on light, via --gold-text · beige #F5F2EC
+   ========================================================================== */
+
+.pe-landing {
+    /* One vertical rhythm for the whole page. Previously each section carried
+       its own inline padding (32 / 0 / 48 / 64px, several with padding-top:0),
+       so the gaps between sections were uneven and unpredictable. */
+    --pe-section-y: clamp(3.25rem, 6.5vw, 6rem);
+    --pe-section-y-tight: clamp(2.25rem, 4vw, 3.5rem);
+    --pe-ease: cubic-bezier(.22, 1, .36, 1);
+    --pe-gold: var(--color-premium-gold, #C89B3C);
+    --pe-gold-lift: #E5B956;
+    --pe-ink: #0B0B0B;
+    --pe-hairline: rgba(11, 11, 11, .09);
+}
+
+/* Dark-surface opt-in, mirroring the surfaces block in app.css.
+   --gold-text defaults to #A16207, which is the accessible gold on light
+   backgrounds but only reaches 4.0:1 on the near-black panels below. Inside
+   these containers it switches back to the brand gold #C89B3C, which measures
+   7.69:1 on rich black. app.css lists the old .newsletter-section /
+   .promo-banner class names; these are their replacements. */
+.pe-newsletter,
+.pe-promo,
+.pe-story__badge {
+    --gold-text: var(--color-premium-gold);
+}
+
+/* Rhythm utilities — these replace the per-section inline `style="padding: …"`. */
+.pe-section { padding-block: var(--pe-section-y); }
+.pe-section--tight { padding-block: var(--pe-section-y-tight); }
+.pe-section--flush-top { padding-block-start: 0; }
+.pe-section--flush-bottom { padding-block-end: 0; }
+.pe-section--beige { background: var(--color-warm-beige); }
+
+
+/* ==========================================================================
+   1. HERO
+   ========================================================================== */
+
+.pe-hero {
+    --hero-ink: #15130f;
+    --hero-gold: var(--pe-gold);
+    --hero-ease: var(--pe-ease);
+    /* Aligns the hero's own overlays (controls, counter, glass card) to the
+       same content edge `.container` produces, so they sit on the page grid
+       even though the artwork behind them runs edge to edge. Percentages
+       resolve against the element's own box, which keeps this correct when a
+       scrollbar makes the layout width differ from the viewport width. */
+    --hero-inset: max(var(--space-md), calc((100% - 1200px) / 2 + var(--space-md)));
+    position: relative;
+    isolation: isolate;
+    /* Full-bleed: no gutter above or below, nothing framing the image. */
+    padding-block: 0;
+    background: var(--color-pure-white, #fff);
+}
+
+@media (min-width: 768px) {
+    /* Matches the wider padding `.container` switches to at this breakpoint. */
+    .pe-hero { --hero-inset: max(var(--space-xl), calc((100% - 1200px) / 2 + var(--space-xl))); }
+}
+
+/* Edge to edge — no radius, no shadow, no inset. The copy is put back on the
+   page grid by `.container` on .pe-hero__inner rather than by insetting the
+   artwork. */
+.pe-hero__viewport {
+    position: relative;
+    overflow: hidden;
+    /* Fills the screen the sticky chrome leaves behind (~233px on desktop),
+       with a floor and ceiling that hold a roughly 2:1 cinematic crop rather
+       than letterboxing on short windows or towering on tall ones. */
+    min-height: clamp(600px, calc(100svh - 10rem), 900px);
+    background: var(--hero-ink);
+}
+
+/* ── Slides ── */
+.pe-hero__slide {
+    position: absolute;
+    inset: 0;
+    min-height: inherit;
+    /* visibility:hidden also pulls the inactive slide's links out of the tab
+       order, so the aria-hidden below never hides a focusable element. */
+    visibility: hidden;
+    opacity: 0;
+    transform: scale(1.03);
+    transition:
+        opacity 700ms ease,
+        transform 1100ms var(--hero-ease),
+        visibility 0s linear 1100ms;
+}
+.pe-hero__slide.is-active {
+    position: relative;
+    visibility: visible;
+    opacity: 1;
+    transform: scale(1);
+    transition-delay: 0s;
+}
+
+.pe-hero__inner {
+    position: relative;
+    z-index: 1;
+    display: block;
+    min-height: inherit;
+}
+
+/* ── Image bed: Ken Burns + cinematic grade ── */
+.pe-hero__visual,
+.pe-hero__visual::after { position: absolute; inset: 0; }
+.pe-hero__visual { overflow: hidden; }
+.pe-hero__visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: saturate(.9) contrast(1.05);
+    transform: scale(1.08);
+    transition: transform 9s ease-out;
+}
+.pe-hero__slide.is-active .pe-hero__visual img { transform: scale(1); }
+
+.pe-hero__visual::after {
+    content: "";
+    pointer-events: none;
+    background:
+        linear-gradient(100deg,
+            rgba(10,9,7,.95) 0%,
+            rgba(10,9,7,.84) 24%,
+            rgba(10,9,7,.5)  48%,
+            rgba(10,9,7,.12) 70%,
+            rgba(10,9,7,.02) 84%),
+        linear-gradient(0deg, rgba(10,9,7,.5) 0%, transparent 40%);
+}
+
+/* Film grain — stops the large flat gradients banding on wide displays. */
+.pe-hero__grain {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: .038;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px;
+    mix-blend-mode: overlay;
+}
+
+/* ── Copy column ── */
+.pe-hero__copy {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    min-height: inherit;
+    width: min(58%, 730px);
+    flex-direction: column;
+    justify-content: center;
+    /* Horizontal inset comes from `.container` on the parent now, so the
+       headline starts exactly where the sections below it do. */
+    padding: clamp(3rem, 6vw, 6rem) 0 clamp(6rem, 8vw, 8rem);
+    color: #fff;
+}
+
+/* Each copy element rises on its own beat once the slide activates. --d is the
+   beat index, so one rule covers what used to be five near-identical blocks. */
+.pe-hero__rise {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 650ms ease calc(var(--d, 0) * 130ms + 180ms),
+        transform 750ms var(--hero-ease) calc(var(--d, 0) * 130ms + 180ms);
+}
+.pe-hero__slide.is-active .pe-hero__rise {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.pe-hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin: 0 0 clamp(.9rem, 1.8vw, 1.35rem);
+    color: var(--hero-gold);
+    font-size: clamp(.64rem, .75vw, .76rem);
+    font-weight: 600;
+    letter-spacing: .22em;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
+.pe-hero__eyebrow i {
+    width: 36px;
+    height: 1px;
+    flex: 0 0 auto;
+    background: currentColor;
+    /* Draws itself in with the slide instead of just fading. */
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 700ms var(--hero-ease) 380ms;
+}
+.pe-hero__slide.is-active .pe-hero__eyebrow i { transform: scaleX(1); }
+
+.pe-hero__title {
+    max-width: 12ch;
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: clamp(3rem, 5.4vw, 6.4rem);
+    font-weight: 600;
+    letter-spacing: -.045em;
+    line-height: .95;
+    text-wrap: balance;
+}
+
+.pe-hero__description {
+    max-width: 48ch;
+    margin: clamp(1.2rem, 2.2vw, 1.75rem) 0 0;
+    color: rgba(255,255,255,.78);
+    font-size: clamp(.88rem, 1.05vw, 1.03rem);
+    line-height: 1.7;
+}
+
+/* ── Hero actions ── */
+.pe-hero__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .8rem 1.25rem;
+    margin-top: clamp(1.5rem, 2.8vw, 2.25rem);
+}
+
+.pe-hero__cta,
+.pe-hero__link {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: .65rem;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.pe-hero__cta {
+    position: relative;
+    overflow: hidden;
+    padding: .85rem 1.7rem;
+    border: 1px solid var(--hero-gold);
+    border-radius: var(--radius-full, 999px);
+    background: var(--hero-gold);
+    color: var(--hero-ink);
+    box-shadow: 0 14px 34px -12px rgba(0,0,0,.6);
+    transition:
+        transform 240ms var(--hero-ease),
+        background 200ms ease,
+        box-shadow 240ms ease;
+}
+/* Gold sheen sweeps across on hover — transform only, stays on the compositor. */
+.pe-hero__cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.5) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 700ms var(--hero-ease);
+}
+.pe-hero__cta:hover {
+    background: var(--pe-gold-lift);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 44px -14px rgba(0,0,0,.65);
+}
+.pe-hero__cta:hover::before { transform: translateX(120%); }
+.pe-hero__cta:active { transform: translateY(-1px); }
+.pe-hero__cta > * { position: relative; }
+
+.pe-hero__link {
+    position: relative;
+    padding-inline: .35rem;
+    color: #fff;
+    transition: color 200ms ease;
+}
+.pe-hero__link::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: .35rem;
+    right: .35rem;
+    height: 1px;
+    background: rgba(255,255,255,.55);
+    transform-origin: left;
+    transition: background 200ms ease, transform 300ms var(--hero-ease);
+}
+.pe-hero__link:hover { color: var(--hero-gold); }
+.pe-hero__link:hover::after { background: var(--hero-gold); transform: scaleX(1.08); }
+
+.pe-hero__cta .material-symbols-outlined,
+.pe-hero__link .material-symbols-outlined { font-size: 1rem; }
+
+/* ── Trust line ── */
+.pe-hero__proof {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    margin-top: clamp(2rem, 3.5vw, 3.25rem);
+}
+.pe-hero__proof-mark {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.32);
+    border-radius: 50%;
+    color: var(--hero-gold);
+    font: 600 .62rem/1 var(--font-serif);
+    backdrop-filter: blur(6px);
+}
+.pe-hero__proof strong,
+.pe-hero__proof small { display: block; }
+.pe-hero__proof strong { color: #fff; font-size: .74rem; font-weight: 500; }
+.pe-hero__proof small { margin-top: .2rem; color: rgba(255,255,255,.6); font-size: .66rem; }
+
+/* ── Corner slide counter ── */
+.pe-hero__index {
+    position: absolute;
+    z-index: 4;
+    top: clamp(1.25rem, 2vw, 2rem);
+    right: var(--hero-inset);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    color: rgba(255,255,255,.85);
+    font-size: .62rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-shadow: 0 2px 12px rgba(0,0,0,.35);
+}
+.pe-hero__index i { width: 30px; height: 1px; background: currentColor; opacity: .7; }
+
+/* ── Glass quick-link card ── */
+.pe-hero__card {
+    display: none;
+    position: absolute;
+    z-index: 5;
+    right: var(--hero-inset);
+    bottom: clamp(2rem, 3vw, 3.5rem);
+    padding: 1.1rem 1.35rem;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 14px;
+    background: rgba(255,255,255,.09);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    color: #fff;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(16px) scale(.97);
+    transition: opacity 500ms ease, transform 400ms var(--hero-ease), background 220ms ease;
+}
+.pe-hero__slide.is-active .pe-hero__card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition-delay: 850ms;
+}
+.pe-hero__card:hover {
+    background: rgba(255,255,255,.15);
+    transform: translateY(-3px) scale(1.02);
+    transition-delay: 0s;
+}
+.pe-hero__card small {
+    display: block;
+    margin-bottom: .35rem;
+    color: var(--hero-gold);
+    font-size: .6rem;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+}
+.pe-hero__card strong { display: block; margin-bottom: .5rem; font-size: .84rem; font-weight: 500; line-height: 1.35; }
+.pe-hero__card span { display: inline-flex; align-items: center; gap: .3rem; color: var(--hero-gold); font-size: .68rem; font-weight: 600; }
+
+/* ── Controls ── */
+.pe-hero__controls {
+    position: absolute;
+    z-index: 8;
+    right: 0;
+    bottom: clamp(1.75rem, 3vw, 3rem);
+    left: 0;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding-inline: var(--hero-inset);
+    pointer-events: none;
+}
+.pe-hero__arrow, .pe-hero__dot { pointer-events: auto; cursor: pointer; }
+
+.pe-hero__arrow {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 50%;
+    background: rgba(15,13,10,.35);
+    color: #fff;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: background 200ms ease, border-color 200ms ease, transform 240ms var(--hero-ease);
+}
+.pe-hero__arrow:hover {
+    border-color: var(--hero-gold);
+    background: var(--hero-gold);
+    color: var(--hero-ink);
+    transform: translateY(-2px);
+}
+.pe-hero__arrow .material-symbols-outlined { font-size: 1.05rem; }
+
+.pe-hero__dots { display: flex; align-items: center; margin-left: .15rem; }
+
+/* The dot reads as an 8px mark but the button is a full 44px-tall target
+   (WCAG 2.5.5 — the old dots were 8x8). The visible pill is drawn by ::before
+   so the hit area can stay invisible. */
+.pe-hero__dot {
+    position: relative;
+    width: 34px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+.pe-hero__dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(255,255,255,.65);
+    border-radius: 99px;
+    background: transparent;
+    transition: width 300ms var(--hero-ease), background 200ms ease, border-color 200ms ease;
+}
+.pe-hero__dot.is-active { width: 44px; }
+.pe-hero__dot.is-active::before {
+    width: 32px;
+    background: var(--hero-gold);
+    border-color: var(--hero-gold);
+}
+.pe-hero__dot:hover:not(.is-active)::before { border-color: #fff; background: rgba(255,255,255,.25); }
+
+.pe-hero__progress {
+    width: 78px;
+    height: 2px;
+    margin-left: .35rem;
+    overflow: hidden;
+    border-radius: 2px;
+    background: rgba(255,255,255,.22);
+}
+.pe-hero__progress i {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--hero-gold), var(--pe-gold-lift));
+}
+/* The bar's animation and its play state are both written inline by the hero
+   controller (see home.js) — the `animation` shorthand it sets would override a
+   rule here anyway, so this file only owns the keyframes. */
+@keyframes peHeroProgress { from { width: 0; } to { width: 100%; } }
+
+@media (min-width: 1200px) { .pe-hero__card { display: block; } }
+@media (min-width: 1600px) {
+    .pe-hero__viewport { min-height: clamp(680px, calc(100svh - 10rem), 960px); }
+    .pe-hero__copy { width: min(62%, 800px); }
+    .pe-hero__visual img { object-position: center 26%; }
+}
+
+/* ── Hero ≤ 900px ── */
+@media (max-width: 900px) {
+    .pe-hero__viewport {
+        /* 174px of sticky chrome sits above the hero and a 61px bottom nav
+           below it. Sizing to the leftover space keeps the headline, the CTA
+           and the carousel controls all above the fold — at the previous 92svh
+           the CTA landed ~130px below it on a 375x812 phone. */
+        min-height: clamp(420px, calc(100svh - 14.5rem), 600px);
+    }
+    .pe-hero__visual img { object-position: center 24%; }
+    .pe-hero__visual::after {
+        background:
+            linear-gradient(0deg,
+                rgba(9,8,7,.96) 0%,
+                rgba(9,8,7,.8)  34%,
+                rgba(9,8,7,.36) 62%,
+                rgba(9,8,7,.06) 80%),
+            linear-gradient(90deg, rgba(9,8,7,.25), transparent 60%);
+    }
+    .pe-hero__copy {
+        /* An absolutely positioned box resolves against its ancestor's padding
+           box, so it does not inherit `.container`'s gutter — it has to repeat
+           it. --hero-inset is exactly that gutter at these widths. */
+        position: absolute;
+        inset: auto 0 0;
+        min-height: 0;
+        width: 100%;
+        justify-content: flex-end;
+        padding: 4rem var(--hero-inset) 5.25rem;
+    }
+    .pe-hero__title { max-width: 14ch; font-size: clamp(2.5rem, 9.5vw, 4.4rem); }
+    .pe-hero__description { max-width: 46ch; }
+    .pe-hero__proof { display: none; }
+    .pe-hero__index { top: 1rem; }
+    .pe-hero__controls { bottom: 1.25rem; }
+}
+
+/* ── Hero ≤ 560px ── */
+@media (max-width: 560px) {
+    .pe-hero__viewport { min-height: clamp(400px, calc(100svh - 15rem), 540px); }
+    .pe-hero__visual img { object-position: 58% 22%; }
+    .pe-hero__copy { padding: 3.5rem var(--hero-inset) 5rem; }
+    .pe-hero__eyebrow { margin-bottom: .7rem; font-size: .58rem; letter-spacing: .14em; }
+    .pe-hero__eyebrow i { width: 22px; }
+    .pe-hero__title { font-size: clamp(2.25rem, 11.5vw, 3.4rem); line-height: .98; }
+    .pe-hero__description {
+        margin-top: .7rem;
+        font-size: .8rem;
+        line-height: 1.55;
+        /* Two lines is all the room a phone hero has; more pushed the CTA down. */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .pe-hero__actions { margin-top: 1rem; }
+    .pe-hero__cta { min-height: 46px; padding: .75rem 1.15rem; font-size: .64rem; }
+    .pe-hero__link { display: none; }
+    .pe-hero__index span:first-child, .pe-hero__index i { display: none; }
+    .pe-hero__controls { bottom: 1rem; }
+    .pe-hero__progress { display: none; }
+}
+
+/* ── Short landscape ── */
+@media (max-height: 540px) and (orientation: landscape) {
+    .pe-hero__viewport { min-height: 400px; }
+    /* Back in normal flow here, so `.container` on the parent supplies the
+       gutter and the copy needs no horizontal padding of its own. */
+    .pe-hero__copy { position: static; width: 62%; justify-content: center; padding: 2.25rem 0 4.5rem; }
+    .pe-hero__title { font-size: clamp(2.2rem, 6.5vw, 3.6rem); }
+    .pe-hero__description { margin-top: .6rem; line-height: 1.45; }
+    .pe-hero__actions { margin-top: .8rem; }
+    .pe-hero__proof { display: none; }
+    .pe-hero__visual::after {
+        background: linear-gradient(90deg, rgba(9,8,7,.93), rgba(9,8,7,.55) 46%, rgba(9,8,7,.08));
+    }
+}
+
+
+/* ==========================================================================
+   2. SECTION HEADER — one editorial header for every section
+   ========================================================================== */
+
+.pe-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-md) var(--space-lg);
+    margin-bottom: clamp(1.75rem, 3vw, 2.75rem);
+}
+.pe-head--center { flex-direction: column; align-items: center; text-align: center; }
+
+.pe-head__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .6rem;
+    color: var(--gold-text);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+}
+.pe-head__eyebrow::before {
+    content: '';
+    width: 26px;
+    height: 1px;
+    background: var(--pe-gold);
+}
+.pe-head--center .pe-head__eyebrow {
+    justify-content: center;
+}
+.pe-head--center .pe-head__eyebrow::after {
+    content: '';
+    width: 26px;
+    height: 1px;
+    background: var(--pe-gold);
+}
+
+.pe-head__title {
+    margin: 0;
+    color: var(--color-primary-text);
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    font-weight: 600;
+    letter-spacing: -.035em;
+    line-height: 1.05;
+    text-wrap: balance;
+}
+.pe-head__title em {
+    font-style: italic;
+    /* The gold ink token keeps this at 4.92:1 on white; the brand gold would
+       only reach 2.56:1. */
+    color: var(--gold-text);
+}
+
+.pe-head__sub {
+    max-width: 54ch;
+    margin: .7rem 0 0;
+    color: var(--color-paragraph-text);
+    font-size: .92rem;
+    line-height: 1.65;
+}
+
+/* "View all" — 44px tall target with an arrow that travels on hover. */
+.pe-head__link {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    min-height: 44px;
+    padding-inline: .1rem;
+    color: var(--color-primary-text);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-head__link .material-symbols-outlined {
+    font-size: 1.05rem;
+    transition: transform var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-head__link:hover { color: var(--gold-text); }
+.pe-head__link:hover .material-symbols-outlined { transform: translateX(4px); }
+
+
+/* ==========================================================================
+   3. ASSURANCE BAR (value propositions)
+   ========================================================================== */
+
+.pe-assurance {
+    display: grid;
+    /* Fixed 4 -> 2 -> 2, never auto-fit. There are always exactly four items,
+       and both counts divide 4 evenly, so the last row is always full. auto-fit
+       chose 3 tracks in the tablet range and stranded the fourth item alone. */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid var(--pe-hairline);
+    border-radius: var(--radius-lg);
+    /* The 1px grid gap over this background paints the dividers, so no
+       separate divider elements are needed at any breakpoint. */
+    background: var(--pe-hairline);
+}
+
+.pe-assurance__item {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: clamp(1.1rem, 2vw, 1.5rem) clamp(1rem, 2vw, 1.5rem);
+    background: var(--color-pure-white);
+    transition: background var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-assurance__item:hover { background: var(--color-off-white); }
+
+.pe-assurance__icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--color-warm-beige);
+    color: var(--pe-ink);
+    transition:
+        background var(--dur-base, 220ms) var(--pe-ease),
+        color var(--dur-base, 220ms) var(--pe-ease),
+        transform var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-assurance__icon .material-symbols-outlined { font-size: 1.35rem; }
+.pe-assurance__item:hover .pe-assurance__icon {
+    background: var(--pe-ink);
+    color: var(--pe-gold);
+    transform: translateY(-2px);
+}
+
+.pe-assurance__title {
+    color: var(--color-primary-text);
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+.pe-assurance__desc {
+    margin-top: 2px;
+    color: var(--color-paragraph-text);
+    font-size: .76rem;
+    line-height: 1.4;
+}
+
+@media (min-width: 900px) {
+    .pe-assurance { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 520px) {
+    .pe-assurance__item { flex-direction: column; text-align: center; gap: .55rem; padding: 1.1rem .75rem; }
+    .pe-assurance__icon { width: 40px; height: 40px; }
+    .pe-assurance__title { font-size: .68rem; letter-spacing: .06em; }
+    .pe-assurance__desc { font-size: .7rem; }
+}
+
+
+/* ==========================================================================
+   4. COLLECTION TILES (Men / Women / Outlet)
+   ========================================================================== */
+
+.pe-collections {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(.75rem, 1.4vw, 1.25rem);
+}
+
+.pe-collection {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    height: clamp(220px, 30vw, 420px);
+    border-radius: var(--radius-lg);
+    background: var(--color-soft-gray);
+    text-decoration: none;
+    isolation: isolate;
+    transition: box-shadow 400ms var(--pe-ease);
+}
+.pe-collection:hover { box-shadow: 0 26px 60px -28px rgba(11,11,11,.55); }
+
+.pe-collection__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 900ms var(--pe-ease), filter 500ms ease;
+}
+.pe-collection:hover .pe-collection__img { transform: scale(1.07); }
+
+.pe-collection__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(11,11,11,.18) 0%, transparent 34%, rgba(11,11,11,.72) 100%);
+    transition: background 400ms var(--pe-ease);
+}
+.pe-collection:hover .pe-collection__scrim {
+    background: linear-gradient(180deg, rgba(11,11,11,.28) 0%, transparent 26%, rgba(11,11,11,.82) 100%);
+}
+
+/* Editorial numeral in the top corner — the cheap way to make three stock
+   photos read as a curated set rather than three buttons. */
+.pe-collection__num {
+    position: absolute;
+    z-index: 2;
+    top: clamp(.9rem, 1.6vw, 1.4rem);
+    left: clamp(1rem, 1.8vw, 1.6rem);
+    color: rgba(255,255,255,.72);
+    font-family: var(--font-serif);
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+}
+
+.pe-collection__body {
+    position: absolute;
+    z-index: 2;
+    inset: auto 0 0;
+    padding: clamp(1.1rem, 2vw, 1.75rem);
+    transition: transform 400ms var(--pe-ease);
+}
+.pe-collection:hover .pe-collection__body { transform: translateY(-5px); }
+
+.pe-collection__title {
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: clamp(1.35rem, 2.4vw, 2.1rem);
+    font-weight: 600;
+    letter-spacing: -.01em;
+    line-height: 1.1;
+}
+
+.pe-collection__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: .5rem;
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+.pe-collection__cta .material-symbols-outlined {
+    font-size: .95rem;
+    color: var(--pe-gold);
+    transition: transform var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-collection:hover .pe-collection__cta .material-symbols-outlined { transform: translate(3px, -3px); }
+
+/* Gold hairline sweeps under the label on hover. */
+.pe-collection__rule {
+    display: block;
+    width: 100%;
+    max-width: 120px;
+    height: 1px;
+    margin-top: .7rem;
+    background: var(--pe-gold);
+    transform: scaleX(.28);
+    transform-origin: left;
+    transition: transform 450ms var(--pe-ease);
+}
+.pe-collection:hover .pe-collection__rule { transform: scaleX(1); }
+
+@media (max-width: 720px) {
+    .pe-collections { grid-template-columns: 1fr; }
+    .pe-collection { height: clamp(180px, 42vw, 240px); }
+    .pe-collection__num { display: none; }
+}
+
+
+/* ==========================================================================
+   5. CATEGORY CARDS ("Shop by category")
+   ========================================================================== */
+
+/* Flex, not grid, because the tile count is whatever the catalogue holds — it
+   is now every stocked department rather than three top-level categories. Grid
+   fills rows left to right, so an 11th tile would sit alone against the left
+   edge; wrapped flex lines centre themselves, so a short last row always reads
+   as deliberate. max-width caps the growth so a sparse catalogue does not
+   stretch each tile across a third of the page. */
+.pe-categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(.75rem, 1.4vw, 1.15rem);
+    max-width: 1140px;
+    margin-inline: auto;
+}
+
+.pe-category {
+    position: relative;
+    /* A tight basis/max range keeps every tile essentially the same width. Each
+       flex line sizes itself independently, so a wide max let a full row of six
+       settle at 174px while a short row of five stretched to 210px — a visible
+       step between rows. At 160/180 both land within a few px of each other and
+       the short row simply centres. */
+    flex: 1 1 160px;
+    max-width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .7rem;
+    padding: clamp(1.5rem, 2.6vw, 2rem) .85rem;
+    overflow: hidden;
+    border: 1px solid var(--pe-hairline);
+    border-radius: var(--radius-lg);
+    background: var(--color-pure-white);
+    color: var(--color-primary-text);
+    text-align: center;
+    text-decoration: none;
+    transition:
+        border-color var(--dur-base, 220ms) var(--pe-ease),
+        box-shadow 300ms var(--pe-ease),
+        transform 300ms var(--pe-ease);
+}
+.pe-category::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--pe-gold), var(--pe-gold-lift));
+    transform: scaleX(0);
+    transition: transform 380ms var(--pe-ease);
+}
+.pe-category:hover {
+    border-color: rgba(200,155,60,.5);
+    box-shadow: 0 18px 38px -22px rgba(11,11,11,.4);
+    transform: translateY(-4px);
+}
+.pe-category:hover::after { transform: scaleX(1); }
+
+.pe-category__icon {
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--color-warm-beige);
+    color: var(--pe-ink);
+    transition:
+        background var(--dur-base, 220ms) var(--pe-ease),
+        color var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-category__icon .material-symbols-outlined { font-size: 1.5rem; }
+.pe-category:hover .pe-category__icon { background: var(--pe-ink); color: var(--pe-gold); }
+
+.shop-cat-name {
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .07em;
+    line-height: 1.3;
+    text-transform: uppercase;
+    /* Department names run longer than the old single words ("Accessories",
+       "Beauty Store"), so let them wrap rather than overflow the tile. */
+    text-wrap: balance;
+}
+
+.pe-category__count {
+    margin-top: auto;
+    padding-top: .3rem;
+    color: var(--color-muted-text);
+    font-size: .72rem;
+}
+
+/* The parent department ("Men", "Women") — this is what keeps the two
+   "Clothing" tiles and the two "Watches" tiles telling themselves apart. */
+.pe-category__parent {
+    color: var(--gold-text);
+    font-weight: 600;
+    letter-spacing: .04em;
+}
+.pe-category__parent::after {
+    content: ' · ';
+    color: var(--color-muted-text);
+    font-weight: 400;
+}
+
+
+/* ==========================================================================
+   6. PRODUCT GRIDS
+   ========================================================================== */
+
+.pe-products {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(.75rem, 1.4vw, 1.25rem);
+}
+@media (min-width: 600px)  { .pe-products { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 900px)  { .pe-products { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1720px) { .pe-products { grid-template-columns: repeat(5, 1fr); } }
+@media (min-width: 2200px) { .pe-products { grid-template-columns: repeat(6, 1fr); } }
+
+.pe-products > * { min-width: 0; }
+
+/* Trim a stranded last card.
+   These are teaser rows with a "View all" link, and a single card marooned in a
+   row of four reads as a broken grid. `:nth-child(Nn+1):last-child` is true only
+   when the final item starts a fresh row; `:not(:first-child)` keeps a
+   one-product section from hiding its only product. The column counts mirror the
+   breakpoints above, and 2-column rows are left alone — a half-width last card
+   looks deliberate. */
+@media (min-width: 600px) and (max-width: 899px) {
+    .pe-products--fill > :nth-child(3n + 1):last-child:not(:first-child) { display: none; }
+}
+@media (min-width: 900px) and (max-width: 1719px) {
+    .pe-products--fill > :nth-child(4n + 1):last-child:not(:first-child) { display: none; }
+}
+@media (min-width: 1720px) and (max-width: 2199px) {
+    .pe-products--fill > :nth-child(5n + 1):last-child:not(:first-child) { display: none; }
+}
+@media (min-width: 2200px) {
+    .pe-products--fill > :nth-child(6n + 1):last-child:not(:first-child) { display: none; }
+}
+
+/* On beige, the white card needs a hairline or it dissolves into the ground. */
+.pe-section--beige .product-card { border-color: rgba(11,11,11,.08); }
+
+
+/* ==========================================================================
+   7. BRAND MARQUEE
+   ========================================================================== */
+
+.pe-brands {
+    padding-block: var(--pe-section-y);
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% -20%, rgba(200,155,60,.07), transparent 60%),
+        var(--color-pure-white);
+}
+
+.pe-marquee {
+    margin-top: clamp(1.5rem, 2.5vw, 2.25rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+.pe-marquee__track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    animation: peMarquee 46s linear infinite;
+}
+/* Pause on hover/focus so the logos can actually be read and clicked. */
+.pe-marquee:hover .pe-marquee__track,
+.pe-marquee:focus-within .pe-marquee__track { animation-play-state: paused; }
+
+@keyframes peMarquee {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-33.333%, 0, 0); }
+}
+
+.pe-marquee__item {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    padding-inline: clamp(.75rem, 1.5vw, 1.25rem);
+    text-decoration: none;
+    transition: opacity 350ms var(--pe-ease), transform 350ms var(--pe-ease);
+}
+/* Dim the field and spotlight the hovered logo. */
+.pe-marquee__track:hover .pe-marquee__item { opacity: .35; }
+.pe-marquee__track .pe-marquee__item:hover { opacity: 1; transform: scale(1.1); }
+
+.pe-marquee__item img {
+    height: 34px;
+    width: auto;
+    max-width: 150px;
+    object-fit: contain;
+    /* Mixed-colour logo files read as a set once desaturated; colour returns on
+       hover so the spotlight lands. */
+    filter: grayscale(1);
+    opacity: .78;
+    transition: filter 350ms ease, opacity 350ms ease;
+}
+.pe-marquee__item:hover img { filter: grayscale(0); opacity: 1; }
+
+@media (max-width: 768px) {
+    .pe-marquee__item { height: 52px; }
+    .pe-marquee__item img { height: 26px; }
+}
+
+/* Reduced motion: stop the scroll and let the row be swiped instead. */
+@media (prefers-reduced-motion: reduce) {
+    .pe-marquee {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .pe-marquee::-webkit-scrollbar { display: none; }
+    .pe-marquee__track { animation: none; }
+}
+
+
+/* ==========================================================================
+   8. BRAND STORY
+   ========================================================================== */
+
+.pe-story {
+    padding-block: var(--pe-section-y);
+    overflow: hidden;
+    background: var(--color-warm-beige);
+}
+
+.pe-story__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4.5rem);
+}
+@media (min-width: 900px) {
+    .pe-story__grid { grid-template-columns: 1.05fr 1fr; }
+}
+
+.pe-story__text {
+    margin: 1.25rem 0 1.75rem;
+    max-width: 56ch;
+    color: var(--color-paragraph-text);
+    font-size: .95rem;
+    line-height: 1.85;
+}
+
+/* Stat row replaces a second paragraph of adjectives with something checkable. */
+.pe-story__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    margin-bottom: 1.9rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid rgba(11,11,11,.12);
+}
+.pe-story__stat dt {
+    color: var(--color-primary-text);
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -.02em;
+}
+.pe-story__stat dd {
+    margin: .4rem 0 0;
+    color: var(--color-paragraph-text);
+    font-size: .72rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.pe-story__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    min-height: 48px;
+    padding: .8rem 1.6rem;
+    border: 1px solid var(--pe-ink);
+    border-radius: var(--radius-full);
+    background: var(--pe-ink);
+    color: #fff;
+    font-size: .74rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+        background var(--dur-base, 220ms) var(--pe-ease),
+        color var(--dur-base, 220ms) var(--pe-ease),
+        transform var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-story__btn .material-symbols-outlined {
+    font-size: 1rem;
+    transition: transform var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-story__btn:hover {
+    background: var(--pe-gold);
+    border-color: var(--pe-gold);
+    color: var(--pe-ink);
+    transform: translateY(-2px);
+}
+.pe-story__btn:hover .material-symbols-outlined { transform: translateX(4px); }
+
+.pe-story__figure {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    max-height: 560px;
+    border-radius: var(--radius-lg);
+    background: var(--color-soft-gray);
+}
+.pe-story__figure img { width: 100%; height: 100%; object-fit: cover; }
+
+.pe-story__badge {
+    position: absolute;
+    bottom: clamp(1rem, 2vw, 1.5rem);
+    left: clamp(1rem, 2vw, 1.5rem);
+    right: clamp(1rem, 2vw, 1.5rem);
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(200,155,60,.32);
+    border-radius: var(--radius-md);
+    background: rgba(11,11,11,.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #fff;
+}
+.pe-story__badge strong {
+    display: block;
+    color: var(--gold-text);
+    font-size: .66rem;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+.pe-story__badge span { display: block; margin-top: 3px; color: rgba(255,255,255,.82); font-size: .78rem; }
+
+
+/* ==========================================================================
+   9. MEMBERSHIP PROMO
+   ========================================================================== */
+
+.pe-promo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+    overflow: hidden;
+    padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem);
+    border: 1px solid rgba(200,155,60,.24);
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(circle at 12% 50%, rgba(200,155,60,.14), transparent 55%),
+        var(--pe-ink);
+}
+
+.pe-promo__left { display: flex; align-items: center; gap: 1.1rem; }
+
+.pe-promo__icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgba(200,155,60,.35);
+    border-radius: var(--radius-full);
+    color: var(--gold-text);
+}
+.pe-promo__icon .material-symbols-outlined { font-size: 1.6rem; }
+
+.pe-promo__heading {
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: -.01em;
+    line-height: 1.2;
+}
+.pe-promo__desc { margin-top: .35rem; color: rgba(255,255,255,.62); font-size: .84rem; line-height: 1.5; }
+
+.pe-promo__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    min-height: 48px;
+    flex: 0 0 auto;
+    padding: .8rem 1.75rem;
+    border: 1px solid var(--pe-gold);
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--gold-text);
+    font-size: .74rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+        background var(--dur-base, 220ms) var(--pe-ease),
+        color var(--dur-base, 220ms) var(--pe-ease),
+        transform var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-promo__btn:hover { background: var(--pe-gold); color: var(--pe-ink); transform: translateY(-2px); }
+
+@media (max-width: 700px) {
+    .pe-promo { flex-direction: column; text-align: center; }
+    .pe-promo__left { flex-direction: column; }
+    .pe-promo__btn { width: 100%; justify-content: center; }
+}
+
+
+/* ==========================================================================
+   10. NEWSLETTER
+   ========================================================================== */
+
+.pe-newsletter {
+    position: relative;
+    padding-block: var(--pe-section-y);
+    overflow: hidden;
+    background: var(--pe-ink);
+}
+.pe-newsletter::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(200,155,60,.1) 0%, transparent 55%);
+}
+
+.pe-newsletter__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 620px;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.pe-newsletter__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .9rem;
+    color: var(--gold-text);
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+}
+.pe-newsletter__eyebrow::before,
+.pe-newsletter__eyebrow::after {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: currentColor;
+    opacity: .6;
+}
+
+.pe-newsletter__heading {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+    font-weight: 600;
+    letter-spacing: -.03em;
+    line-height: 1.12;
+    text-wrap: balance;
+}
+.pe-newsletter__desc {
+    max-width: 46ch;
+    margin: .9rem auto 0;
+    color: rgba(255,255,255,.62);
+    font-size: .9rem;
+    line-height: 1.65;
+}
+
+.pe-newsletter__form {
+    display: flex;
+    gap: .6rem;
+    max-width: 480px;
+    margin: clamp(1.5rem, 3vw, 2.25rem) auto 1.1rem;
+}
+
+.pe-newsletter__input {
+    flex: 1;
+    min-width: 0;
+    min-height: 50px;
+    padding: .85rem 1.15rem;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: var(--radius-full);
+    background: rgba(255,255,255,.06);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: .88rem;
+    outline: none;
+    transition: border-color var(--dur-base, 220ms) ease, background var(--dur-base, 220ms) ease;
+}
+.pe-newsletter__input::placeholder { color: rgba(255,255,255,.4); }
+.pe-newsletter__input:focus {
+    border-color: var(--pe-gold);
+    background: rgba(255,255,255,.1);
+}
+/* The gold ring on the dark panel measures 7.69:1, well past the 3:1 that
+   WCAG 1.4.11 asks of a focus indicator. */
+.pe-newsletter__input:focus-visible {
+    outline: 2px solid var(--pe-gold);
+    outline-offset: 2px;
+}
+.pe-newsletter__input[aria-invalid="true"] { border-color: var(--color-error); }
+
+.pe-newsletter__submit {
+    flex: 0 0 auto;
+    min-height: 50px;
+    padding: .85rem 1.75rem;
+    border: 1px solid var(--pe-gold);
+    border-radius: var(--radius-full);
+    background: var(--pe-gold);
+    color: var(--pe-ink);
+    font-family: var(--font-sans);
+    font-size: .74rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--dur-base, 220ms) ease, transform var(--dur-base, 220ms) var(--pe-ease);
+}
+.pe-newsletter__submit:hover { background: var(--pe-gold-lift); transform: translateY(-2px); }
+.pe-newsletter__submit:active { transform: translateY(0); }
+.pe-newsletter__submit[disabled] { opacity: .6; cursor: progress; transform: none; }
+
+/* Inline result. The confirmation used to flash at the very top of a ~6000px
+   page, far above the form that produced it. */
+.pe-newsletter__status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    max-width: 480px;
+    margin: 0 auto 1rem;
+    padding: .75rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: .82rem;
+    line-height: 1.4;
+    text-align: left;
+}
+.pe-newsletter__status .material-symbols-outlined { font-size: 1.1rem; flex: 0 0 auto; }
+.pe-newsletter__status--ok {
+    border: 1px solid rgba(200,155,60,.35);
+    background: rgba(200,155,60,.12);
+    color: #F3E4C4;
+}
+.pe-newsletter__status--error {
+    border: 1px solid rgba(211,47,47,.4);
+    background: rgba(211,47,47,.12);
+    /* #F5A9A9 on the #0B0B0B panel measures 8.4:1. */
+    color: #F5A9A9;
+}
+
+.pe-newsletter__trust {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    color: rgba(255,255,255,.42);
+    font-size: .74rem;
+}
+.pe-newsletter__trust .material-symbols-outlined { font-size: .95rem; color: var(--gold-text); opacity: .7; }
+
+@media (max-width: 520px) {
+    .pe-newsletter__form { flex-direction: column; }
+    .pe-newsletter__submit { width: 100%; }
+}
+
+
+/* ==========================================================================
+   11. SCROLL REVEAL
+   ========================================================================== */
+
+/* Reveal is opt-in via JS: the `.pe-reveal` class only starts hiding things
+   once the controller sets data-reveal on <html>. Without JS every section
+   stays visible instead of being stuck at opacity 0. */
+[data-reveal] .pe-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+        opacity 700ms var(--pe-ease) calc(var(--i, 0) * 70ms),
+        transform 700ms var(--pe-ease) calc(var(--i, 0) * 70ms);
+}
+[data-reveal] .pe-reveal.is-in {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-reveal] .pe-reveal { opacity: 1; transform: none; transition: none; }
+
+    .pe-hero__slide,
+    .pe-hero__visual img,
+    .pe-hero__rise,
+    .pe-hero__eyebrow i,
+    .pe-hero__cta,
+    .pe-hero__cta::before,
+    .pe-hero__arrow,
+    .pe-hero__dot::before,
+    .pe-hero__card,
+    .pe-hero__link::after,
+    .pe-collection__img,
+    .pe-collection__scrim,
+    .pe-collection__body,
+    .pe-collection__rule,
+    .pe-category,
+    .pe-category::after,
+    .pe-marquee__item,
+    .pe-marquee__item img { transition: none; }
+
+    .pe-hero__rise { opacity: 1; transform: none; }
+    .pe-hero__eyebrow i { transform: scaleX(1); }
+    .pe-hero__card { opacity: 1; transform: none; }
+    .pe-hero__progress i { animation: none; }
+    .pe-collection__rule { transform: scaleX(1); }
+}

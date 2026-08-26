@@ -1,154 +1,358 @@
 @extends('layouts.app')
 
 @section('title', 'Home')
+@section('meta_description', 'Pure Elegance — original branded fashion for Men & Women. Curated collections, islandwide delivery and secure checkout.')
+
+@push('styles')
+    @vite('resources/css/home.css')
+@endpush
 
 @section('content')
 
-{{-- ============================================
-    HERO BANNER SECTION — Cinematic Entrance
-============================================= --}}
-<section class="hero-section" id="hero">
-    @php $heroBanner = $banners->first(); @endphp
-    <div class="hero-bg">
-        <img src="{{ $heroBanner?->image_url ?? asset('images/hero-banner.jpg') }}" alt="{{ $heroBanner?->title ?? 'Pure Elegance Fashion' }}" class="hero-bg-img">
-        <div class="hero-overlay"></div>
-    </div>
-    <div class="container">
-        <div class="hero-content">
-            <div class="hero-label">{{ $heroBanner->subtitle ?? 'STEP INTO STYLE' }}</div>
-            <h1 class="hero-heading">{!! $heroBanner ? e($heroBanner->title) : 'TIMELESS FASHION.<br>PURE ELEGANCE.' !!}</h1>
-            <div class="hero-divider"></div>
-            <p class="hero-desc">Premium fashion for Men &amp; Women.<br>Elevate your everyday style.</p>
-            <a href="{{ $heroBanner->cta_link ?? route('categories') }}" class="btn btn-primary hero-btn">
-                {{ $heroBanner->cta_text ?? 'SHOP NOW' }} <span class="material-symbols-outlined" style="font-size: 1rem;">chevron_right</span>
-            </a>
-        </div>
-    </div>
-    <a href="#categories-section" class="hero-scroll-indicator" aria-label="Scroll down">
-        <span class="hero-scroll-text">SCROLL</span>
-        <span class="material-symbols-outlined">expand_more</span>
-    </a>
-</section>
+{{-- Scroll-reveal is opt-in: the CSS only hides `.pe-reveal` while <html> carries
+     data-reveal. Setting it here — before the sections below are parsed — means
+     no flash of visible-then-hidden content, and a browser with JS off simply
+     renders the whole page.
 
-{{-- ============================================
-    CATEGORY TILES — MEN, WOMEN, OUTLET
-============================================= --}}
-<section style="padding: var(--space-xl) 0;" id="categories-section">
-    <div class="container">
-        <div class="category-tiles reveal">
-            <a href="{{ route('categories') }}?gender=men" class="cat-tile stagger-item">
-                <img src="{{ asset('images/category-men.jpg') }}" alt="Men's Collection" class="cat-tile-img" loading="lazy" width="600" height="340">
-                <div class="cat-tile-overlay"></div>
-                <div class="cat-tile-content">
-                    <div class="cat-tile-title">MEN</div>
-                    <span class="cat-tile-cta">SHOP NOW</span>
-                </div>
-            </a>
-            <a href="{{ route('categories') }}?gender=women" class="cat-tile stagger-item">
-                <img src="{{ asset('images/category-women.jpg') }}" alt="Women's Collection" class="cat-tile-img" loading="lazy" width="600" height="340">
-                <div class="cat-tile-overlay"></div>
-                <div class="cat-tile-content">
-                    <div class="cat-tile-title">WOMEN</div>
-                    <span class="cat-tile-cta">SHOP NOW</span>
-                </div>
-            </a>
-            <a href="{{ route('sale') }}" class="cat-tile stagger-item">
-                <img src="{{ asset('images/category-outlet.jpg') }}" alt="Outlet Sale" class="cat-tile-img" loading="lazy" width="600" height="340">
-                <div class="cat-tile-overlay"></div>
-                <div class="cat-tile-content">
-                    <div class="cat-tile-title">OUTLET</div>
-                    <span class="cat-tile-cta">UP TO 60% OFF</span>
-                </div>
-            </a>
-        </div>
-    </div>
-</section>
+     The timeout is the failsafe: home.js sets data-reveal-active from inside the
+     observer's first callback, so if the script never loads — or loads somewhere
+     IntersectionObserver never fires — the attribute is stripped and the page
+     shows in full rather than staying at opacity 0. --}}
+<script>
+    (function () {
+        var root = document.documentElement;
+        root.setAttribute('data-reveal', '');
+        setTimeout(function () {
+            if (!root.hasAttribute('data-reveal-active')) root.removeAttribute('data-reveal');
+        }, 1200);
+    })();
+</script>
 
-{{-- ============================================
-    VALUE PROPOSITIONS BAR
-============================================= --}}
-<section style="padding: 0 0 var(--space-xl);">
-    <div class="container">
-        <div class="value-props reveal">
-            <div class="value-prop">
-                <span class="material-symbols-outlined value-prop-icon">local_shipping</span>
-                <div class="value-prop-title">{{ site('feature_1_title', 'CASH ON DELIVERY') }}</div>
-                <div class="value-prop-desc">{{ site('feature_1_subtitle', 'Islandwide Delivery') }}</div>
-            </div>
-            <div class="value-prop-divider"></div>
-            <div class="value-prop">
-                <span class="material-symbols-outlined value-prop-icon">workspace_premium</span>
-                <div class="value-prop-title">{{ site('feature_2_title', '100% ORIGINAL') }}</div>
-                <div class="value-prop-desc">{{ site('feature_2_subtitle', 'Branded Products') }}</div>
-            </div>
-            <div class="value-prop-divider"></div>
-            <div class="value-prop">
-                <span class="material-symbols-outlined value-prop-icon">sync_alt</span>
-                <div class="value-prop-title">{{ site('feature_3_title', 'EASY RETURNS') }}</div>
-                <div class="value-prop-desc">{{ site('feature_3_subtitle', '7 Days Return Policy') }}</div>
-            </div>
-            <div class="value-prop-divider"></div>
-            <div class="value-prop">
-                <span class="material-symbols-outlined value-prop-icon">lock</span>
-                <div class="value-prop-title">{{ site('feature_4_title', 'SECURE PAYMENT') }}</div>
-                <div class="value-prop-desc">{{ site('feature_4_subtitle', 'Safe &amp; Secure Checkout') }}</div>
-            </div>
-        </div>
-    </div>
-</section>
+@php
+    /* ------------------------------------------------------------------
+       Hero slides — built from the admin-managed banners, with a curated
+       fallback set so the hero is never a single static frame on a fresh
+       install. Each banner may carry its own description; the generic line
+       is only used when it has none.
+    ------------------------------------------------------------------ */
+    $heroSlides = $banners->map(fn ($banner) => [
+        'eyebrow'     => $banner->subtitle ?: 'The new signature collection',
+        'title'       => $banner->title ?: 'Timeless style. Made distinctly yours.',
+        'description' => 'Premium pieces selected for modern living, effortless confidence and everyday ease.',
+        'image'       => $banner->image_url,
+        'cta_text'    => $banner->cta_text ?: 'Shop the collection',
+        'cta_link'    => $banner->cta_link ?: route('categories'),
+    ])->values();
 
-{{-- ============================================
-    SHOP BY CATEGORY — Browsable Category Grid
-============================================= --}}
-@if(isset($topCategories) && $topCategories->count() > 0)
-<section style="padding-bottom: var(--space-2xl);" id="shop-by-category">
-    <div class="container">
-        <div class="section-header reveal">
-            <div>
-                <h2 class="section-title">
-                    SHOP BY CATEGORY
-                    <span class="material-symbols-outlined" style="color: var(--gold-text); font-size: 1.2rem;">grid_view</span>
-                </h2>
-                <div class="section-title-underline"></div>
-            </div>
-        </div>
+    if ($heroSlides->count() < 2) {
+        $heroSlides = collect([
+            [
+                'eyebrow'     => 'Step into style',
+                'title'       => 'Timeless fashion. Pure elegance.',
+                'description' => 'Premium fashion for Men & Women. Elevate your everyday style.',
+                'image'       => asset('images/hero-banner.jpg'),
+                'cta_text'    => 'Shop now',
+                'cta_link'    => route('categories'),
+            ],
+            [
+                'eyebrow'     => 'New season',
+                'title'       => 'Wear your confidence.',
+                'description' => 'Modern silhouettes and considered essentials for every occasion.',
+                'image'       => asset('images/category-men.jpg'),
+                'cta_text'    => 'Explore men',
+                'cta_link'    => route('categories', ['gender' => 'men']),
+            ],
+            [
+                'eyebrow'     => 'The women’s edit',
+                'title'       => 'Elevate your everyday.',
+                'description' => 'Refined pieces designed to move with your life and your style.',
+                'image'       => asset('images/category-women.jpg'),
+                'cta_text'    => 'Explore women',
+                'cta_link'    => route('categories', ['gender' => 'women']),
+            ],
+        ]);
+    }
 
-        <div class="shop-categories-grid">
-            @php
-                $categoryIcons = [
-                    'men' => 'man',
-                    'women' => 'woman',
-                    'sale' => 'sell',
-                    'clothing' => 'checkroom',
-                    'footwear' => 'steps',
-                    'watches' => 'watch',
-                    'accessories' => 'diamond',
-                    'fragrances' => 'spa',
-                    'bags' => 'shopping_bag',
-                    'beauty' => 'cosmetics',
-                    'tech' => 'headphones',
-                    'skin-care' => 'dermatology',
-                    'makeup' => 'brush',
-                ];
-            @endphp
-            @foreach($topCategories as $index => $category)
-                {{-- Sale is price-driven: its tile goes to the dedicated /sale page --}}
-                <a href="{{ $category->slug === 'sale' ? route('sale') : route('category.show', $category->slug) }}"
-                   class="shop-cat-card stagger-item"
-                   style="transition-delay: {{ $index * 0.08 }}s;">
-                    <div class="shop-cat-icon">
-                        @php
-                            // Only use the DB icon if it's a valid Material Symbols ligature
-                            // (lowercase letters/digits/underscore). Legacy Font Awesome names
-                            // like "fa-male" contain dashes → fall back to the slug map.
-                            $catIcon = (filled($category->icon) && preg_match('/^[a-z0-9_]+$/', $category->icon))
-                                ? $category->icon
-                                : ($categoryIcons[strtolower($category->slug)] ?? 'category');
-                        @endphp
-                        <span class="material-symbols-outlined">{{ $catIcon }}</span>
+    $slideCount = $heroSlides->count();
+@endphp
+
+<div class="pe-landing">
+
+{{-- ==========================================================================
+     HERO — full-bleed editorial carousel
+     The image runs edge to edge with no gutter, radius or shadow. The copy
+     inside rides `.container`, so the headline still lines up with every
+     section below it while the artwork fills the screen.
+     ========================================================================== --}}
+<section class="pe-hero"
+         id="hero"
+         data-hero
+         aria-roledescription="carousel"
+         aria-label="Pure Elegance highlights">
+        <div class="pe-hero__viewport">
+            @foreach($heroSlides as $index => $slide)
+                <article class="pe-hero__slide {{ $index === 0 ? 'is-active' : '' }}"
+                         data-hero-slide
+                         aria-hidden="{{ $index === 0 ? 'false' : 'true' }}"
+                         aria-roledescription="slide"
+                         aria-label="{{ $index + 1 }} of {{ $slideCount }}">
+
+                    <div class="pe-hero__visual">
+                        <img src="{{ $slide['image'] }}"
+                             alt=""
+                             width="1600" height="1000"
+                             fetchpriority="{{ $index === 0 ? 'high' : 'low' }}"
+                             loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                             decoding="async">
                     </div>
+                    <div class="pe-hero__grain" aria-hidden="true"></div>
+
+                    <div class="pe-hero__index" aria-hidden="true">
+                        <span>PURE ELEGANCE</span><i></i><span>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                    </div>
+
+                    {{-- `.container` here is what keeps the headline on the same
+                         grid as the sections below, now that the artwork itself
+                         is full-bleed. --}}
+                    <div class="pe-hero__inner container">
+                        <div class="pe-hero__copy">
+                            <p class="pe-hero__eyebrow pe-hero__rise" style="--d:0">
+                                <i aria-hidden="true"></i>{{ $slide['eyebrow'] }}
+                            </p>
+
+                            {{-- Only the first slide is an <h1>; the rest are <h2> so the
+                                 page keeps exactly one top-level heading. --}}
+                            @if($index === 0)
+                                <h1 class="pe-hero__title pe-hero__rise" style="--d:1">{{ $slide['title'] }}</h1>
+                            @else
+                                <h2 class="pe-hero__title pe-hero__rise" style="--d:1">{{ $slide['title'] }}</h2>
+                            @endif
+
+                            <p class="pe-hero__description pe-hero__rise" style="--d:2">{{ $slide['description'] }}</p>
+
+                            <div class="pe-hero__actions pe-hero__rise" style="--d:3">
+                                <a href="{{ $slide['cta_link'] }}" class="pe-hero__cta">
+                                    <span>{{ $slide['cta_text'] }}</span>
+                                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                                </a>
+                                <a href="{{ route('new-arrivals') }}" class="pe-hero__link">
+                                    Explore new arrivals
+                                    <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
+                                </a>
+                            </div>
+
+                            <div class="pe-hero__proof pe-hero__rise" style="--d:4">
+                                <span class="pe-hero__proof-mark" aria-hidden="true">PE</span>
+                                <span>
+                                    <strong>Original pieces, considered carefully.</strong>
+                                    <small>Islandwide delivery · Secure checkout</small>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{{ $slide['cta_link'] }}" class="pe-hero__card">
+                        <small>Just landed</small>
+                        <strong>Modern icons,<br>made to last.</strong>
+                        <span>Discover now <b aria-hidden="true">&rarr;</b></span>
+                    </a>
+                </article>
+            @endforeach
+
+            @if($slideCount > 1)
+                <div class="pe-hero__controls">
+                    <button type="button" class="pe-hero__arrow" data-hero-prev aria-label="Previous highlight">
+                        <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+                    </button>
+                    <div class="pe-hero__dots" role="tablist" aria-label="Choose a highlight">
+                        @foreach($heroSlides as $index => $slide)
+                            <button type="button"
+                                    class="pe-hero__dot {{ $index === 0 ? 'is-active' : '' }}"
+                                    data-hero-dot="{{ $index }}"
+                                    role="tab"
+                                    aria-selected="{{ $index === 0 ? 'true' : 'false' }}"
+                                    aria-label="Show highlight {{ $index + 1 }}"></button>
+                        @endforeach
+                    </div>
+                    <button type="button" class="pe-hero__arrow" data-hero-next aria-label="Next highlight">
+                        <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                    </button>
+                    <span class="pe-hero__progress" aria-hidden="true"><i data-hero-progress></i></span>
+                </div>
+
+                {{-- Slide changes are announced here rather than on the slides
+                     themselves, so a screen reader gets one calm update. --}}
+                <p class="sr-only" aria-live="polite" data-hero-live>Highlight 1 of {{ $slideCount }}</p>
+            @endif
+        </div>
+</section>
+
+
+{{-- ==========================================================================
+     ASSURANCE BAR
+     ========================================================================== --}}
+<section class="pe-section pe-section--tight" aria-label="Why shop with Pure Elegance">
+    <div class="container">
+        @php
+            $assurances = [
+                ['icon' => 'local_shipping',      'title' => site('feature_1_title', 'Cash on delivery'), 'desc' => site('feature_1_subtitle', 'Islandwide delivery')],
+                ['icon' => 'workspace_premium',   'title' => site('feature_2_title', '100% original'),    'desc' => site('feature_2_subtitle', 'Branded products')],
+                ['icon' => 'sync_alt',            'title' => site('feature_3_title', 'Easy returns'),     'desc' => site('feature_3_subtitle', '7 day return policy')],
+                ['icon' => 'lock',                'title' => site('feature_4_title', 'Secure payment'),   'desc' => site('feature_4_subtitle', 'Safe & secure checkout')],
+            ];
+        @endphp
+        <div class="pe-assurance pe-reveal">
+            @foreach($assurances as $item)
+                <div class="pe-assurance__item">
+                    <span class="pe-assurance__icon">
+                        <span class="material-symbols-outlined" aria-hidden="true">{{ $item['icon'] }}</span>
+                    </span>
+                    <span>
+                        <span class="pe-assurance__title">{{ $item['title'] }}</span>
+                        <span class="pe-assurance__desc">{{ $item['desc'] }}</span>
+                    </span>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+
+{{-- ==========================================================================
+     COLLECTIONS — Men / Women / Outlet
+     ========================================================================== --}}
+<section class="pe-section pe-section--flush-top" id="collections">
+    <div class="container">
+        <div class="pe-head pe-reveal">
+            <div>
+                <p class="pe-head__eyebrow">The edit</p>
+                <h2 class="pe-head__title">Shop by <em>collection</em></h2>
+            </div>
+            <a href="{{ route('categories') }}" class="pe-head__link">
+                All collections <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
+        </div>
+
+        @php
+            $collections = [
+                ['title' => 'Men',    'href' => route('categories', ['gender' => 'men']),   'img' => asset('images/category-men.jpg'),    'cta' => 'Shop now',        'alt' => "Men's collection"],
+                ['title' => 'Women',  'href' => route('categories', ['gender' => 'women']), 'img' => asset('images/category-women.jpg'),  'cta' => 'Shop now',        'alt' => "Women's collection"],
+                ['title' => 'Outlet', 'href' => route('sale'),                              'img' => asset('images/category-outlet.jpg'), 'cta' => 'Up to 60% off',   'alt' => 'Outlet sale'],
+            ];
+        @endphp
+        <div class="pe-collections">
+            @foreach($collections as $index => $collection)
+                <a href="{{ $collection['href'] }}" class="pe-collection pe-reveal" style="--i:{{ $index }}">
+                    <img src="{{ $collection['img'] }}"
+                         alt="{{ $collection['alt'] }}"
+                         class="pe-collection__img"
+                         width="600" height="420"
+                         loading="lazy" decoding="async">
+                    <span class="pe-collection__scrim" aria-hidden="true"></span>
+                    <span class="pe-collection__num" aria-hidden="true">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                    <span class="pe-collection__body">
+                        <span class="pe-collection__title">{{ $collection['title'] }}</span>
+                        <span class="pe-collection__rule" aria-hidden="true"></span>
+                        <span class="pe-collection__cta">
+                            {{ $collection['cta'] }}
+                            <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
+                        </span>
+                    </span>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+
+{{-- ==========================================================================
+     SHOP BY CATEGORY
+     ========================================================================== --}}
+@if(isset($topCategories) && $topCategories->count() > 0)
+<section class="pe-section pe-section--flush-top" id="shop-by-category">
+    <div class="container">
+        <div class="pe-head pe-head--center pe-reveal">
+            <div>
+                <p class="pe-head__eyebrow">Browse the catalogue</p>
+                <h2 class="pe-head__title">Shop by category</h2>
+                <p class="pe-head__sub">Every department we stock, with what is in it right now.</p>
+            </div>
+        </div>
+
+        @php
+            /* Material Symbols renders an unknown ligature as its literal text —
+               "cosmetics" is not a symbol and was printing the raw word across a
+               tile. So the DB value is checked against a known-good allowlist
+               rather than a shape regex. */
+            $validIcons = [
+                'man', 'woman', 'sell', 'checkroom', 'apparel', 'steps', 'watch',
+                'diamond', 'spa', 'shopping_bag', 'local_mall', 'health_and_beauty',
+                'brush', 'styler', 'face_retouching_natural', 'dermatology',
+                'headphones', 'redeem', 'auto_awesome', 'category',
+            ];
+
+            /* Keyed on words rather than slugs: the tiles are second-level
+               categories, so their slugs are prefixed ("men-clothing",
+               "women-watches") and a slug lookup would miss every one of them.
+               First match against the lowercased name wins, so order matters —
+               "skin care" is checked before the broader "beauty". */
+            $iconByKeyword = [
+                'skin'        => 'dermatology',
+                'makeup'      => 'brush',
+                'beauty'      => 'health_and_beauty',
+                'fragrance'   => 'spa',
+                'footwear'    => 'steps',
+                'shoe'        => 'steps',
+                'sneaker'     => 'steps',
+                'watch'       => 'watch',
+                'bag'         => 'shopping_bag',
+                'accessor'    => 'diamond',
+                'jewel'       => 'diamond',
+                'cloth'       => 'checkroom',
+                'shirt'       => 'checkroom',
+                'dress'       => 'checkroom',
+                'tech'        => 'headphones',
+                'sale'        => 'sell',
+                'outlet'      => 'sell',
+                'men'         => 'man',
+                'women'       => 'woman',
+            ];
+        @endphp
+
+        <div class="pe-categories">
+            @foreach($topCategories as $index => $category)
+                @php
+                    $slug = strtolower($category->slug);
+                    $icon = null;
+
+                    if (in_array($category->icon, $validIcons, true)) {
+                        $icon = $category->icon;
+                    } else {
+                        $haystack = strtolower($category->name);
+                        foreach ($iconByKeyword as $needle => $symbol) {
+                            if (str_contains($haystack, $needle)) {
+                                $icon = $symbol;
+                                break;
+                            }
+                        }
+                    }
+                    $icon ??= 'category';
+
+                    // Sale is price-driven, so its tile goes to the dedicated /sale page.
+                    $href = $slug === 'sale' ? route('sale') : route('category.show', $category->slug);
+                    $count = $category->products_count . ' ' . Str::plural('product', $category->products_count);
+                @endphp
+                <a href="{{ $href }}" class="pe-category pe-reveal" style="--i:{{ min($index, 5) }}">
+                    <span class="pe-category__icon">
+                        <span class="material-symbols-outlined" aria-hidden="true">{{ $icon }}</span>
+                    </span>
                     <div class="shop-cat-name">{{ $category->name }}</div>
-                    <div class="shop-cat-count">{{ $category->products_count }} {{ Str::plural('Product', $category->products_count) }}</div>
+                    <div class="pe-category__count">
+                        @if($category->parent_label)
+                            <span class="pe-category__parent">{{ $category->parent_label }}</span>
+                        @endif
+                        {{ $count }}
+                    </div>
                 </a>
             @endforeach
         </div>
@@ -156,34 +360,27 @@
 </section>
 @endif
 
-{{-- ============================================
-    FEATURED PRODUCTS (from DB is_featured flag)
-============================================= --}}
+
+{{-- ==========================================================================
+     FEATURED
+     ========================================================================== --}}
 @if($featuredProducts->count() > 0)
-<section class="section-bg-beige" style="padding: var(--space-2xl) 0;" id="featured-section">
-    <div class="container skeleton-container">
-        <div class="section-header reveal">
+<section class="pe-section pe-section--beige" id="featured-section">
+    <div class="container">
+        <div class="pe-head pe-reveal">
             <div>
-                <h2 class="section-title">
-                    FEATURED
-                    <span class="material-symbols-outlined" style="color: var(--gold-text); font-size: 1.2rem;">star</span>
-                </h2>
-                <div class="section-title-underline"></div>
+                <p class="pe-head__eyebrow">Handpicked</p>
+                <h2 class="pe-head__title">Featured <em>pieces</em></h2>
+                <p class="pe-head__sub">The pieces our team keeps coming back to — chosen for cut, material and the way they wear.</p>
             </div>
-            <a href="{{ route('categories') }}" class="section-link">
-                VIEW ALL <span class="material-symbols-outlined" style="font-size: 1.1rem;">arrow_forward</span>
+            <a href="{{ route('categories') }}" class="pe-head__link">
+                View all <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
             </a>
         </div>
 
-        <div class="skeleton-grid" aria-hidden="true">
-            @for($i = 0; $i < 4; $i++)
-                @include('storefront.partials.skeleton-product-card')
-            @endfor
-        </div>
-
-        <div class="product-real-grid home-product-grid">
+        <div class="pe-products pe-products--fill">
             @foreach($featuredProducts as $index => $product)
-                <div class="home-product-item stagger-item" style="transition-delay: {{ $index * 0.1 }}s;">
+                <div class="pe-reveal" style="--i:{{ $index % 4 }}">
                     @include('storefront.partials.product-card', [
                         'product'     => $product,
                         'wishlistIds' => $wishlistIds ?? [],
@@ -195,35 +392,35 @@
 </section>
 @endif
 
-{{-- ============================================
-    SHOP BY BRAND (data-driven carousel)
-============================================= --}}
+
+{{-- ==========================================================================
+     SHOP BY BRAND — auto-scrolling marquee
+     The brand set is rendered 3x so the CSS loop (translateX -33.333%) is
+     seamless; copies past the first are hidden from AT and the tab order.
+     ========================================================================== --}}
 @if($brands->count() > 0)
-<section class="brand-section">
+<section class="pe-brands" aria-labelledby="brands-heading">
     <div class="container">
-        <div class="brand-section-head reveal">
-            <div class="brand-section-eyebrow">Trusted Labels</div>
-            <h2 class="section-title" style="justify-content: center;">Shop by Brand</h2>
-            <div class="section-title-underline" style="margin: 6px auto 0;"></div>
+        <div class="pe-head pe-head--center pe-reveal">
+            <div>
+                <p class="pe-head__eyebrow">Trusted labels</p>
+                <h2 class="pe-head__title" id="brands-heading">Shop by Brand</h2>
+            </div>
         </div>
     </div>
 
-    {{-- Auto-scrolling marquee. The brand set is rendered 3× so the CSS loop
-        (translateX -33.333%) is seamless; copies past the first are hidden from
-        AT / keyboard. Pauses on hover/focus; falls back to a swipe row under
-        prefers-reduced-motion. --}}
-    <div class="brand-marquee">
-        <div class="brand-marquee-track">
+    <div class="pe-marquee">
+        <div class="pe-marquee__track">
             @for($rep = 0; $rep < 3; $rep++)
                 @foreach($brands as $brand)
                     <a href="{{ route('categories', ['brand' => $brand->brand]) }}"
-                       class="brand-logo-link"
+                       class="pe-marquee__item"
                        @if($rep > 0) aria-hidden="true" tabindex="-1" @endif>
-                        <img src="{{ asset('images/brands/' . Str::slug($brand->brand) . '.png') }}" 
-                             onerror="this.onerror=null;this.src='https://placehold.co/140x50/transparent/333333/png?text={{ urlencode($brand->brand) }}'"
-                             alt="{{ $brand->brand }} logo" 
-                             class="brand-logo-img"
-                             loading="lazy">
+                        <img src="{{ asset('images/brands/' . Str::slug($brand->brand) . '.png') }}"
+                             onerror="this.onerror=null;this.src='https://placehold.co/150x50/transparent/333333/png?text={{ urlencode($brand->brand) }}'"
+                             alt="{{ $rep === 0 ? $brand->brand : '' }}"
+                             width="150" height="50"
+                             loading="lazy" decoding="async">
                     </a>
                 @endforeach
             @endfor
@@ -232,66 +429,79 @@
 </section>
 @endif
 
-{{-- ============================================
-    BRAND STORY / ABOUT SECTION
-============================================= --}}
-<section class="brand-story-section" style="padding: var(--space-3xl) 0;">
+
+{{-- ==========================================================================
+     BRAND STORY
+     ========================================================================== --}}
+<section class="pe-story" id="our-story">
     <div class="container">
-        <div class="brand-story-grid">
-            <div class="brand-story-content reveal">
-                <div class="brand-story-label">OUR STORY</div>
-                <h2 class="brand-story-heading">Discover Original<br>Branded Fashion</h2>
-                <div class="brand-story-divider"></div>
-                <p class="brand-story-text">
-                    At Pure Elegance, we believe fashion is more than clothing — it's a statement of who you are.
-                    We curate original branded pieces from the finest designers, bringing you premium fashion
-                    that combines timeless elegance with contemporary style. Every item in our collection is
-                    handpicked to ensure authenticity, quality, and the perfect fit for the modern individual.
+        <div class="pe-story__grid">
+            <div class="pe-reveal">
+                <p class="pe-head__eyebrow">Our story</p>
+                <h2 class="pe-head__title">Discover original<br>branded fashion</h2>
+                <p class="pe-story__text">
+                    At Pure Elegance we believe fashion is more than clothing — it is a statement of who you are.
+                    We curate original branded pieces from the finest designers, bringing you premium fashion that
+                    pairs timeless elegance with contemporary style. Every item is handpicked for authenticity,
+                    quality and the perfect fit.
                 </p>
-                <a href="{{ route('categories') }}" class="brand-story-btn">
-                    EXPLORE COLLECTION
-                    <span class="material-symbols-outlined" style="font-size: 1rem;">arrow_forward</span>
+
+                <dl class="pe-story__stats">
+                    <div class="pe-story__stat">
+                        <dt>{{ $brands->count() ?: '20' }}+</dt>
+                        <dd>Labels curated</dd>
+                    </div>
+                    <div class="pe-story__stat">
+                        <dt>100%</dt>
+                        <dd>Original pieces</dd>
+                    </div>
+                    <div class="pe-story__stat">
+                        <dt>7 days</dt>
+                        <dd>Easy returns</dd>
+                    </div>
+                </dl>
+
+                <a href="{{ route('categories') }}" class="pe-story__btn">
+                    Explore collection
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
                 </a>
             </div>
-            <div class="brand-story-img-wrapper reveal reveal-delay-2">
-                <img src="{{ asset('images/hero-banner.jpg') }}" alt="Pure Elegance Brand Story" loading="lazy" width="800" height="1000">
-                <div class="brand-story-img-badge">
-                    <div class="brand-story-img-badge-title">PURE ELEGANCE</div>
-                    <div class="brand-story-img-badge-text">Premium Fashion Since 2024</div>
+
+            <div class="pe-story__figure pe-reveal" style="--i:1">
+                <img src="{{ asset('images/hero-banner.jpg') }}"
+                     alt="Pure Elegance curated rail"
+                     width="800" height="1000"
+                     loading="lazy" decoding="async">
+                <div class="pe-story__badge">
+                    <strong>Pure Elegance</strong>
+                    <span>Premium fashion since 2024</span>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-{{-- ============================================
-    NEW ARRIVALS
-============================================= --}}
+
+{{-- ==========================================================================
+     NEW ARRIVALS
+     ========================================================================== --}}
 @if($newArrivals->count() > 0)
-<section style="padding: var(--space-2xl) 0;" id="new-arrivals-section">
-    <div class="container skeleton-container">
-        <div class="section-header reveal">
+<section class="pe-section" id="new-arrivals-section">
+    <div class="container">
+        <div class="pe-head pe-reveal">
             <div>
-                <h2 class="section-title">
-                    NEW ARRIVALS
-                    <span class="material-symbols-outlined" style="color: var(--gold-text); font-size: 1.2rem;">crown</span>
-                </h2>
-                <div class="section-title-underline"></div>
+                <p class="pe-head__eyebrow">Just landed</p>
+                <h2 class="pe-head__title">New <em>arrivals</em></h2>
+                <p class="pe-head__sub">Fresh in this week, while sizes last.</p>
             </div>
-            <a href="{{ route('new-arrivals') }}" class="section-link">
-                VIEW ALL <span class="material-symbols-outlined" style="font-size: 1.1rem;">arrow_forward</span>
+            <a href="{{ route('new-arrivals') }}" class="pe-head__link">
+                View all <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
             </a>
         </div>
 
-        <div class="skeleton-grid" aria-hidden="true">
-            @for($i = 0; $i < 4; $i++)
-                @include('storefront.partials.skeleton-product-card')
-            @endfor
-        </div>
-
-        <div class="product-real-grid home-product-grid">
+        <div class="pe-products pe-products--fill">
             @foreach($newArrivals as $index => $product)
-                <div class="home-product-item stagger-item" style="transition-delay: {{ $index * 0.1 }}s;">
+                <div class="pe-reveal" style="--i:{{ $index % 4 }}">
                     @include('storefront.partials.product-card', [
                         'product'     => $product,
                         'wishlistIds' => $wishlistIds ?? [],
@@ -303,87 +513,85 @@
 </section>
 @endif
 
-{{-- ============================================
-    PROMO BANNER
-============================================= --}}
-<section style="padding-bottom: var(--space-2xl);">
+
+{{-- ==========================================================================
+     MEMBERSHIP PROMO
+     ========================================================================== --}}
+@guest
+<section class="pe-section pe-section--flush-top">
     <div class="container">
-        <div class="promo-banner reveal">
-            <div class="promo-left">
-                <div class="promo-icon">
-                    <span class="material-symbols-outlined">featured_seasonal_and_gifts</span>
-                </div>
+        <div class="pe-promo pe-reveal">
+            <div class="pe-promo__left">
+                <span class="pe-promo__icon">
+                    <span class="material-symbols-outlined" aria-hidden="true">featured_seasonal_and_gifts</span>
+                </span>
                 <div>
-                    <div class="promo-heading">{{ site('promo_banner_heading', 'JOIN FOR EXCLUSIVE OFFERS') }}</div>
-                    <div class="promo-desc">{{ site('promo_banner_text', 'Create an account and be first to hear about new drops and member deals.') }}</div>
+                    <div class="pe-promo__heading">{{ site('promo_banner_heading', 'Join for exclusive offers') }}</div>
+                    <p class="pe-promo__desc">{{ site('promo_banner_text', 'Create an account and be first to hear about new drops and member deals.') }}</p>
                 </div>
             </div>
-            <a href="{{ route('register') }}" class="btn btn-outline-gold promo-btn">JOIN NOW</a>
+            <a href="{{ route('register') }}" class="pe-promo__btn">
+                Join now <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
         </div>
     </div>
 </section>
+@endguest
 
-{{-- ============================================
-    NEWSLETTER SECTION
-============================================= --}}
-<section class="newsletter-section" style="padding: var(--space-3xl) 0;">
+
+{{-- ==========================================================================
+     NEWSLETTER
+     ========================================================================== --}}
+<section class="pe-newsletter" id="newsletter">
     <div class="container">
-        <div class="newsletter-inner reveal">
-            <div class="newsletter-label">STAY IN THE LOOP</div>
-            <h2 class="newsletter-heading">{{ site('newsletter_title', 'Get the Latest Drops Straight to Your Inbox') }}</h2>
-            <p class="newsletter-desc">{{ site('newsletter_subtitle', 'Be the first to know about new collections, exclusive deals, and style inspiration.') }}</p>
-            <form class="newsletter-form" method="POST" action="{{ route('newsletter.store') }}">
+        <div class="pe-newsletter__inner pe-reveal">
+            <p class="pe-newsletter__eyebrow">Stay in the loop</p>
+            <h2 class="pe-newsletter__heading">{{ site('newsletter_title', 'Get the latest drops straight to your inbox') }}</h2>
+            <p class="pe-newsletter__desc">{{ site('newsletter_subtitle', 'Be the first to know about new collections, exclusive deals and style inspiration.') }}</p>
+
+            {{-- The result is rendered here, beside the form that produced it.
+                 The controller redirects back to #newsletter so the confirmation
+                 is on screen instead of ~6000px above at the top of <main>. --}}
+            @if(session('newsletter_status'))
+                <p class="pe-newsletter__status pe-newsletter__status--ok" role="status">
+                    <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                    {{ session('newsletter_status') }}
+                </p>
+            @endif
+            @error('email')
+                <p class="pe-newsletter__status pe-newsletter__status--error" role="alert">
+                    <span class="material-symbols-outlined" aria-hidden="true">error</span>
+                    {{ $message }}
+                </p>
+            @enderror
+
+            <form class="pe-newsletter__form" method="POST" action="{{ route('newsletter.store') }}" data-newsletter>
                 @csrf
-                <input type="email" name="email" class="newsletter-input" placeholder="Enter your email address" required>
-                {{-- Honeypot: hidden from real users; bots that fill it are silently dropped --}}
-                <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px; width:1px; height:1px;" aria-hidden="true">
-                <button type="submit" class="newsletter-submit">SUBSCRIBE</button>
+                <label class="sr-only" for="newsletter-email">Email address</label>
+                <input type="email"
+                       id="newsletter-email"
+                       name="email"
+                       class="pe-newsletter__input"
+                       placeholder="Enter your email address"
+                       value="{{ old('email') }}"
+                       autocomplete="email"
+                       @error('email') aria-invalid="true" aria-describedby="newsletter-error" @enderror
+                       required>
+                {{-- Honeypot: hidden from real users; bots that fill it are silently dropped. --}}
+                <input type="text" name="website" tabindex="-1" autocomplete="off" class="sr-only" aria-hidden="true">
+                <button type="submit" class="pe-newsletter__submit">Subscribe</button>
             </form>
-            @error('email')<div style="color: var(--gold-text); font-size: 0.75rem; margin-top: 8px;">{{ $message }}</div>@enderror
-            <div class="newsletter-trust">
-                <span class="material-symbols-outlined">lock</span>
+
+            <p class="pe-newsletter__trust">
+                <span class="material-symbols-outlined" aria-hidden="true">lock</span>
                 No spam. Unsubscribe anytime.
-            </div>
+            </p>
         </div>
     </div>
 </section>
 
-{{-- ============================================
-    SCROLL-REVEAL & SKELETON TRANSITION SCRIPT
-============================================= --}}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Skeleton → Real content transition
-    document.querySelectorAll('.skeleton-container').forEach(function (el) {
-        el.classList.add('content-loaded');
-    });
+</div>{{-- /.pe-landing --}}
 
-    // IntersectionObserver for scroll-reveal animations
-    const revealElements = document.querySelectorAll('.reveal, .stagger-item');
-
-    if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('revealed');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -40px 0px'
-        });
-
-        revealElements.forEach(function (el) {
-            observer.observe(el);
-        });
-    } else {
-        // Fallback: show everything immediately
-        revealElements.forEach(function (el) {
-            el.classList.add('revealed');
-        });
-    }
-});
-</script>
+@vite('resources/js/home.js')
 
 @endsection
