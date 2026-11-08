@@ -835,10 +835,32 @@
 }
 .pe-collection:hover .pe-collection__rule { transform: scaleX(1); }
 
+/* Phones: stacked full-width banners cropped the square photos to a letterbox
+   and cut off every face. Instead, a swipeable row of portrait cards that bleeds
+   to the screen edge, with the next card peeking in so the row reads as scrollable. */
 @media (max-width: 720px) {
-    .pe-collections { grid-template-columns: 1fr; }
-    .pe-collection { height: clamp(180px, 42vw, 240px); }
+    .pe-collections {
+        display: flex;
+        gap: .75rem;
+        margin-inline: calc(-1 * var(--space-md));
+        padding-inline: var(--space-md);
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-padding-inline: var(--space-md);
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+    }
+    .pe-collections::-webkit-scrollbar { display: none; }
+    .pe-collection {
+        flex: 0 0 72%;
+        height: auto;
+        aspect-ratio: 4 / 5;
+        scroll-snap-align: start;
+    }
+    .pe-collection__img { object-position: center top; }
     .pe-collection__num { display: none; }
+    /* Rule only animates on hover, which touch never gets; show it fully. */
+    .pe-collection__rule { transform: scaleX(1); }
 }
 
 
@@ -944,11 +966,21 @@
     font-weight: 600;
     letter-spacing: .04em;
 }
-.pe-category__parent::after {
+/* Separator only when a "Coming soon" note follows the parent label. */
+.pe-category__parent:has(+ .pe-category__soon)::after {
     content: ' · ';
     color: var(--color-muted-text);
     font-weight: 400;
 }
+
+/* Empty category: visible but quiet, and no hover lift since it isn't a link. */
+/* Dimmed via colour, not opacity, so it doesn't fight the .pe-reveal fade-in. */
+.pe-category--soon { cursor: default; border-style: dashed; color: var(--color-muted-text); }
+.pe-category--soon:hover { border-color: var(--pe-hairline); box-shadow: none; transform: none; }
+.pe-category--soon:hover::after { transform: scaleX(0); }
+.pe-category--soon .pe-category__icon,
+.pe-category--soon:hover .pe-category__icon { background: var(--color-warm-beige); color: var(--color-muted-text); }
+.pe-category__soon { font-style: italic; }
 
 
 /* ==========================================================================
@@ -1052,6 +1084,19 @@
     transition: filter 350ms ease, opacity 350ms ease;
 }
 .pe-marquee__item:hover img { filter: grayscale(0); opacity: 1; }
+
+.pe-marquee__word {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+    font-weight: 600;
+    letter-spacing: .02em;
+    white-space: nowrap;
+    color: currentColor;
+    opacity: .78;
+    transition: opacity 350ms ease;
+}
+.pe-marquee__item:hover .pe-marquee__word { opacity: 1; }
+.pe-marquee__item:focus-visible { outline: 2px solid var(--gold-text, #9a7b2e); outline-offset: 2px; }
 
 @media (max-width: 768px) {
     .pe-marquee__item { height: 52px; }

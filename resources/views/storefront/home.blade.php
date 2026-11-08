@@ -5,6 +5,31 @@
 
 @push('styles')
     @vite('resources/css/home.css')
+    <script type="application/ld+json">
+    {!! json_encode([
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'Organization',
+                'name'  => 'Pure Elegance',
+                'url'   => url('/'),
+                'logo'  => asset('favicon.svg'),
+                'email' => site('contact_email', 'info@pureelegance.lk'),
+                'telephone' => site('contact_phone', '+94 77 123 4567'),
+            ],
+            [
+                '@type' => 'WebSite',
+                'name'  => 'Pure Elegance',
+                'url'   => url('/'),
+                'potentialAction' => [
+                    '@type'       => 'SearchAction',
+                    'target'      => route('search') . '?q={search_term_string}',
+                    'query-input' => 'required name=search_term_string',
+                ],
+            ],
+        ],
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}
+    </script>
 @endpush
 
 @section('content')
@@ -50,7 +75,7 @@
                 'eyebrow'     => 'Step into style',
                 'title'       => 'Timeless fashion. Pure elegance.',
                 'description' => 'Premium fashion for Men & Women. Elevate your everyday style.',
-                'image'       => asset('images/hero-banner.jpg'),
+                'image'       => asset('images/hero-banner.webp'),
                 'cta_text'    => 'Shop now',
                 'cta_link'    => route('categories'),
             ],
@@ -58,7 +83,7 @@
                 'eyebrow'     => 'New season',
                 'title'       => 'Wear your confidence.',
                 'description' => 'Modern silhouettes and considered essentials for every occasion.',
-                'image'       => asset('images/category-men.jpg'),
+                'image'       => asset('images/category-men.webp'),
                 'cta_text'    => 'Explore men',
                 'cta_link'    => route('categories', ['gender' => 'men']),
             ],
@@ -66,7 +91,7 @@
                 'eyebrow'     => 'The women’s edit',
                 'title'       => 'Elevate your everyday.',
                 'description' => 'Refined pieces designed to move with your life and your style.',
-                'image'       => asset('images/category-women.jpg'),
+                'image'       => asset('images/category-women.webp'),
                 'cta_text'    => 'Explore women',
                 'cta_link'    => route('categories', ['gender' => 'women']),
             ],
@@ -235,9 +260,9 @@
 
         @php
             $collections = [
-                ['title' => 'Men',    'href' => route('categories', ['gender' => 'men']),   'img' => asset('images/category-men.jpg'),    'cta' => 'Shop now',        'alt' => "Men's collection"],
-                ['title' => 'Women',  'href' => route('categories', ['gender' => 'women']), 'img' => asset('images/category-women.jpg'),  'cta' => 'Shop now',        'alt' => "Women's collection"],
-                ['title' => 'Outlet', 'href' => route('sale'),                              'img' => asset('images/category-outlet.jpg'), 'cta' => 'Up to 60% off',   'alt' => 'Outlet sale'],
+                ['title' => 'Men',    'href' => route('categories', ['gender' => 'men']),   'img' => asset('images/category-men.webp'),    'cta' => 'Shop now',        'alt' => "Men's collection"],
+                ['title' => 'Women',  'href' => route('categories', ['gender' => 'women']), 'img' => asset('images/category-women.webp'),  'cta' => 'Shop now',        'alt' => "Women's collection"],
+                ['title' => 'Outlet', 'href' => route('sale'),                              'img' => asset('images/category-outlet.webp'), 'cta' => 'Up to 60% off',   'alt' => 'Outlet sale'],
             ];
         @endphp
         <div class="pe-collections">
@@ -340,9 +365,12 @@
 
                     // Sale is price-driven, so its tile goes to the dedicated /sale page.
                     $href = $slug === 'sale' ? route('sale') : route('category.show', $category->slug);
-                    $count = $category->products_count . ' ' . Str::plural('product', $category->products_count);
+                    $soon = $category->products_count < 1;
+                    $tag  = $soon ? 'div' : 'a';
                 @endphp
-                <a href="{{ $href }}" class="pe-category pe-reveal" style="--i:{{ min($index, 5) }}">
+                {{-- Empty categories render as a plain tile, so none links to an empty listing. --}}
+                <{{ $tag }} @unless($soon) href="{{ $href }}" @endunless
+                    class="pe-category pe-reveal {{ $soon ? 'pe-category--soon' : '' }}" style="--i:{{ min($index, 5) }}">
                     <span class="pe-category__icon">
                         <span class="material-symbols-outlined" aria-hidden="true">{{ $icon }}</span>
                     </span>
@@ -351,9 +379,11 @@
                         @if($category->parent_label)
                             <span class="pe-category__parent">{{ $category->parent_label }}</span>
                         @endif
-                        {{ $count }}
+                        @if($soon)
+                            <span class="pe-category__soon">Coming soon</span>
+                        @endif
                     </div>
-                </a>
+                </{{ $tag }}>
             @endforeach
         </div>
     </div>
@@ -413,14 +443,16 @@
         <div class="pe-marquee__track">
             @for($rep = 0; $rep < 3; $rep++)
                 @foreach($brands as $brand)
+                    @php $logo = 'images/brands/' . Str::slug($brand->brand) . '.png'; @endphp
                     <a href="{{ route('categories', ['brand' => $brand->brand]) }}"
                        class="pe-marquee__item"
-                       @if($rep > 0) aria-hidden="true" tabindex="-1" @endif>
-                        <img src="{{ asset('images/brands/' . Str::slug($brand->brand) . '.png') }}"
-                             onerror="this.onerror=null;this.src='https://placehold.co/150x50/transparent/333333/png?text={{ urlencode($brand->brand) }}'"
-                             alt="{{ $rep === 0 ? $brand->brand : '' }}"
-                             width="150" height="50"
-                             loading="lazy" decoding="async">
+                       @if($rep > 0) aria-hidden="true" tabindex="-1" @else aria-label="Shop {{ $brand->brand }}" @endif>
+                        {{-- No logo file → typeset wordmark, never a third-party placeholder service. --}}
+                        @if(file_exists(public_path($logo)))
+                            <img src="{{ asset($logo) }}" alt="" width="150" height="50" loading="lazy" decoding="async">
+                        @else
+                            <span class="pe-marquee__word">{{ $brand->brand }}</span>
+                        @endif
                     </a>
                 @endforeach
             @endfor
@@ -447,10 +479,18 @@
                 </p>
 
                 <dl class="pe-story__stats">
-                    <div class="pe-story__stat">
-                        <dt>{{ $brands->count() ?: '20' }}+</dt>
-                        <dd>Labels curated</dd>
-                    </div>
+                    {{-- Real count only; a "1+" or invented number reads worse than no stat. --}}
+                    @if($brands->count() >= 5)
+                        <div class="pe-story__stat">
+                            <dt>{{ $brands->count() }}+</dt>
+                            <dd>Labels curated</dd>
+                        </div>
+                    @else
+                        <div class="pe-story__stat">
+                            <dt>COD</dt>
+                            <dd>Islandwide</dd>
+                        </div>
+                    @endif
                     <div class="pe-story__stat">
                         <dt>100%</dt>
                         <dd>Original pieces</dd>
@@ -468,7 +508,7 @@
             </div>
 
             <div class="pe-story__figure pe-reveal" style="--i:1">
-                <img src="{{ asset('images/hero-banner.jpg') }}"
+                <img src="{{ asset('images/hero-banner.webp') }}"
                      alt="Pure Elegance curated rail"
                      width="800" height="1000"
                      loading="lazy" decoding="async">
