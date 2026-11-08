@@ -19,8 +19,8 @@ class CategoryBrowsingTest extends TestCase
         $leaf = Category::factory()->create(['name' => 'Shirts Leaf', 'parent_id' => $child->id]);
         Product::factory()->create(['category_id' => $leaf->id]);
 
-        // A parent whose entire subtree is empty must not get a tile.
-        Category::factory()->create(['name' => 'Empty Section', 'sort_order' => 2]);
+        // A parent whose entire subtree is empty still gets a tile, but not a link.
+        $empty = Category::factory()->create(['name' => 'Empty Section', 'sort_order' => 2]);
 
         $response = $this->get('/');
 
@@ -31,7 +31,10 @@ class CategoryBrowsingTest extends TestCase
         $response->assertSee('<div class="shop-cat-name">Clothing Sub</div>', false);
         $response->assertSee('Men Section');            // rendered as the tile's parent label
         $response->assertDontSee('Shirts Leaf');        // the 3rd level is not tiled
-        $response->assertDontSee('Empty Section');      // empty subtree hidden
+        $response->assertSee('<div class="shop-cat-name">Empty Section</div>', false);
+        $response->assertSee('Coming soon');            // empty tile is marked, not linked
+        $response->assertDontSee('/category/' . $empty->slug, false);
+        $response->assertDontSee(' products</div>', false); // counts are no longer shown
     }
 
     public function test_stocked_top_level_category_without_children_is_tiled_itself(): void
@@ -80,14 +83,15 @@ class CategoryBrowsingTest extends TestCase
         $response->assertDontSee('/category/sale', false);
     }
 
-    public function test_sale_tile_hidden_when_nothing_is_discounted(): void
+    public function test_sale_tile_shows_coming_soon_when_nothing_is_discounted(): void
     {
         Category::factory()->create(['name' => 'Sale', 'slug' => 'sale']);
         $leaf = Category::factory()->create(['name' => 'Some Leaf']);
         Product::factory()->create(['category_id' => $leaf->id]); // full price
 
         $this->get('/')->assertOk()
-            ->assertDontSee('<div class="shop-cat-name">Sale</div>', false);
+            ->assertSee('<div class="shop-cat-name">Sale</div>', false)
+            ->assertSee('Coming soon');
     }
 
     public function test_parent_category_page_aggregates_descendant_products(): void

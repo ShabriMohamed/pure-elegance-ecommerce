@@ -103,31 +103,28 @@ class HomeController extends Controller
             if ($root->slug === 'sale') {
                 $root->products_count = $onSaleCount;
                 $root->parent_label = null;
-                if ($onSaleCount > 0) {
-                    $topCategories->push($root);
-                }
+                $topCategories->push($root);
                 continue;
             }
 
-            $stocked = $childrenByParent->get($root->id, collect())
+            // Empty categories are listed too; the view renders them as
+            // non-clickable "Coming soon" tiles so none leads to an empty page.
+            $children = $childrenByParent->get($root->id, collect())
                 ->sortBy('sort_order')
                 ->map(function ($child) use ($subtreeCount, $root) {
                     $child->products_count = $subtreeCount($child->id);
                     $child->parent_label = $root->name;
                     return $child;
-                })
-                ->filter(fn ($child) => $child->products_count > 0);
+                });
 
-            if ($stocked->isNotEmpty()) {
-                $topCategories = $topCategories->concat($stocked);
+            if ($children->isNotEmpty()) {
+                $topCategories = $topCategories->concat($children);
                 continue;
             }
 
             $root->products_count = $subtreeCount($root->id);
             $root->parent_label = null;
-            if ($root->products_count > 0) {
-                $topCategories->push($root);
-            }
+            $topCategories->push($root);
         }
 
         $topCategories = $topCategories->values();

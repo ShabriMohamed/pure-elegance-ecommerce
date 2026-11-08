@@ -195,7 +195,20 @@ button {
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
     vertical-align: middle;
     line-height: 1;
+    /* Each icon is a ligature (the word "shopping_bag" drawn as one glyph). Pin
+       the box to the glyph's 1em square so the raw word can never widen the
+       layout while the font is still downloading. */
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    overflow: hidden;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
 }
+/* Until the icon font has loaded (the layouts add .icons-ready), hide the raw
+   ligature words instead of flashing "local_shipping" across the page. */
+html:not(.icons-ready) .material-symbols-outlined { visibility: hidden !important; }
 
 /* ========================================
    Container
@@ -601,7 +614,7 @@ body {
     color: var(--color-primary-text); padding: 0.2rem 0;
 }
 .sf-search-input::placeholder { color: rgba(0,0,0,0.25); font-weight: 400; }
-.sf-close-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: none; background: transparent; cursor: pointer; color: rgba(0,0,0,0.35); transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+.sf-close-btn { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; border: none; background: transparent; cursor: pointer; color: rgba(0,0,0,0.55); transition: background 0.15s, color 0.15s; flex-shrink: 0; }
 .sf-close-btn:hover { background: rgba(0,0,0,0.07); color: rgba(0,0,0,0.7); }
 .sf-close-btn .material-symbols-outlined { font-size: 1.2rem; }
 
